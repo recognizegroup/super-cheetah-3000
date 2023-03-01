@@ -41,7 +41,7 @@ jobs:
         terraform_wrapper: false
         cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
     - name: Setup Terragrunt
-      uses: autero1/action-terragrunt@v1.1.0
+      uses: autero1/action-terragrunt@v1.3.0
       with:
         terragrunt_version: latest
     - name: Terragrunt Apply
