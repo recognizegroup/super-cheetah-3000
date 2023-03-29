@@ -27,7 +27,7 @@ jobs:
       with:
         terraform_wrapper: false
     - name: Setup Terragrunt
-      uses: autero1/action-terragrunt@v1.3.0
+      uses: autero1/action-terragrunt@v1.3.1
       with:
         terragrunt_version: latest
     - name: Terragrunt Apply
