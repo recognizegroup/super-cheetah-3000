@@ -15,6 +15,10 @@ permissions:
   id-token: write
   contents: read
 
+defaults:
+  run:
+    working-directory: cli/
+
 jobs:
   test:
     runs-on: ubuntu-latest

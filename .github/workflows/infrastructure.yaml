@@ -5,6 +5,7 @@ on:
       - main
       - release/*
       - develop
+      - feature/RECGEN-1-cli-setup
 
 permissions:
   id-token: write
