@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - v*
+    branches:
+      - feature/RECGEN-1-cli-setup
   pull_request:
     branches:
       - main
