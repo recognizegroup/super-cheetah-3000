@@ -1,12 +1,10 @@
-<<<<<<< HEAD
 dist/
 node_modules/
 /.idea/
 sample-project/
 yarn-error.log
-=======
 # Terraform
 terraform/modules/**/backend.tf
 terraform/modules/**/default_vars.tf
 terraform/modules/**/provider.tf
->>>>>>> 5f5e52ec8b10d6903e73b43319dd2cf523b8b6b6
+tmp/
