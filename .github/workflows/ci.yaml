@@ -1,0 +1,77 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+      - release/*
+      - develop
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  determine-environment:
+    runs-on: ubuntu-latest
+    name: Determine environment
+    steps:
+      - run: echo "🤖  Finding correct environment"
+    outputs:
+      environment: ${{ github.ref == 'refs/heads/main' && 'prd' || (startsWith(github.ref, 'refs/heads/release/') && 'acc' || 'tst') }}
+
+  infrastructure:
+    needs: [determine-environment]
+    name: Deploy infrastructure
+    defaults:
+      run:
+        working-directory: terraform/
+    env:
+      ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ needs.determine-environment.outputs.environment }}
+    concurrency: ${{ needs.determine-environment.outputs.environment }}
+    outputs:
+      url: ${{ steps.terragrunt.outputs.url }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+        cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: latest
+    - name: Terragrunt Apply
+      id: terragrunt
+      run: |-
+        terragrunt run-all apply --terragrunt-non-interactive
+        echo "url=https://recognize.nl" >> $GITHUB_OUTPUT # Change this URL based on the deployed infrastructure
+      env:
+        ARM_USE_OIDC: true
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        ARM_SKIP_PROVIDER_REGISTRATION: true
+
+  security-reporting:
+    needs: [infrastructure]
+    name: Security report
+    runs-on: ubuntu-latest
+    steps:
+    - uses: recognizegroup/recognize-internal-security-assistant-action@v2
+      with:
+        urls: ${{ needs.infrastructure.outputs.url }}
+        reporting-application-insights-connection-string: ${{ secrets.SECURITY_REPORT_APPLICATION_INSIGHTS_CONNECTION_STRING }}
+
+  policy-versions:
+    name: Policy version scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - uses: recognizegroup/recognize-cli-action@v1
+      with:
+        application-insights-key: ${{ secrets.RECOGNIZE_CLI_APPLICATION_INSIGHTS_KEY }}
