@@ -3,51 +3,36 @@ on:
   push:
     branches:
       - main
-      - release/*
-      - develop
-      - feature/RECGEN-1-cli-setup
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  determine-environment:
-    runs-on: ubuntu-latest
-    name: Determine environment
-    steps:
-      - run: echo "🤖  Finding correct environment"
-    outputs:
-      environment: ${{ github.ref == 'refs/heads/main' && 'prd' || (startsWith(github.ref, 'refs/heads/release/') && 'acc' || 'tst') }}
-
   infrastructure:
-    needs: [determine-environment]
     name: Deploy infrastructure
     defaults:
       run:
         working-directory: terraform/
-    env:
-      ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
     runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment.outputs.environment }}
-    concurrency: ${{ needs.determine-environment.outputs.environment }}
+    environment: prd
+    concurrency: prd
     outputs:
       url: ${{ steps.terragrunt.outputs.url }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_wrapper: false
-        cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
     - name: Setup Terragrunt
-      uses: autero1/action-terragrunt@v1.1.0
+      uses: autero1/action-terragrunt@v1.3.0
       with:
         terragrunt_version: latest
     - name: Terragrunt Apply
       id: terragrunt
-      run:  terragrunt run-all apply --terragrunt-non-interactive
+      run: terragrunt run-all apply --terragrunt-non-interactive
       env:
         ARM_USE_OIDC: true
         ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}

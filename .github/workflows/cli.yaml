@@ -9,7 +9,6 @@ on:
   pull_request:
     branches:
       - main
-      - develop
 
 permissions:
   id-token: write
@@ -27,7 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -36,3 +35,50 @@ jobs:
         run: yarn build
       - name: Test
         run: yarn test
+
+  pack:
+    runs-on: ubuntu-latest
+    name: Pack
+    needs: [test]
+    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Pack
+        run: npx oclif pack tarballs
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cli
+          path: dist/
+
+  # upload:
+  #   runs-on: ubuntu-latest
+  #   name: Upload
+  #   needs: [pack]
+  #   steps:
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: cli
+  #     - name: Log in to Azure using OIDC
+  #       uses: azure/login@v1
+  #       with:
+  #         client-id: ${{ secrets.ARM_CLIENT_ID }}
+  #         tenant-id: ${{ secrets.ARM_TENANT_ID }}
+  #         subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  #     - name: Upload artifact
+  #       run: |
+  #         az storage blob upload-batch \
+  #           --account-name <storageaccountname> \
+  #           --resource-group <resourcegroup> \
+  #           --destination <container> \
+  #           --source dist/
