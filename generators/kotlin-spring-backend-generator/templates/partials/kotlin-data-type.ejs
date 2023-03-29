@@ -1,0 +1,1 @@
+<% if(type === 'string' || type === 'text') { %>String<% } else if (type === 'integer') { %>Int<% } else if (type === 'boolean') { %>Boolean<% } else {%><%= toPascalCase(type.target.name) %><% } %><% if (nullable) { %>?<% } %>

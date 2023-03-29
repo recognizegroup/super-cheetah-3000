@@ -1,0 +1,5 @@
+dist/
+node_modules/
+/.idea/
+sample-project/
+yarn-error.log

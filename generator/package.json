@@ -1,0 +1,22 @@
+{
+  "name": "@recognizebv/sc3000-generator",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "private": true,
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@tsconfig/node18": "^1.0.1",
+    "@types/ejs": "^3.1.1",
+    "@types/node": "^18.11.18",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "ejs": "^3.1.8",
+    "gray-matter": "^4.0.3"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --outDir dist",
+    "watch": "tsc -p tsconfig.json --outDir dist --watch"
+  }
+}

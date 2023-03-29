@@ -1,0 +1,13 @@
+---
+id: dto
+constants:
+    name: <%= toPascalCase(entity.name) %>DTO
+    import: <%= variables.packageName %>.model.<%= toPascalCase(entity.name) %>DTO
+---
+package <%= variables.packageName %>.model
+
+import <%= variables.packageName %>.entity.*
+
+data class <%= constants.name %>(<% entity.fields.forEach((field) => { %>
+    val <%= field.name %>: <%- include('/partials/kotlin-data-type.ejs', { type: field.type, nullable: field.required ? false : true }); -%>,<% }) %>
+)

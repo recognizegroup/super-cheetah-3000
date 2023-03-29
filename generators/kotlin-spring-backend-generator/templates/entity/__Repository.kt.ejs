@@ -1,0 +1,16 @@
+---
+id: repository
+constants:
+    name: <%= toPascalCase(entity.name) %>Repository
+    variableName: <%= toCamelCase(entity.name) %>Repository
+    import: <%= variables.packageName %>.repository.<%= toPascalCase(entity.name) %>Repository
+dependencies: [entity]
+---
+package <%= variables.packageName %>.repository
+
+import <%= dependencies.entity.import %>
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface <%= constants.name %> : JpaRepository<<%= dependencies.entity.name %>, Long>

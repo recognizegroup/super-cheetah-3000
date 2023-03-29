@@ -1,0 +1,19 @@
+{
+  "name": "@recognizebv/sc3000",
+  "version": "1.0.0",
+  "description": "* Custom NPM registry to publish packages",
+  "main": "index.js",
+  "scripts": {
+    "watch:cli": "cd cli/ && yarn watch",
+    "watch:generator": "cd generator/ && yarn watch",
+    "watch:generator:kotlin-spring-backend": "cd generators/kotlin-spring-backend-generator/ && yarn watch",
+    "watch:all": "concurrently \"yarn watch:cli\" \"yarn watch:generator\" \"yarn watch:generator:kotlin-spring-backend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^5.3.0"
+  }
+}
