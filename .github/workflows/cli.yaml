@@ -67,5 +67,5 @@ jobs:
           prerelease: ${{ contains(github.ref, '-beta') }}
           generate_release_notes: true
           files: |
-            dist/*.tar.gz
-            dist/*.tar.xz
+            cli/dist/*.tar.gz
+            cli/dist/*.tar.xz
