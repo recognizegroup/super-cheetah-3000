@@ -47,6 +47,15 @@ jobs:
           node-version: 18.x
       - name: Install dependencies
         run: yarn
+      - name: Write release version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Change version
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: ${{ env.VERSION }}
       - name: Build
         run: yarn build
       - name: Pack
