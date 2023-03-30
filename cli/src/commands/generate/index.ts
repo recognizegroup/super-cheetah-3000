@@ -15,8 +15,6 @@ $ oex generate --force
   }
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(Generate)
-
-    this.log(`hello ${args.person} from ${flags.from}! (./src/commands/hello/index.ts)`)
+    this.log('hello world')
   }
 }
