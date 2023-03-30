@@ -1,6 +1,16 @@
 # CLI
 This folder contains the code for the CLI tool of Recognize Super Cheetah 3000.
 
+## 👋 About The Project
+
+### Built With
+
+* []() Node.js
+* []() Typescript
+* []() Oclif
+
+
+
 ## 🚀 Getting Started
 
 To get a local copy up and running follow these simple steps.

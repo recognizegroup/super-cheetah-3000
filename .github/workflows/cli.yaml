@@ -1,14 +1,11 @@
 name: CLI
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - v*
-    branches:
-      - feature/RECGEN-1-cli-setup
   pull_request:
     branches:
       - main
+    tags:
+      - v*
 
 permissions:
   id-token: write
@@ -36,11 +33,11 @@ jobs:
       - name: Test
         run: yarn test
 
-  pack:
+  create-release:
     runs-on: ubuntu-latest
-    name: Pack
+    name: Create release
     needs: [test]
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -54,31 +51,10 @@ jobs:
         run: yarn build
       - name: Pack
         run: npx oclif pack tarballs
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      - uses: softprops/action-gh-release@v1
         with:
-          name: cli
-          path: dist/
-
-  # upload:
-  #   runs-on: ubuntu-latest
-  #   name: Upload
-  #   needs: [pack]
-  #   steps:
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: cli
-  #     - name: Log in to Azure using OIDC
-  #       uses: azure/login@v1
-  #       with:
-  #         client-id: ${{ secrets.ARM_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.ARM_TENANT_ID }}
-  #         subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  #     - name: Upload artifact
-  #       run: |
-  #         az storage blob upload-batch \
-  #           --account-name <storageaccountname> \
-  #           --resource-group <resourcegroup> \
-  #           --destination <container> \
-  #           --source dist/
+          prerelease: ${{ contains(github.ref, '-beta') }}
+          generate_release_notes: true
+          files: |
+            dist/*.tar.gz
+            dist/*.tar.xz
