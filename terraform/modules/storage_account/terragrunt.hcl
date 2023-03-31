@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/recognizegroup/terraform.git//modules/azure/storage_account_public?ref=v3.0.0-beta.17"
+  source = "git::https://github.com/recognizegroup/terraform.git//modules/azure/storage_account_public?ref=${include.locals.version}"
 }
 
 include {

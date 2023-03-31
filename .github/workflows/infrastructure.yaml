@@ -4,22 +4,34 @@ on:
   push:
     branches:
       - main
+      - develop
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
+  determine-environment:
+    runs-on: ubuntu-latest
+    name: Determine environment
+    steps:
+      - run: echo "🤖  Finding correct environment"
+    outputs:
+      environment: ${{ github.ref == 'refs/heads/main' && 'prd' || (startsWith(github.ref, 'refs/heads/release/') && 'acc' || 'tst') }}
+
   infrastructure:
+    needs: [determine-environment]
     name: Deploy infrastructure
     defaults:
       run:
         working-directory: terraform/
     runs-on: ubuntu-latest
-    environment: prd
-    concurrency: prd
+    environment: ${{ needs.determine-environment.outputs.environment }}
+    concurrency: infrastructure-${{ needs.determine-environment.outputs.environment }}
     outputs:
       url: ${{ steps.terragrunt.outputs.url }}
+    env:
+      ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -39,4 +51,5 @@ jobs:
         ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        REGISTRY_AUTH_CLIENT_SECRET: ${{ secrets.REGISTRY_AUTH_CLIENT_SECRET }}
         ARM_SKIP_PROVIDER_REGISTRATION: true
