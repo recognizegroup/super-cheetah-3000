@@ -17,14 +17,17 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
+    "@azure/msal-common": "^11.0.0",
+    "@azure/msal-node": "^1.16.0",
     "@oclif/core": "^2",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.4.3",
-    "@oclif/plugin-update": "^3.1.9"
+    "@oclif/plugin-update": "^3.1.9",
+    "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "@tsconfig/node18": "^1.0.1",
     "@oclif/test": "^2.3.11",
+    "@tsconfig/node18": "^1.0.1",
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.18.20",
@@ -35,6 +38,7 @@
     "mocha": "^9",
     "oclif": "^3",
     "shx": "^0.3.3",
+    "sinon": "^15.0.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
     "typescript": "^4.9.5"
@@ -49,7 +53,9 @@
       "@oclif/plugin-update"
     ],
     "topicSeparator": " ",
-    "topics": {
+    "topics": {},
+    "hooks": {
+      "init": "./dist/hooks/init/environment"
     }
   },
   "scripts": {

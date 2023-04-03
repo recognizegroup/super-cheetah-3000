@@ -3,5 +3,8 @@
     "oclif",
     "oclif-typescript"
   ],
-  "ignorePatterns": "**/*.d.ts"
+  "ignorePatterns": "**/*.d.ts",
+  "rules": {
+    "no-useless-constructor": 0
+  }
 }

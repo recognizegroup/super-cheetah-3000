@@ -1,6 +1,7 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
+import {BaseCommand} from '../base'
 
-export default class Generate extends Command {
+export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
 
   static examples = [
