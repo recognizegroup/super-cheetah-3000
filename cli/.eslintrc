@@ -5,6 +5,8 @@
   ],
   "ignorePatterns": "**/*.d.ts",
   "rules": {
-    "no-useless-constructor": 0
+    "no-useless-constructor": 0,
+    "@typescript-eslint/no-empty-function": 0,
+    "node/no-extraneous-import": 0
   }
 }

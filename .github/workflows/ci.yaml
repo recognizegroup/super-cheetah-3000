@@ -1,0 +1,51 @@
+name: CI
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+
+jobs:
+  test-cli:
+    runs-on: ubuntu-latest
+    name: Test CLI
+    defaults:
+      run:
+        working-directory: cli/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Lint
+        run: yarn lint
+      - name: Test
+        run: yarn
+  test-generator:
+    runs-on: ubuntu-latest
+    name: Test Generator
+    defaults:
+      run:
+        working-directory: generator/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Lint
+        run: yarn lint
+      - name: Test
+        run: yarn test

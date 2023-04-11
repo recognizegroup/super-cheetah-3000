@@ -1,54 +1,56 @@
-export class StringModifificationHelper {
-    static toPascalCase(value: string): string {
-        return value
-            .split(/[\s-]/)
-            .map(word => word[0].toUpperCase() + word.substr(1).toLowerCase())
-            .join("");
+export const StringModificationHelper = {
+  toPascalCase(value: string): string {
+    return value
+    .split(/[\s-]/)
+    .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+    .join('')
+  },
+
+  toCamelCase(value: string): string {
+    return value[0].toLowerCase() + StringModificationHelper.toPascalCase(value).slice(1)
+  },
+
+  toKebabCase(value: string): string {
+    return value
+    .split(/[\s-]|(?=[A-Z])/)
+    .map(word => word.toLowerCase())
+    .join('-')
+  },
+
+  toSnakeCase(value: string): string {
+    return value
+    .split(/[\s-]|(?=[A-Z])/)
+    .map(word => word.toLowerCase())
+    .join('_')
+  },
+
+  toTitleCase(value: string): string {
+    return value
+    .split(/[\s-]/)
+    .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+  },
+
+  toSentenceCase(value: string): string {
+    return value[0].toUpperCase() + value.slice(1)
+  },
+
+  toPlural(value: string): string {
+    if (value.endsWith('s')) {
+      return value
     }
 
-    static toCamelCase(value: string): string {
-        return value[0].toLowerCase() + StringModifificationHelper.toPascalCase(value).substr(1);
+    if (value.endsWith('y')) {
+      return value.slice(0, Math.max(0, value.length - 1)) + 'ies'
     }
 
-    static toKebabCase(value: string): string {
-        return value
-            .split(/[\s-]/)
-            .map(word => word.toLowerCase())
-            .join("-");
-    }
+    return value + 's'
+  },
 
-    static toSnakeCase(value: string): string {
-        return value
-            .split(/[\s-]|(?=[A-Z])/)
-            .map(word => word.toLowerCase())
-            .join("_");
-    }
+  toUrlCase(value: string): string {
+    return this.toKebabCase(
+      this.toPlural(value),
+    )
+  },
 
-    static toTitleCase(value: string): string {
-        return value
-            .split(/[\s-]/)
-            .map(word => word[0].toUpperCase() + word.substr(1).toLowerCase())
-            .join(" ");
-    }
-
-    static toSentenceCase(value: string): string {
-        return value[0].toUpperCase() + value.substr(1);
-    }
-
-    static toPlural(value: string): string {
-        if (value.endsWith("s")) {
-            return value;
-        } else if (value.endsWith("y")) {
-            return value.substr(0, value.length - 1) + "ies";
-        } else {
-            return value + "s";
-        }
-    }
-
-    static toUrlCase(value: string): string {
-        return this.toKebabCase(
-            this.toPlural(value),
-        );
-    }
-        
 }

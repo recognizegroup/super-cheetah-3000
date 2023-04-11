@@ -26,25 +26,31 @@ import org.springframework.web.bind.annotation.RestController
 class <%= dependencies.entity.name %>Controller(
     private val <%= dependencies.repository.variableName %>: <%= dependencies.repository.name %>,
 ) {
+<% if(entity.operations.read) { %>
     @GetMapping("")
     fun list(
         @ParameterObject @PageableDefault(size = 20, sort = ["id"]) pageRequest: Pageable,
     ) = <%= dependencies.entity.variableName %>Repository.findAll(pageRequest)
-
+<% } %>
+<% if(entity.operations.create) { %>
     @PostMapping("")
     fun create(@RequestBody input: <%= dependencies.dto.name %>) = <%= dependencies.repository.variableName %>.save(
         <%= dependencies.entity.name %>(
             <% entity.fields.filter(it => it.required === true).forEach((field) => { %><%= field.name %> = input.<%= field.name %>,<% }) %>
         ).apply { applyDTO(input) }
     )
-
+<% } %>
+<% if(entity.operations.update) { %>
     @PutMapping("{entity}")
     fun update(@PathVariable entity: <%= dependencies.entity.name %>, @RequestBody input: <%= dependencies.dto.name %>)
         = <%= dependencies.repository.variableName %>.save(entity.apply { applyDTO(input) })
-
+<% } %>
+<% if(entity.operations.delete) { %>
     @DeleteMapping("{entity}")
     fun delete(@PathVariable entity: <%= dependencies.entity.name %>) = <%= dependencies.repository.variableName %>.delete(entity)
-
+<% } %>
+<% if(entity.operations.read) { %>
     @GetMapping("{entity}")
     fun detail(@PathVariable entity: <%= dependencies.entity.name %>) = entity
+<% } %>
 }

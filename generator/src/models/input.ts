@@ -1,4 +1,4 @@
-import { DataType } from "../enums/data-type";
+import {DataType} from '../enums/data-type'
 
 interface BaseInput {
     name: string;

@@ -1,6 +1,4 @@
-import { CodeProvider } from "./code-provider";
-import { EntityContext } from "../models/entity-context";
+import {CodeProvider} from './code-provider'
+import {EntityContext} from '../context/entity-context'
 
-export abstract class EntityCodeProvider extends CodeProvider<EntityContext> {
-    
-}
+export abstract class EntityCodeProvider extends CodeProvider<EntityContext> {}

@@ -1,5 +1,4 @@
-import { EntityCodeProvider as BaseProvider, EntityContext, Input, StringModifificationHelper } from "@recognizebv/sc3000-generator";
-import { RenderHookType } from "@recognizebv/sc3000-generator/dist/enums/render-hook-type";
+import { EntityCodeProvider as BaseProvider, EntityContext, Input, StringModificationHelper, RenderHookType } from "@recognizebv/sc3000-generator";
 
 export class EntityCodeProvider extends BaseProvider {
     getInputs(): Input[] {
@@ -10,8 +9,8 @@ export class EntityCodeProvider extends BaseProvider {
 
     async generate(context: EntityContext): Promise<void> {
         const packageName = this.generatePackage(context);
-        const { entity } = context;
-        const pascalCase = StringModifificationHelper.toPascalCase(entity.name);
+        const entity = context.entity
+        const pascalCase = StringModificationHelper.toPascalCase(entity.name);
 
         this.renderer.setContext(context);
         this.renderer.setVariables({
@@ -23,7 +22,7 @@ export class EntityCodeProvider extends BaseProvider {
         await this.renderer.addFile('entity/__Repository.kt.ejs', `src/main/kotlin/${packageName.replace(/\./g, '/')}/repository/${pascalCase}Repository.kt`);
         await this.renderer.addFile('entity/__Controller.kt.ejs', `src/main/kotlin/${packageName.replace(/\./g, '/')}/controller/${pascalCase}Controller.kt`);
         await this.renderer.addFile('entity/__ControllerTest.kt.ejs', `src/test/kotlin/${packageName.replace(/\./g, '/')}/controller/${pascalCase}ControllerTest.kt`);
-        await this.renderer.addFile('entity/__test_fixture.sql.ejs', `src/test/resources/fixtures/${StringModifificationHelper.toKebabCase(entity.name)}.sql`);
+        await this.renderer.addFile('entity/__test_fixture.sql.ejs', `src/test/resources/fixtures/${StringModificationHelper.toKebabCase(entity.name)}.sql`);
 
         // Create migrations
         await this.renderer.addShellCommandHook(RenderHookType.afterRender, 'docker compose up -d && sleep 5');

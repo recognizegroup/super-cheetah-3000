@@ -97,4 +97,86 @@ describe('azure ad authentication provider', () => {
       expect(tokenResponse.username).to.equal('test')
     })
   })
+
+  describe('is expired', () => {
+    it('should return true if the token has already expired', () => {
+      const expiredToken: TokenResponse = {
+        accessToken: 'expired_access_token',
+        idToken: 'id_token',
+        expiresOn: new Date('2022-01-01T00:00:00Z'),
+        refreshToken: 'refresh_token',
+        username: 'user',
+      }
+
+      const result = provider.isExpired(expiredToken)
+
+      expect(result).to.be.true
+    })
+
+    it('should return false if the token has not yet expired', () => {
+      const notExpiredToken: TokenResponse = {
+        accessToken: 'not_expired_access_token',
+        idToken: 'id_token',
+        expiresOn: new Date('2024-01-01T00:00:00Z'),
+        refreshToken: 'refresh_token',
+        username: 'user',
+      }
+
+      const result = provider.isExpired(notExpiredToken)
+
+      expect(result).to.be.false
+    })
+  })
+
+  describe('fetch token or refresh', () => {
+    let refreshStub: SinonStub
+
+    beforeEach(() => {
+      refreshStub = stub(provider, 'refresh')
+    })
+
+    afterEach(() => {
+      refreshStub.restore()
+    })
+
+    it('should return the token if it has not yet expired', async () => {
+      const notExpiredToken: TokenResponse = {
+        accessToken: 'not_expired_access_token',
+        idToken: 'id_token',
+        expiresOn: new Date('2024-01-01T00:00:00Z'),
+        refreshToken: 'refresh_token',
+        username: 'user',
+      }
+
+      const result = await provider.fetchTokenOrRefresh(notExpiredToken)
+
+      expect(result).to.deep.equal(notExpiredToken)
+      expect(refreshStub.callCount).to.equal(0)
+    })
+
+    it('should refresh the token if it has already expired', async () => {
+      const expiredToken: TokenResponse = {
+        accessToken: 'expired_access_token',
+        idToken: 'id_token',
+        expiresOn: new Date('2022-01-01T00:00:00Z'),
+        refreshToken: 'refresh_token',
+        username: 'user',
+      }
+      const refreshedToken: TokenResponse = {
+        accessToken: 'refreshed_access_token',
+        idToken: 'id_token',
+        expiresOn: new Date('2024-01-01T00:00:00Z'),
+        refreshToken: 'refresh_token',
+        username: 'user',
+      }
+
+      refreshStub.resolves(refreshedToken)
+
+      const result = await provider.fetchTokenOrRefresh(expiredToken)
+
+      expect(result).to.deep.equal(refreshedToken)
+      expect(refreshStub.callCount).to.equal(1)
+      expect(refreshStub.getCall(0).args).to.deep.equal([expiredToken])
+    })
+  })
 })

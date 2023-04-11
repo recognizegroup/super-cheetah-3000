@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 internal class <%= dependencies.entity.name %>ControllerTest : AbstractIntegrationTest() {
+<% if(entity.operations.read) { %>
     @Test
     @Sql(scripts = ["classpath:fixtures/<%= toKebabCase(entity.name) %>.sql"])
     fun `Lists a set of <%= entity.name %> items`() {
@@ -27,7 +28,8 @@ internal class <%= dependencies.entity.name %>ControllerTest : AbstractIntegrati
             .andExpect(jsonPath("$.content", hasSize<<%= dependencies.entity.name %>>(1)))<% entity.fields.forEach((field, index) => { %>
             .andExpect(jsonPath("$.content[0].<%= field.name %>", equalTo(<%- include('/partials/kotlin-data-value.ejs', { field, value: listEntityTestData[field.name] }); %>)))<% }) %>
     }
-
+<% } %>
+<% if(entity.operations.read) { %>
     @Test
     @Sql(scripts = ["classpath:fixtures/<%= toKebabCase(entity.name) %>.sql"])
     fun `Retrieve a single <%= entity.name %>`() {
@@ -45,7 +47,8 @@ internal class <%= dependencies.entity.name %>ControllerTest : AbstractIntegrati
             .perform(get("<%= dependencies.controller.url %>/0"))
             .andExpect(status().isNotFound)
     }
-
+<% } %>
+<% if(entity.operations.create) { %>
     @Test
     @Sql(scripts = ["classpath:fixtures/<%= toKebabCase(entity.name) %>.sql"])
     fun `Create a <%= entity.name %>`() {
@@ -63,7 +66,8 @@ internal class <%= dependencies.entity.name %>ControllerTest : AbstractIntegrati
             .andExpect(status().isOk)<% entity.fields.forEach((field, index) => { %>
             .andExpect(jsonPath("$.<%= field.name %>", equalTo(<%- include('/partials/kotlin-data-value.ejs', { field, value: createEntityTestData[field.name] }); %>)))<% }) %>
     }
-
+<% } %>
+<% if(entity.operations.update) { %>
     @Test
     @Sql(scripts = ["classpath:fixtures/<%= toKebabCase(entity.name) %>.sql"])
     fun `Updates a <%= entity.name %>`() {
@@ -74,14 +78,15 @@ internal class <%= dependencies.entity.name %>ControllerTest : AbstractIntegrati
                     .contentType("application/json")
                     .content(
                         """
-<%- JSON.stringify(createEntityTestData, null, 4) %>
+<%- JSON.stringify(updateEntityTestData, null, 4) %>
                         """.trimIndent()
                     )
             )
             .andExpect(status().isOk)<% entity.fields.forEach((field, index) => { %>
             .andExpect(jsonPath("$.<%= field.name %>", equalTo(<%- include('/partials/kotlin-data-value.ejs', { field, value: updateEntityTestData[field.name] }); %>)))<% }) %>
     }
-
+<% } %>
+<% if(entity.operations.delete) { %>
     @Test
     @Sql(scripts = ["classpath:fixtures/<%= toKebabCase(entity.name) %>.sql"])
     fun `Deletes a <%= entity.name %>`() {
@@ -91,4 +96,5 @@ internal class <%= dependencies.entity.name %>ControllerTest : AbstractIntegrati
             )
             .andExpect(status().isOk)
     }
+<% } %>
 }
