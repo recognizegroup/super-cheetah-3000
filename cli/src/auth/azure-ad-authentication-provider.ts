@@ -6,8 +6,10 @@ import {ux} from '@oclif/core'
 import {DeviceCodeResponse} from '@azure/msal-common'
 import {Environment} from '../environments/environment'
 
-export class AzureAdAuthenticationProvider implements AuthenticationProvider {
-  constructor(private environment: Environment) {}
+export class AzureAdAuthenticationProvider extends AuthenticationProvider {
+  constructor(private environment: Environment) {
+    super()
+  }
 
   private configuration = {
     auth: {

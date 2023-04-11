@@ -19,7 +19,7 @@ describe('login', () => {
 
   beforeEach(() => {
     loginStub = stub(AzureAdAuthenticationProvider.prototype, 'login').callsFake(async () => stubTokenResponse)
-    configProviderStub = stub(LocalConfigProvider.prototype, 'storeConfig').callsFake(async () => null)
+    configProviderStub = stub(LocalConfigProvider.prototype, 'storeConfig').callsFake(async () => {})
   })
 
   afterEach(() => {

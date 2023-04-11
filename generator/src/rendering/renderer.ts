@@ -1,22 +1,21 @@
-import { Filesystem } from "../io/filesystem";
-import { TemplateMetadata } from "../models/template-metadata";
-import matter from 'gray-matter';
-import { EjsTemplateEngine } from "../templating/ejs-template-engine";
-import { Generator } from "../models/generator";
-import { LocalFilesystem } from "../io/local-filesystem";
-import { TemplateEngine } from "../templating/template-engine";
-import { RenderHookType } from "../enums/render-hook-type";
-import { Context } from "../models/context";
-import util from 'util';
-const exec = util.promisify(require('child_process').exec);
+import {Filesystem} from '../io/filesystem'
+import {TemplateMetadata} from '../models/template-metadata'
+import matter from 'gray-matter'
+import {EjsTemplateEngine} from '../templating/ejs-template-engine'
+import {Generator} from '../models/generator'
+import {LocalFilesystem} from '../io/local-filesystem'
+import {TemplateEngine} from '../templating/template-engine'
+import {RenderHookType} from '../enums/render-hook-type'
+import {Context} from '../context/context'
+import {exec} from '../util/command-wrapper'
 
 /**
  * The Renderer class is responsible for rendering one or more templates.
  * Templates can have a context, which is a map of key-value pairs.
  * Furthermore, templates can have dependencies on other templates.
- * These dependencies are defined using frontmatter. Before rendering, 
+ * These dependencies are defined using frontmatter. Before rendering,
  * all dependencies are resolved and a dependency graph is created.
- * 
+ *
  * @class Renderer
  */
 export class Renderer {
@@ -25,200 +24,225 @@ export class Renderer {
     private files: TemplateMetadata[] = [];
     private hooks: Partial<Record<RenderHookType, ((context: Context) => Promise<void>)[]>> = {};
 
-    constructor (private readonly generator: Generator) { }
+    constructor(private readonly generator: Generator) {}
 
-    async addDirectory(directory: string, transformFileName: (fileName: string) => string = (fileName) => fileName) {
-        const filesystem = this.getGeneratorTemplateFilesystem();
-        const children = await filesystem.list(directory);
+    async addDirectory(directory: string, transformFileName: (fileName: string) => string = fileName => fileName): Promise<void> {
+      const filesystem = this.getGeneratorTemplateFilesystem()
+      const children = await filesystem.list(directory)
 
-        for (const child of children) {
-            await this.addFile(`${directory}/${child}`, transformFileName(
-                child.replace(new RegExp(`^${directory}`), ''),
-            ));
-        }
+      for (const child of children) {
+        await this.addFile(`${directory}/${child}`, transformFileName(
+          child.replace(new RegExp(`^${directory}`), ''),
+        ))
+      }
     }
 
-    async addFile(file: string, output: string) {
-        const metadata = await this.processMetadata(file, output);
-        this.files.push(metadata);
+    async addFile(file: string, output: string): Promise<void> {
+      const metadata = await this.processMetadata(file, output)
+      this.files.push(metadata)
     }
 
     async render(): Promise<void> {
-        await this.executeHook(RenderHookType.beforeRender);
+      await this.executeHook(RenderHookType.beforeRender)
 
-        const tree = this.createDependencyTree();
-        const filesystem = this.context?.filesystem;
+      const tree = this.createDependencyTree(this.files)
+      const filesystem = this.context?.filesystem
 
-        const outputs: { [key: string]: { [key: string]: any }} = {};
+      const outputs: { [key: string]: { [key: string]: any }} = {}
 
-        for (const group of tree) {
-            for (const file of group) {
-                const engine = this.getTemplateEngine(file.path);
+      for (const group of tree) {
+        for (const file of group) {
+          const engine = this.getTemplateEngine(file.path)
 
-                if (!engine) {
-                    await filesystem?.write(
-                        file.outputPath, 
-                        file.content,
-                        file.permissions,
-                    );
+          if (!engine) {
+            await filesystem?.write(
+              file.outputPath,
+              file.content,
+              file.permissions,
+            )
 
-                    continue;
-                }
+            continue
+          }
 
-                const constants = {...file.constants } || {};
+          const constants = {...file.constants} || {}
 
-                // First, render all constants
-                for (const [key, value] of Object.entries(constants)) {
-                    constants[key] = await engine.render(value, this.buildVariables());
-                }
+          // First, render all constants
+          for (const [key, value] of Object.entries(constants)) {
+            constants[key] = await engine.render(value, this.buildVariables())
+          }
 
-                const dependencies = Object.fromEntries(
-                    file.dependencies.map((dependency) => {
-                        return [dependency, outputs[dependency]];
-                    }),
-                )
+          const dependencies = Object.fromEntries(
+            file.dependencies.map(dependency => {
+              return [dependency, outputs[dependency]]
+            }),
+          )
 
-                const variables = this.buildVariables({ constants, dependencies });
+          const variables = this.buildVariables({constants, dependencies})
 
-                const content = await engine.render(file.content.toString(), variables);
-                await filesystem?.write(
-                    engine.transformFilename(file.outputPath), 
-                    Buffer.from(content),
-                    file.permissions,
-                );
+          const content = await engine.render(file.content.toString(), variables)
+          await filesystem?.write(
+            engine.transformFilename(file.outputPath),
+            Buffer.from(content),
+            file.permissions,
+          )
 
-                if (file.id) outputs[file.id] = constants;
-            }
+          if (file.id) outputs[file.id] = constants
         }
+      }
 
-        await this.executeHook(RenderHookType.afterRender);
+      await this.executeHook(RenderHookType.afterRender)
     }
 
     async processMetadata(file: string, output: string): Promise<TemplateMetadata> {
-        // If the file is not a template, just return an empty metadata object
-        const engine = this.getTemplateEngine(file);
-        const filesystem = this.getGeneratorTemplateFilesystem();
+      // If the file is not a template, just return an empty metadata object
+      const engine = this.getTemplateEngine(file)
+      const filesystem = this.getGeneratorTemplateFilesystem()
 
-        const content = await filesystem.read(file);
-        const permissions = await filesystem.fetchPermissions(file);
+      const content = await filesystem.read(file)
+      const permissions = await filesystem.fetchPermissions(file)
 
-        if (!engine) {
-            return {
-                id: null,
-                path: file,
-                permissions,
-                outputPath: output,
-                content,
-                constants: {},
-                dependencies: [],
-            } 
-        }
-
-        const asString = content.toString();
-        const { data, content: body } = matter(asString);
-
-        const constants = data.constants ?? {};
-        const dependencies = data.dependencies ?? [];
-        const id = data.id ?? null;
-
+      if (!engine) {
         return {
-            id,
-            path: file,
-            permissions,
-            outputPath: output,
-            content: Buffer.from(body),
-            constants,
-            dependencies,
+          id: null,
+          path: file,
+          permissions,
+          outputPath: output,
+          content,
+          constants: {},
+          dependencies: [],
         }
+      }
+
+      const asString = content.toString()
+      const {data, content: body} = matter(asString)
+
+      const constants = data.constants ?? {}
+      const dependencies = data.dependencies ?? []
+      const id = data.id ?? null
+
+      return {
+        id,
+        path: file,
+        permissions,
+        outputPath: output,
+        content: Buffer.from(body),
+        constants,
+        dependencies,
+      }
     }
 
-    createDependencyTree(): TemplateMetadata[][] {
-        const list = [...this.files];
+    createDependencyTree(files: TemplateMetadata[]): TemplateMetadata[][] {
+      const list = [...files].sort((a, b) => a.dependencies.length - b.dependencies.length)
 
-        // Split the list into groups of files that do not depend on each other
-        // The order of the groups is important, because the first group can be rendered first
-        // The files are identified by ID, which can be empty. If empty, there is no file that depends on it
-        // Each file has an array of dependencies, which are the IDs of the files it depends on
-        const groups: TemplateMetadata[][] = [];
+      // Split the list into groups of files that do not depend on each other
+      // The order of the groups is important, because the first group can be rendered first
+      // The files are identified by ID, which can be empty. If empty, there is no file that depends on it
+      // Each file has an array of dependencies, which are the IDs of the files it depends on
+      const groups: TemplateMetadata[][] = []
 
-        while (list.length > 0) {
-            const group: TemplateMetadata[] = [];
-            const dependencies = list.flatMap(it => it.dependencies);
+      // Start with the files that have no dependencies
+      const filesWithoutDependencies = list.filter(file => file.dependencies.length === 0)
 
-            for (let i = list.length - 1; i >= 0; i--) {
-                const file = list[i];
+      if (filesWithoutDependencies.length > 0) {
+        groups.push(filesWithoutDependencies)
+      }
 
-                if (dependencies.includes(file.id ?? '')) {
-                    continue;
-                }
+      // Remove the files that have no dependencies from the list
+      list.splice(0, filesWithoutDependencies.length)
 
-                group.push(file);
-                list.splice(i, 1);
-            }
+      // Loop through the remaining files and add them to the groups
+      for (const file of list) {
+        // Find the first group that does not contain any of the files dependencies
+        const group = groups.find(group => {
+          return group.every(groupFile => {
+            return !file.dependencies.includes(groupFile.id!)
+          })
+        })
 
-            groups.push(group);
+        // If no group was found, create a new one
+        if (group) {
+          group.push(file)
+        } else {
+          groups.push([file])
         }
+      }
 
-        return groups.reverse();
+      return groups
     }
 
-    setVariables(variables: { [key: string]: any }) {
-        this.variables = variables;
+    setVariables(variables: { [key: string]: any }): void {
+      this.variables = variables
     }
 
-    setContext(context: Context) {
-        this.context = context;
+    setContext(context: Context): void {
+      this.context = context
     }
 
-    addHook(type: RenderHookType, hook: (context: Context) => Promise<void>) {
-        if (!this.hooks[type]) {
-            this.hooks[type] = [];
-        }
-
-        this.hooks[type]?.push(hook);
+    getVariables(): { [key: string]: any } {
+      return this.variables
     }
 
-    addShellCommandHook(type: RenderHookType, command: string) {
-        this.addHook(type, async (context) => {
-            const workingDirectory = context.filesystem?.getRoot() ?? process.cwd();
-            
-            const { stdout } = await exec(command, { cwd: workingDirectory });
-            console.log(stdout);
-        });
+    getContext(): Context | null {
+      return this.context
     }
 
-    reset() {
-        this.variables = {};
-        this.context = null;
-        this.files = [];
-        this.hooks = {};
+    getFiles(): TemplateMetadata[] {
+      return this.files
     }
 
-    private buildVariables(additional: { [key: string]: any } = {}) {
-        return {
-            variables: { ...this.variables },
-            ...this.context,
-            ...additional,
-        };
+    getHooks(): Partial<Record<RenderHookType, ((context: Context) => Promise<void>)[]>> {
+      return this.hooks
+    }
+
+    addHook(type: RenderHookType, hook: (context: Context) => Promise<void>): void {
+      if (!this.hooks[type]) {
+        this.hooks[type] = []
+      }
+
+      this.hooks[type]?.push(hook)
+    }
+
+    addShellCommandHook(type: RenderHookType, command: string): void {
+      this.addHook(type, async context => {
+        const workingDirectory = context.filesystem?.getRoot() ?? process.cwd()
+
+        const {stdout} = await exec(command, {cwd: workingDirectory})
+        console.log(stdout)
+      })
+    }
+
+    reset(): void {
+      this.variables = {}
+      this.context = null
+      this.files = []
+      this.hooks = {}
+    }
+
+    buildVariables(additional: { [key: string]: any } = {}): Record<string, any> {
+      return {
+        variables: {...this.variables},
+        ...this.context?.buildVariables(),
+        ...additional,
+      }
+    }
+
+    getGeneratorTemplateFilesystem(): Filesystem {
+      const metadata = this.generator.metaData
+
+      return new LocalFilesystem(metadata.templateRoot)
+    }
+
+    async executeHook(type: RenderHookType): Promise<void> {
+      const hooks = this.hooks[type] ?? []
+
+      for (const hook of hooks) {
+        await hook(this.context!)
+      }
     }
 
     private getTemplateEngine(file: string): TemplateEngine | null {
-        return [
-            new EjsTemplateEngine(this.generator.metaData.templateRoot),
-        ].find(it => it.supports(file)) ?? null;
-    }
-
-    protected getGeneratorTemplateFilesystem(): Filesystem {
-        const metadata = this.generator.metaData;
-
-        return new LocalFilesystem(metadata.templateRoot);
-    }
-
-    private async executeHook(type: RenderHookType) {
-        const hooks = this.hooks[type] ?? [];
-
-        for (const hook of hooks) {
-            await hook(this.context!);
-        }
+      return [
+        new EjsTemplateEngine(this.generator.metaData.templateRoot),
+      ].find(it => it.supports(file)) ?? null
     }
 }

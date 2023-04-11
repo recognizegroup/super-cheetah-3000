@@ -1,5 +1,5 @@
-import { RelationshipParity } from "../enums/relationship-parity";
-import { Entity } from "./entity";
+import {RelationshipParity} from '../enums/relationship-parity'
+import {Entity} from './entity'
 
 export interface Relationship {
     parity: RelationshipParity;
