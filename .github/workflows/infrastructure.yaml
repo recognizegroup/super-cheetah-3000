@@ -79,3 +79,5 @@ jobs:
         ARM_SKIP_PROVIDER_REGISTRATION: true
         DOCKER_IMAGE_REGISTRY: recognizegroup.azurecr.io/recognize/super-cheetah-3000/registry
         DOCKER_IMAGE_TAG_REGISTRY: ${{ github.sha }}
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
