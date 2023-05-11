@@ -19,8 +19,32 @@ jobs:
     outputs:
       environment: ${{ github.ref == 'refs/heads/main' && 'prd' || (startsWith(github.ref, 'refs/heads/release/') && 'acc' || 'tst') }}
 
+  build-registry-docker-image:
+    runs-on: ubuntu-latest
+    name: Build registry Docker image
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to registry
+        uses: docker/login-action@v2
+        with:
+          registry: recognizegroup.azurecr.io
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: recognizegroup.azurecr.io/recognize/super-cheetah-3000/registry:${{ github.sha }}
+          context: registry/
+          file: registry/Dockerfile
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
   infrastructure:
-    needs: [determine-environment]
+    needs: [determine-environment, build-registry-docker-image]
     name: Deploy infrastructure
     defaults:
       run:
@@ -53,3 +77,5 @@ jobs:
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
         REGISTRY_AUTH_CLIENT_SECRET: ${{ secrets.REGISTRY_AUTH_CLIENT_SECRET }}
         ARM_SKIP_PROVIDER_REGISTRATION: true
+        DOCKER_IMAGE_REGISTRY: recognizegroup.azurecr.io/recognize/super-cheetah-3000/registry
+        DOCKER_IMAGE_TAG_REGISTRY: ${{ github.sha }}

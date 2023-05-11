@@ -1,10 +1,10 @@
 import {SinonStub, stub} from 'sinon'
 import {expect} from 'chai'
 import {TokenResponse} from '../../src/auth/token-response'
-import {AzureAdAuthenticationProvider} from '../../src/auth/azure-ad-authentication-provider'
 import tst from '../../src/environments/settings/tst'
 import {AuthenticationResult, PublicClientApplication, TokenCache} from '@azure/msal-node'
 import {AuthenticationProvider} from '../../src/auth/authentication-provider'
+import {AzureAdAuthenticationProvider} from '../../src/auth/azure-ad-authentication-provider'
 
 describe('azure ad authentication provider', () => {
   let provider: AuthenticationProvider

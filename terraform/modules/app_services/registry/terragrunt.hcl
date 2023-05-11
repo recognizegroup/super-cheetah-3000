@@ -34,8 +34,8 @@ dependency "storage_account" {
 inputs = {
   service_plan_id       = dependency.service_plan.outputs.id
   name                  = "app-${include.locals.client}-${include.locals.workload}-${include.locals.environment}-registry"
-  docker_image          = "verdaccio/verdaccio"
-  docker_image_tag      = "4"
+  docker_image          = get_env("DOCKER_IMAGE_REGISTRY")
+  docker_image_tag      = get_env("DOCKER_IMAGE_TAG_REGISTRY")
   always_on             = true
   resource_group_name   = include.locals.env.resource_group_name
   auth_enabled = true
@@ -47,6 +47,9 @@ inputs = {
   }
 
   app_settings = {
+    "DOCKER_REGISTRY_SERVER_URL"      = include.locals.globals.docker_registry_url
+    "DOCKER_REGISTRY_SERVER_USERNAME" = get_env("DOCKER_USER", "")
+    "DOCKER_REGISTRY_SERVER_PASSWORD" = get_env("DOCKER_PASSWORD", "")
     "WEBSITE_TIME_ZONE"                   = include.locals.globals.time_zone
     "WEBSITES_PORT"                       = "4873"
     "AUTH_CLIENT_SECRET"                  = get_env("REGISTRY_AUTH_CLIENT_SECRET", "")
