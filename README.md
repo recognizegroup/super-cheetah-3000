@@ -1,4 +1,4 @@
-![workflow status](https://github.com/recognizegroup/recognize-super-cheetah-3000/actions/workflows/ci.yaml/badge.svg)
+![workflow status](https://github.com/recognizegroup/recognize-super-cheetah-3000/actions/workflows/infrastructure.yaml/badge.svg)
 
 # Recognize Super Cheetah 3000
 This repository contains the code for the Recognize Super Cheetah 3000 tool:
