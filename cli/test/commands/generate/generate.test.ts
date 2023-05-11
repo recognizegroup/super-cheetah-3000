@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import sinon, {stub} from 'sinon'
+import sinon from 'sinon'
 import {AzureAdAuthenticationProvider} from '../../../src/auth/azure-ad-authentication-provider'
 import {TokenResponse} from '../../../src/auth/token-response'
 import {LocalConfigProvider} from '../../../src/config/local-config-provider'
@@ -24,10 +24,10 @@ describe('generate', () => {
     const projectCodeProvider = sinon.createStubInstance(ProjectCodeProvider)
     const entityCodeProvider = sinon.createStubInstance(ProjectCodeProvider)
 
-    stub(AzureAdAuthenticationProvider.prototype, 'fetchTokenOrRefresh').callsFake(async () => stubTokenResponse)
-    stub(LocalConfigProvider.prototype, 'retrieveConfig').callsFake(async () => ({authentication: stubTokenResponse}))
-    stub(LocalConfigProvider.prototype, 'storeConfig').callsFake(async () => {})
-    stub(GeneratorLoader.prototype, 'loadProjectGenerators').callsFake(async () => [
+    sandbox.stub(AzureAdAuthenticationProvider.prototype, 'fetchTokenOrRefresh').callsFake(async () => stubTokenResponse)
+    sandbox.stub(LocalConfigProvider.prototype, 'retrieveConfig').callsFake(async () => ({authentication: stubTokenResponse}))
+    sandbox.stub(LocalConfigProvider.prototype, 'storeConfig').callsFake(async () => {})
+    sandbox.stub(GeneratorLoader.prototype, 'loadProjectGenerators').callsFake(async () => [
       {
         entityCodeProvider,
         projectCodeProvider,
@@ -40,8 +40,8 @@ describe('generate', () => {
         },
       },
     ])
-    stub(definition, 'checkDefinitionFileExistsInDirectory').callsFake(async () => {})
-    stub(definition, 'parseDefinitionFileInCurrentDirectory').callsFake(async () => ({
+    sandbox.stub(definition, 'checkDefinitionFileExistsInDirectory').callsFake(async () => {})
+    sandbox.stub(definition, 'parseDefinitionFileInCurrentDirectory').callsFake(async () => ({
       project: {
         name: 'test-project',
         version: '1.0.0',
