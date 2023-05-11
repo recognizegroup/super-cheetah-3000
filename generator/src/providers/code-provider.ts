@@ -10,7 +10,6 @@ export abstract class CodeProvider<C extends Context> {
       this.renderer = new Renderer(generator)
     }
 
-    abstract getInputs(): Input[];
     abstract generate(context: C): Promise<void>;
 
     public async render(context: C): Promise<void> {

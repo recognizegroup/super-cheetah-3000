@@ -38,6 +38,14 @@ describe('generate', () => {
           templateRoot: '/tmp',
           authors: [],
         },
+        inputs: [
+          {
+            name: 'directory',
+            description: 'The directory to generate the project in',
+            type: DataType.string,
+            required: true,
+          },
+        ],
       },
     ])
     sandbox.stub(definition, 'checkDefinitionFileExistsInDirectory').callsFake(async () => {})
@@ -66,7 +74,7 @@ describe('generate', () => {
       ],
       workingDirectory: '/tmp',
       generators: [
-        {packageName: '@recognizegroup/kotlin', inputs: {}},
+        {packageName: '@recognizegroup/kotlin', inputs: {directory: 'tmp'}},
       ],
     }))
   })

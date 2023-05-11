@@ -34,6 +34,9 @@ describe('renderer', () => {
     filesystem,
     templateEngine,
     testData,
+    inputs: {
+      directory: '/tmp',
+    },
   })
 
   beforeEach(() => {
@@ -49,6 +52,7 @@ describe('renderer', () => {
       },
       entityCodeProvider: sinon.createStubInstance(EntityCodeProvider),
       projectCodeProvider: sinon.createStubInstance(ProjectCodeProvider),
+      inputs: [],
     }
 
     renderer = new Renderer(generator)
