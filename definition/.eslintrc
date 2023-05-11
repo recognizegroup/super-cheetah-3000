@@ -6,10 +6,9 @@
   "ignorePatterns": "**/*.d.ts",
   "rules": {
     "no-useless-constructor": 0,
-    "@typescript-eslint/no-empty-function": 0,
-    "node/no-extraneous-import": 0,
-    "node/no-missing-import": 0,
+    "node/no-unpublished-import": 0,
     "no-await-in-loop": 0,
-    "unicorn/prefer-module": 0
+    "@typescript-eslint/no-empty-function": 0,
+    "node/no-extraneous-import": 0
   }
 }

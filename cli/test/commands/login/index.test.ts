@@ -2,8 +2,8 @@ import {expect, test} from '@oclif/test'
 import * as azureAdAuth from '../../../src/auth/azure-ad-authentication-provider'
 import {TokenResponse} from '../../../src/auth/token-response'
 import {SinonStub, stub} from 'sinon'
-import {AzureAdAuthenticationProvider} from '../../../src/auth/azure-ad-authentication-provider'
 import {LocalConfigProvider} from '../../../src/config/local-config-provider'
+import {AzureAdAuthenticationProvider} from '../../../src/auth/azure-ad-authentication-provider'
 
 describe('login', () => {
   const stubTokenResponse: TokenResponse = {

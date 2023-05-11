@@ -1,12 +1,16 @@
 import {Flags} from '@oclif/core'
 import {BaseCommand} from '../base'
 import {
-  DataType,
-  EjsTemplateEngine, Entity, EntityContext,
+  EjsTemplateEngine, EntityContext,
   FakerTestDataManager,
-  Generator, LocalFilesystem,
-  Project, ProjectContext,
+  LocalFilesystem,
+  ProjectContext,
 } from '@recognizebv/sc3000-generator'
+import {
+  checkDefinitionFileExistsInCurrentDirectory,
+  parseDefinitionFileInCurrentDirectory,
+} from '../../datamodel/definition'
+import {GeneratorLoader} from '../../generators/generator-loader'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -23,82 +27,57 @@ $ oex generate --force
   }
 
   async run(): Promise<void> {
-    await this.ensureAuthenticated()
+    await checkDefinitionFileExistsInCurrentDirectory()
+    const token = await this.ensureAuthenticated()
 
-    const library = '@recognizebv/sc3000-kotlin-spring-backend-generator'
-    const {default: Generator} = await import(library)
-    const generatorInstance: Generator = new Generator()
+    const definition = await parseDefinitionFileInCurrentDirectory()
+    const generatorLoader = new GeneratorLoader(this.environment)
 
-    const path = '/Users/b.wesselink/Projects/super-cheetah-3000/sample-project'
+    const generators = await generatorLoader.loadProjectGenerators(definition, token)
+    const path = definition.workingDirectory
 
-    const project: Project = {
-      client: 'recognize',
-      name: 'bezoekersapp',
-      team: 'team-technology',
-    }
-
-    const {projectCodeProvider, entityCodeProvider, metaData} = generatorInstance
     const testData = new FakerTestDataManager()
     const filesystem = new LocalFilesystem(path)
-    const templateEngine = new EjsTemplateEngine(metaData.templateRoot)
 
-    const context = new ProjectContext({
-      project,
-      filesystem,
-      templateEngine,
-      testData,
-    })
+    let projectCodeProviderInvocations = 0
+    let entityCodeProviderInvocations = 0
 
-    await projectCodeProvider?.render(context)
+    for (const {metaData, entityCodeProvider, projectCodeProvider} of generators) {
+      try {
+        const templateEngine = new EjsTemplateEngine(metaData.templateRoot)
 
-    const entity: Entity = {
-      name: 'Project',
-      operations: {
-        read: false,
-      },
-      fields: [
-        {
-          name: 'projectId',
-          required: true,
-          type: DataType.string,
-        },
-        {
-          name: 'title',
-          required: true,
-          type: DataType.string,
-        },
-        {
-          name: 'size',
-          required: true,
-          type: DataType.integer,
-        },
-        {
-          name: 'description',
-          required: true,
-          type: DataType.text,
-        },
-      ],
-    }
+        const context = new ProjectContext({
+          project: definition.project,
+          filesystem,
+          templateEngine,
+          testData,
+        })
 
-    const entityContext = new EntityContext({
-      project,
-      filesystem,
-      templateEngine,
-      testData,
-      entity,
-    })
+        await projectCodeProvider?.render(context)
+        projectCodeProviderInvocations++
 
-    try {
-      await entityCodeProvider?.render(entityContext)
+        for (const entity of definition.entities) {
+          const entityContext = new EntityContext({
+            project: definition.project,
+            filesystem,
+            templateEngine,
+            testData,
+            entity,
+          })
 
-      this.log('Finished')
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        const message = `Something went wrong while invoking the ${generatorInstance!.metaData.name} generator.\n\n${error.message}`
-        throw new Error(message)
+          await entityCodeProvider?.render(entityContext)
+          entityCodeProviderInvocations++
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          const message = `Something went wrong while invoking the ${metaData.name} generator.\n\n${(error as Error).message}`
+          throw new Error(message)
+        }
+
+        throw error
       }
-
-      throw error
     }
+
+    this.log(`✅  Generated ${projectCodeProviderInvocations} projects and ${entityCodeProviderInvocations} entities.`)
   }
 }

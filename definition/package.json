@@ -1,11 +1,11 @@
 {
-  "name": "@recognizebv/sc3000-generator",
+  "name": "@recognizebv/sc3000-definition",
   "version": "1.0.0",
   "main": "dist/index.js",
   "private": true,
   "types": "dist/index.d.ts",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "@tsconfig/node18": "^1.0.1",
@@ -14,21 +14,17 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^18.11.18",
     "@types/sinon": "^10.0.13",
-    "chai": "^4",
-    "eslint": "^7.32.0",
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
+    "chai": "^4",
     "mocha": "^9",
     "sinon": "^15.0.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "eslint": "^7.32.0"
   },
   "dependencies": {
-    "@faker-js/faker": "^7.6.0",
-    "ejs": "^3.1.8",
-    "gray-matter": "^4.0.3",
-    "toposort": "^2.0.2"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json --outDir dist",

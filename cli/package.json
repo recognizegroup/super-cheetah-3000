@@ -69,7 +69,7 @@
     "watch": "tsc -p tsconfig.json --outDir dist --watch"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "bugs": "https://github.com/recognizegroup/recognize-super-cheetah-3000/issues",
   "keywords": [

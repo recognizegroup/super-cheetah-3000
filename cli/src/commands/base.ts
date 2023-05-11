@@ -8,6 +8,7 @@ import {determineEnvironmentFromChannel} from '../util/environment'
 import {Environment} from '../environments/environment'
 import {CommandError} from '@oclif/core/lib/interfaces'
 import chalk from 'chalk'
+import {TokenResponse} from '../auth/token-response'
 
 export abstract class BaseCommand extends Command {
   protected authenticationProvider: AuthenticationProvider
@@ -22,7 +23,7 @@ export abstract class BaseCommand extends Command {
     this.configProvider = new LocalConfigProvider(config.configDir)
   }
 
-  protected async ensureAuthenticated(): Promise<void> {
+  protected async ensureAuthenticated(): Promise<TokenResponse> {
     const config = await this.configProvider.retrieveConfig()
     const token = config.authentication
 
@@ -35,7 +36,7 @@ export abstract class BaseCommand extends Command {
       config.authentication = await this.authenticationProvider.fetchTokenOrRefresh(token)
       await this.configProvider.storeConfig(config)
 
-      return
+      return config.authentication
     } catch (error) {
       config.authentication = undefined
       await this.configProvider.storeConfig(config)
@@ -45,6 +46,6 @@ export abstract class BaseCommand extends Command {
   }
 
   protected async catch(err: CommandError): Promise<any> {
-    this.log(chalk.red(`❌  Error: ${err.message}`))
+    this.log(chalk.red(`❌  ${err.message}`))
   }
 }

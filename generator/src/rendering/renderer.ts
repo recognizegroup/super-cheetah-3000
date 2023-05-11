@@ -8,6 +8,7 @@ import {TemplateEngine} from '../templating/template-engine'
 import {RenderHookType} from '../enums/render-hook-type'
 import {Context} from '../context/context'
 import {exec} from '../util/command-wrapper'
+import toposort from 'toposort'
 
 /**
  * The Renderer class is responsible for rendering one or more templates.
@@ -132,42 +133,36 @@ export class Renderer {
     }
 
     createDependencyTree(files: TemplateMetadata[]): TemplateMetadata[][] {
-      const list = [...files].sort((a, b) => a.dependencies.length - b.dependencies.length)
+      // We have a list of files, each with a list of dependencies.
+      // Before a file is rendered, all of its dependencies must be rendered.
+      // Therefore, we split the list into groups, where each group contains
+      // files that have no dependencies on files in the same group or a later groups
 
-      // Split the list into groups of files that do not depend on each other
-      // The order of the groups is important, because the first group can be rendered first
-      // The files are identified by ID, which can be empty. If empty, there is no file that depends on it
-      // Each file has an array of dependencies, which are the IDs of the files it depends on
+      // First, apply a topological sort to the files
+      const sortedIds = toposort.array(
+        files.map(file => file.id!),
+        files.flatMap(file => file.dependencies.map(dependency => [file.id!, dependency])),
+      )
+      const sorted = sortedIds.map(id => files.find(file => file.id === id))
+
+      // Now, we can create the groups
       const groups: TemplateMetadata[][] = []
+      let currentGroup: TemplateMetadata[] = []
 
-      // Start with the files that have no dependencies
-      const filesWithoutDependencies = list.filter(file => file.dependencies.length === 0)
-
-      if (filesWithoutDependencies.length > 0) {
-        groups.push(filesWithoutDependencies)
-      }
-
-      // Remove the files that have no dependencies from the list
-      list.splice(0, filesWithoutDependencies.length)
-
-      // Loop through the remaining files and add them to the groups
-      for (const file of list) {
-        // Find the first group that does not contain any of the files dependencies
-        const group = groups.find(group => {
-          return group.every(groupFile => {
-            return !file.dependencies.includes(groupFile.id!)
-          })
-        })
-
-        // If no group was found, create a new one
-        if (group) {
-          group.push(file)
-        } else {
-          groups.push([file])
+      for (const file of sorted) {
+        if (currentGroup.some(groupFile => groupFile.dependencies.includes(file.id!))) {
+          groups.push(currentGroup)
+          currentGroup = []
         }
+
+        currentGroup.push(file)
       }
 
-      return groups
+      if (currentGroup.length > 0) {
+        groups.push(currentGroup)
+      }
+
+      return groups.reverse()
     }
 
     setVariables(variables: { [key: string]: any }): void {

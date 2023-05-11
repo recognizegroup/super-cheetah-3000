@@ -1,8 +1,8 @@
 {
-  "name": "@recognizebv/sc3000-kotlin-spring-backend-generator",
-  "version": "1.0.0",
+  "name": "@recognizegroup/sc3000-kotlin-spring-backend-generator",
+  "version": "0.0.3",
+  "repository": "https://github.com/recognizegroup/super-cheetah-3000",
   "main": "dist/index.js",
-  "private": true,
   "dependencies": {},
   "types": "dist/index.d.ts",
   "devDependencies": {
@@ -14,5 +14,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json --outDir dist",
     "watch": "tsc -p tsconfig.json --outDir dist --watch"
+  },
+  "publishConfig": {
+    "registry": "https://sc3000.recognize.nl"
   }
 }

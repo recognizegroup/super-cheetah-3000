@@ -15,7 +15,7 @@ $ oex login
   static flags = {}
 
   async run(): Promise<void> {
-    // Device login using the Azure AD authentication flow
+    // Device login using the Azure AD device authentication flow
     ux.log('Please login to the generator registries using Azure AD authentication.')
 
     const loginResult = await this.authenticationProvider.login()
