@@ -1,19 +1,16 @@
 import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
-import {TemplateEngine} from '../templating/template-engine'
 import {TestDataManager} from '../test-data/test-data-manager'
 
 export class Context {
     private _project: Project;
     private _filesystem: Filesystem;
-    private _templateEngine: TemplateEngine;
     private _testData: TestDataManager;
     private _inputs: Record<string, unknown> = {};
 
-    constructor(object: { project: Project, filesystem: Filesystem, templateEngine: TemplateEngine, testData: TestDataManager, inputs: Record<string, unknown> }) {
+    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, inputs: Record<string, unknown> }) {
       this._project = object.project
       this._filesystem = object.filesystem
-      this._templateEngine = object.templateEngine
       this._testData = object.testData
       this._inputs = object.inputs
     }
@@ -32,14 +29,6 @@ export class Context {
 
     set filesystem(value: Filesystem) {
       this._filesystem = value
-    }
-
-    get templateEngine(): TemplateEngine {
-      return this._templateEngine
-    }
-
-    set templateEngine(value: TemplateEngine) {
-      this._templateEngine = value
     }
 
     get testData(): TestDataManager {

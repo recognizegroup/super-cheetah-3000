@@ -9,6 +9,7 @@ import {RenderHookType} from '../enums/render-hook-type'
 import {Context} from '../context/context'
 import {exec} from '../util/command-wrapper'
 import toposort from 'toposort'
+import {NunjucksTemplateEngine} from '../templating/nunjucks-template-engine'
 
 /**
  * The Renderer class is responsible for rendering one or more templates.
@@ -237,6 +238,7 @@ export class Renderer {
     private getTemplateEngine(file: string): TemplateEngine | null {
       return [
         new EjsTemplateEngine(this.generator.metaData.templateRoot),
+        new NunjucksTemplateEngine(this.generator.metaData.templateRoot),
       ].find(it => it.supports(file)) ?? null
     }
 }

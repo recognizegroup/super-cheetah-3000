@@ -1,9 +1,9 @@
 ---
 id: dbcleaner
 constants:
-    import: <%= variables.packageName %>.util.DbCleanerExtension
+    import: '{{ variables.packageName }}.util.DbCleanerExtension'
 ---
-package <%= variables.packageName %>.util
+package {{ variables.packageName }}.util
 
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext

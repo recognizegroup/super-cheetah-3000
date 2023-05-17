@@ -3,13 +3,12 @@ import {Entity} from '../models/entity'
 import {Operations} from '../models/operations'
 import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
-import {TemplateEngine} from '../templating/template-engine'
 import {TestDataManager} from '../test-data/test-data-manager'
 
 export class EntityContext extends Context {
     private _entity!: Entity;
 
-    constructor(object: { project: Project, filesystem: Filesystem, templateEngine: TemplateEngine, testData: TestDataManager, entity: Entity, inputs: Record<string, unknown> }) {
+    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, entity: Entity, inputs: Record<string, unknown> }) {
       super(object)
       this.entity = object.entity
     }

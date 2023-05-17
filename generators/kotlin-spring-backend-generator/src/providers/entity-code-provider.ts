@@ -12,12 +12,12 @@ export class EntityCodeProvider extends BaseProvider {
             packageName,
         });
 
-        await this.renderer.addFile('entity/__DTO.kt.ejs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/model/${pascalCase}DTO.kt`);
-        await this.renderer.addFile('entity/__Entity.kt.ejs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/entity/${pascalCase}.kt`);
-        await this.renderer.addFile('entity/__Repository.kt.ejs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/repository/${pascalCase}Repository.kt`);
-        await this.renderer.addFile('entity/__Controller.kt.ejs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/controller/${pascalCase}Controller.kt`);
-        await this.renderer.addFile('entity/__ControllerTest.kt.ejs', `${directory}/src/test/kotlin/${packageName.replace(/\./g, '/')}/controller/${pascalCase}ControllerTest.kt`);
-        await this.renderer.addFile('entity/__test_fixture.sql.ejs', `${directory}/src/test/resources/fixtures/${StringModificationHelper.toKebabCase(entity.name)}.sql`);
+        await this.renderer.addFile('entity/__DTO.kt.njs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/model/${pascalCase}DTO.kt`);
+        await this.renderer.addFile('entity/__Entity.kt.njs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/entity/${pascalCase}.kt`);
+        await this.renderer.addFile('entity/__Repository.kt.njs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/repository/${pascalCase}Repository.kt`);
+        await this.renderer.addFile('entity/__Controller.kt.njs', `${directory}/src/main/kotlin/${packageName.replace(/\./g, '/')}/controller/${pascalCase}Controller.kt`);
+        await this.renderer.addFile('entity/__ControllerTest.kt.njs', `${directory}/src/test/kotlin/${packageName.replace(/\./g, '/')}/controller/${pascalCase}ControllerTest.kt`);
+        await this.renderer.addFile('entity/__test_fixture.sql.njs', `${directory}/src/test/resources/fixtures/${StringModificationHelper.toKebabCase(entity.name)}.sql`);
 
         // Create migrations
         await this.renderer.addShellCommandHook(RenderHookType.afterRender, `cd ${directory} && docker compose up -d && sleep 5`);

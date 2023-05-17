@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 import {BaseCommand} from '../base'
 import {
-  EjsTemplateEngine, EntityContext,
+  EntityContext,
   FakerTestDataManager,
   LocalFilesystem,
   ProjectContext,
@@ -53,12 +53,9 @@ $ oex generate --force
       const inputs = parseInputs(generator, definition.generators[index].inputs)
 
       try {
-        const templateEngine = new EjsTemplateEngine(metaData.templateRoot)
-
         const context = new ProjectContext({
           project: definition.project,
           filesystem,
-          templateEngine,
           testData,
           inputs,
         })
@@ -73,7 +70,6 @@ $ oex generate --force
           const entityContext = new EntityContext({
             project: definition.project,
             filesystem,
-            templateEngine,
             testData,
             entity,
             inputs,
