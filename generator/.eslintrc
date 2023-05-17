@@ -8,6 +8,7 @@
     "no-useless-constructor": 0,
     "node/no-unpublished-import": 0,
     "no-await-in-loop": 0,
-    "@typescript-eslint/no-empty-function": 0
+    "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0
   }
 }

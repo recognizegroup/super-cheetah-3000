@@ -1,5 +1,4 @@
 import {Context} from '../context/context'
-import {Input} from '../models/input'
 import {Generator} from '../models/generator'
 import {Renderer} from '../rendering/renderer'
 

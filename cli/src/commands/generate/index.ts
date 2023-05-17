@@ -12,6 +12,7 @@ import {
 } from '../../datamodel/definition'
 import {GeneratorLoader} from '../../generators/generator-loader'
 import {parseInputs} from '../../datamodel/input-validation'
+import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -39,6 +40,8 @@ $ oex generate --force
 
     const testData = new FakerTestDataManager()
     const filesystem = new LocalFilesystem(path)
+    const lockFileManager = new LockFileManager(path)
+    let lockFile = await lockFileManager.readLockFile()
 
     let projectCodeProviderInvocations = 0
     let entityCodeProviderInvocations = 0
@@ -60,8 +63,11 @@ $ oex generate --force
           inputs,
         })
 
-        await projectCodeProvider?.render(context)
-        projectCodeProviderInvocations++
+        if (!lockFileManager.hasGeneratedProjectWithGenerator(lockFile, generator)) {
+          await projectCodeProvider?.render(context)
+          lockFile = await lockFileManager.addGeneratedProject(lockFile, generator)
+          projectCodeProviderInvocations++
+        }
 
         for (const entity of definition.entities) {
           const entityContext = new EntityContext({
@@ -73,8 +79,11 @@ $ oex generate --force
             inputs,
           })
 
-          await entityCodeProvider?.render(entityContext)
-          entityCodeProviderInvocations++
+          if (!lockFileManager.hasGeneratedEntityWithGenerator(lockFile, generator, entity)) {
+            await entityCodeProvider?.render(entityContext)
+            lockFile = await lockFileManager.addGeneratedEntity(lockFile, generator, entity)
+            entityCodeProviderInvocations++
+          }
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -84,6 +93,11 @@ $ oex generate --force
 
         throw error
       }
+    }
+
+    if (projectCodeProviderInvocations === 0 && entityCodeProviderInvocations === 0) {
+      this.log('⚠️  No new entities or projects.')
+      return
     }
 
     this.log(`✅  Generated ${projectCodeProviderInvocations} projects and ${entityCodeProviderInvocations} entities.`)
