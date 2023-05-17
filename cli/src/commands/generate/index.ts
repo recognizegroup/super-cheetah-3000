@@ -11,6 +11,7 @@ import {
   parseDefinitionFileInCurrentDirectory,
 } from '../../datamodel/definition'
 import {GeneratorLoader} from '../../generators/generator-loader'
+import {parseInputs} from '../../datamodel/input-validation'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -42,7 +43,12 @@ $ oex generate --force
     let projectCodeProviderInvocations = 0
     let entityCodeProviderInvocations = 0
 
-    for (const {metaData, entityCodeProvider, projectCodeProvider} of generators) {
+    for (const generator of generators) {
+      const {metaData, entityCodeProvider, projectCodeProvider} = generator
+
+      const index = generators.indexOf(generator)
+      const inputs = parseInputs(generator, definition.generators[index].inputs)
+
       try {
         const templateEngine = new EjsTemplateEngine(metaData.templateRoot)
 
@@ -51,6 +57,7 @@ $ oex generate --force
           filesystem,
           templateEngine,
           testData,
+          inputs,
         })
 
         await projectCodeProvider?.render(context)
@@ -63,6 +70,7 @@ $ oex generate --force
             templateEngine,
             testData,
             entity,
+            inputs,
           })
 
           await entityCodeProvider?.render(entityContext)

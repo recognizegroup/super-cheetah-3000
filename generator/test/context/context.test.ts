@@ -27,12 +27,16 @@ describe('context', () => {
       filesystem,
       templateEngine,
       testData,
+      inputs: {
+        directory: '/tmp',
+      },
     })
 
     expect(context.project).to.equal(project)
     expect(context.filesystem).to.equal(filesystem)
     expect(context.templateEngine).to.equal(templateEngine)
     expect(context.testData).to.equal(testData)
+    expect(context.findInputValue('directory')).to.equal('/tmp')
 
     const variables = context.buildVariables()
     expect(variables).to.have.property('project')
@@ -55,6 +59,9 @@ describe('context', () => {
       templateEngine,
       testData,
       entity,
+      inputs: {
+        directory: '/tmp',
+      },
     })
 
     expect(context.project).to.equal(project)
@@ -62,6 +69,7 @@ describe('context', () => {
     expect(context.templateEngine).to.equal(templateEngine)
     expect(context.testData).to.equal(testData)
     expect(context.entity).to.equal(entity)
+    expect(context.findInputValue('directory')).to.equal('/tmp')
 
     const variables = context.buildVariables()
     expect(variables).to.have.property('project')
@@ -86,6 +94,9 @@ describe('context', () => {
       templateEngine,
       testData,
       entity,
+      inputs: {
+        directory: '/tmp',
+      },
     })
 
     expect(context.entity.operations).not.to.be.undefined
@@ -114,6 +125,9 @@ describe('context', () => {
       templateEngine,
       testData,
       entity,
+      inputs: {
+        directory: '/tmp',
+      },
     })
 
     expect(context.entity.operations).not.to.be.undefined

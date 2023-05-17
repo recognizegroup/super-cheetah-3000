@@ -140,10 +140,10 @@ export class Renderer {
 
       // First, apply a topological sort to the files
       const sortedIds = toposort.array(
-        files.map(file => file.id!),
-        files.flatMap(file => file.dependencies.map(dependency => [file.id!, dependency])),
+        files.map(file => file.id ?? file.path),
+        files.flatMap(file => file.dependencies.map(dependency => [file.id ?? file.path, dependency])),
       )
-      const sorted = sortedIds.map(id => files.find(file => file.id === id))
+      const sorted = sortedIds.map(id => files.find(file => file.id === id || file.path === id))
 
       // Now, we can create the groups
       const groups: TemplateMetadata[][] = []
@@ -201,8 +201,7 @@ export class Renderer {
       this.addHook(type, async context => {
         const workingDirectory = context.filesystem?.getRoot() ?? process.cwd()
 
-        const {stdout} = await exec(command, {cwd: workingDirectory})
-        console.log(stdout)
+        await exec(command, {cwd: workingDirectory})
       })
     }
 

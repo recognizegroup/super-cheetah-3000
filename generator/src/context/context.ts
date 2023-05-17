@@ -8,12 +8,14 @@ export class Context {
     private _filesystem: Filesystem;
     private _templateEngine: TemplateEngine;
     private _testData: TestDataManager;
+    private _inputs: Record<string, unknown> = {};
 
-    constructor(object: { project: Project, filesystem: Filesystem, templateEngine: TemplateEngine, testData: TestDataManager }) {
+    constructor(object: { project: Project, filesystem: Filesystem, templateEngine: TemplateEngine, testData: TestDataManager, inputs: Record<string, unknown> }) {
       this._project = object.project
       this._filesystem = object.filesystem
       this._templateEngine = object.templateEngine
       this._testData = object.testData
+      this._inputs = object.inputs
     }
 
     get project(): Project {
@@ -46,6 +48,10 @@ export class Context {
 
     set testData(value: TestDataManager) {
       this._testData = value
+    }
+
+    findInputValue<T>(name: string): T | undefined {
+      return this._inputs[name] as T
     }
 
     buildVariables(): { [key: string]: any } {

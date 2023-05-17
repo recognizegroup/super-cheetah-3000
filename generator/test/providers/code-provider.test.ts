@@ -50,6 +50,7 @@ describe('code provider', () => {
         },
         entityCodeProvider: new ConcreteCodeProvider(this as any),
         projectCodeProvider: new ConcreteCodeProvider(this as any),
+        inputs: [],
       }
 
       const codeProvider = new ConcreteCodeProvider(generator)
@@ -72,6 +73,9 @@ describe('code provider', () => {
         filesystem,
         templateEngine,
         testData,
+        inputs: {
+          directory: '/tmp/test',
+        },
       })
 
       await codeProvider.render(context)
