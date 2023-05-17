@@ -6,6 +6,7 @@ import {LocalConfigProvider} from '../../../src/config/local-config-provider'
 import {GeneratorLoader} from '../../../src/generators/generator-loader'
 import * as definition from '../../../src/datamodel/definition'
 import {DataType, ProjectCodeProvider} from '@recognizebv/sc3000-generator'
+import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
 
 describe('generate', () => {
   const stubTokenResponse: TokenResponse = {
@@ -27,6 +28,10 @@ describe('generate', () => {
     sandbox.stub(AzureAdAuthenticationProvider.prototype, 'fetchTokenOrRefresh').callsFake(async () => stubTokenResponse)
     sandbox.stub(LocalConfigProvider.prototype, 'retrieveConfig').callsFake(async () => ({authentication: stubTokenResponse}))
     sandbox.stub(LocalConfigProvider.prototype, 'storeConfig').callsFake(async () => {})
+    sandbox.stub(LockFileManager.prototype, 'readLockFile').callsFake(async () => null)
+    sandbox.stub(LockFileManager.prototype, 'hasGeneratedEntityWithGenerator').callsFake(() => false)
+    sandbox.stub(LockFileManager.prototype, 'hasGeneratedProjectWithGenerator').callsFake(() => false)
+    sandbox.stub(LockFileManager.prototype, 'writeLockFile').callsFake(async () => {})
     sandbox.stub(GeneratorLoader.prototype, 'loadProjectGenerators').callsFake(async () => [
       {
         entityCodeProvider,
