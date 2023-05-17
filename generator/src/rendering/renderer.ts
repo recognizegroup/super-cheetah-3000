@@ -9,7 +9,7 @@ import {RenderHookType} from '../enums/render-hook-type'
 import {Context} from '../context/context'
 import {exec} from '../util/command-wrapper'
 import toposort from 'toposort'
-import {NunjucksTemplateEngine} from "../templating/nunjucks-template-engine";
+import {NunjucksTemplateEngine} from '../templating/nunjucks-template-engine'
 
 /**
  * The Renderer class is responsible for rendering one or more templates.

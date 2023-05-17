@@ -1,6 +1,5 @@
 import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
-import {TemplateEngine} from '../templating/template-engine'
 import {TestDataManager} from '../test-data/test-data-manager'
 
 export class Context {

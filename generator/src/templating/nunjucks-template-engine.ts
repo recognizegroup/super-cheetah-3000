@@ -1,6 +1,6 @@
-import {TemplateEngine} from "./template-engine";
+import {TemplateEngine} from './template-engine'
 import * as nunjucks from 'nunjucks'
-import {StringModificationHelper} from "../helpers/string-modification-helper";
+import {StringModificationHelper} from '../helpers/string-modification-helper'
 
 export class NunjucksTemplateEngine implements TemplateEngine {
   constructor(private root: string) {}
