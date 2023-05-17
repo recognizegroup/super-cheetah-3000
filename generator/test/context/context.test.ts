@@ -1,6 +1,5 @@
 import {expect} from 'chai'
 import {
-  EjsTemplateEngine,
   EntityContext,
   FakerTestDataManager,
   LocalFilesystem,
@@ -19,13 +18,11 @@ describe('context', () => {
 
   it('should be able construct a project context and build variables', () => {
     const filesystem = new LocalFilesystem(sampleRoot)
-    const templateEngine = new EjsTemplateEngine(sampleRoot)
     const testData = new FakerTestDataManager()
 
     const context = new ProjectContext({
       project,
       filesystem,
-      templateEngine,
       testData,
       inputs: {
         directory: '/tmp',
@@ -34,7 +31,6 @@ describe('context', () => {
 
     expect(context.project).to.equal(project)
     expect(context.filesystem).to.equal(filesystem)
-    expect(context.templateEngine).to.equal(templateEngine)
     expect(context.testData).to.equal(testData)
     expect(context.findInputValue('directory')).to.equal('/tmp')
 
@@ -50,13 +46,11 @@ describe('context', () => {
     }
 
     const filesystem = new LocalFilesystem(sampleRoot)
-    const templateEngine = new EjsTemplateEngine(sampleRoot)
     const testData = new FakerTestDataManager()
 
     const context = new EntityContext({
       project,
       filesystem,
-      templateEngine,
       testData,
       entity,
       inputs: {
@@ -66,7 +60,6 @@ describe('context', () => {
 
     expect(context.project).to.equal(project)
     expect(context.filesystem).to.equal(filesystem)
-    expect(context.templateEngine).to.equal(templateEngine)
     expect(context.testData).to.equal(testData)
     expect(context.entity).to.equal(entity)
     expect(context.findInputValue('directory')).to.equal('/tmp')
@@ -85,13 +78,11 @@ describe('context', () => {
     }
 
     const filesystem = new LocalFilesystem(sampleRoot)
-    const templateEngine = new EjsTemplateEngine(sampleRoot)
     const testData = new FakerTestDataManager()
 
     const context = new EntityContext({
       project,
       filesystem,
-      templateEngine,
       testData,
       entity,
       inputs: {
@@ -116,13 +107,11 @@ describe('context', () => {
     }
 
     const filesystem = new LocalFilesystem(sampleRoot)
-    const templateEngine = new EjsTemplateEngine(sampleRoot)
     const testData = new FakerTestDataManager()
 
     const context = new EntityContext({
       project,
       filesystem,
-      templateEngine,
       testData,
       entity,
       inputs: {

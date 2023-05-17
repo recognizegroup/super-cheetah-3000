@@ -12,7 +12,7 @@ plugins {
 	kotlin("plugin.spring") version "1.7.22"
 }
 
-group = "nl.<%= project.client %>"
+group = "nl.{{ project.client }}"
 version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -66,10 +66,10 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "changeLogFile" to "src/main/resources/db/changelog/changes.yaml",
-            "url" to "<%= dependencies.docker.database_url %>",
-            "username" to "<%= dependencies.docker.database_username %>",
-            "password" to "<%= dependencies.docker.database_password %>",
-            "referenceUrl" to "hibernate:spring:<%= variables.packageName %>" +
+            "url" to "{{ dependencies.docker.database_url }}",
+            "username" to "{{ dependencies.docker.database_username }}",
+            "password" to "{{ dependencies.docker.database_password }}",
+            "referenceUrl" to "hibernate:spring:{{ variables.packageName }}" +
                 "?dialect=org.hibernate.dialect.PostgreSQL95Dialect" +
 				"&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy" +
                 "&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy",

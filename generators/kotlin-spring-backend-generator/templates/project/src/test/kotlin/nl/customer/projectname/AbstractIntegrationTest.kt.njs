@@ -2,9 +2,9 @@
 id: integrationtest
 dependencies: [dbcleaner]
 ---
-package <%= variables.packageName %>
+package {{ variables.packageName }}
 
-import <%= dependencies.dbcleaner.import %>
+import {{ dependencies.dbcleaner.import }}
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired

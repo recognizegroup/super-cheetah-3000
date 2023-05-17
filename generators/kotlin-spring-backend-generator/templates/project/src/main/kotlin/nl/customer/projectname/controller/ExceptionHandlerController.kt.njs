@@ -1,4 +1,4 @@
-package <%= variables.packageName %>.controller
+package {{ variables.packageName }}.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MissingPathVariableException

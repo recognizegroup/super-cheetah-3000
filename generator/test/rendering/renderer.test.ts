@@ -3,7 +3,6 @@ import sinon, {SinonSandbox} from 'sinon'
 import {TemplateMetadata} from '../../src/models/template-metadata'
 import {Renderer} from '../../src/rendering/renderer'
 import {
-  EjsTemplateEngine,
   EntityCodeProvider,
   FakerTestDataManager,
   LocalFilesystem,
@@ -11,7 +10,7 @@ import {
   ProjectCodeProvider,
   ProjectContext,
   Context,
-  RenderHookType,
+  RenderHookType, EjsTemplateEngine,
 } from '../../src'
 import * as commandWrapper from '../../src/util/command-wrapper'
 
@@ -26,13 +25,11 @@ describe('renderer', () => {
   }
 
   const filesystem = sinon.createStubInstance(LocalFilesystem)
-  const templateEngine = sinon.createStubInstance(EjsTemplateEngine)
   const testData = sinon.createStubInstance(FakerTestDataManager)
 
   const context = new ProjectContext({
     project,
     filesystem,
-    templateEngine,
     testData,
     inputs: {
       directory: '/tmp',
@@ -236,7 +233,7 @@ constants:
 ---
 Test file`.trim()
 
-      templateEngine.render.resolves('Test file')
+      sandbox.stub(EjsTemplateEngine.prototype, 'render').resolves('Test file')
       filesystem.read.resolves(Buffer.from(fileContent))
       filesystem.fetchPermissions.resolves(0o644)
 

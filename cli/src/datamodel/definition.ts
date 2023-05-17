@@ -55,7 +55,9 @@ export const compileDefinitionFileFromTypeScript = async (path: string): Promise
   }
 
   try {
-    ts.createProgram([path], options)
+    const result = ts.createProgram([path], options)
+    result.emit()
+
     return `${output}/sc3000.definition.js`
   } catch {
     throw new Error('Failed to compile definition file to JavaScript')

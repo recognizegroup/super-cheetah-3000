@@ -4,7 +4,6 @@ import sinon from 'sinon'
 import {
   CodeProvider,
   Context,
-  EjsTemplateEngine,
   FakerTestDataManager,
   Generator,
   Input,
@@ -59,7 +58,6 @@ describe('code provider', () => {
       const resetSpy = sandbox.spy(codeProvider.renderer, 'reset')
 
       const filesystem = new LocalFilesystem(root)
-      const templateEngine = new EjsTemplateEngine(root)
       const testData = new FakerTestDataManager()
 
       const project: Project = {
@@ -71,7 +69,6 @@ describe('code provider', () => {
       const context = new ProjectContext({
         project,
         filesystem,
-        templateEngine,
         testData,
         inputs: {
           directory: '/tmp/test',
