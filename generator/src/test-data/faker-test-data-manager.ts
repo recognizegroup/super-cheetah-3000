@@ -9,12 +9,24 @@ export class FakerTestDataManager implements TestDataManager {
   fetchTestDataForEntity(entity: Entity, seed: number): Record<typeof entity.fields[number]['name'], any> {
     const baseSeed = seed * 1_000_000
 
-    return Object.fromEntries(
-      entity.fields.map((field, index) => [
+    return Object.fromEntries([
+      ['id', baseSeed],
+      ...entity.fields.map((field, index) => [
         field.name,
         this.generateTestDataForField(field, baseSeed + (index * 1000)),
       ]),
-    )
+    ])
+  }
+
+  findTestDataForPath(testData: Record<string, any>, path: string) {
+    return path.split('.').reduce((value, key) => {
+      if (key.includes('[')) {
+        const [arrayKey, arrayIndex] = key.split('[')
+        return value[arrayKey][Number.parseInt(arrayIndex.replace(']', ''), 10)]
+      }
+
+      return value[key]
+    }, testData)
   }
 
   private generateTestDataForField(field: Field, seed: number) {
@@ -24,7 +36,7 @@ export class FakerTestDataManager implements TestDataManager {
     case DataType.string:
       return faker.lorem.word()
     case DataType.text:
-      return faker.lorem.paragraph()
+      return faker.lorem.paragraph(1)
     case DataType.integer:
       return faker.datatype.number()
     case DataType.boolean:

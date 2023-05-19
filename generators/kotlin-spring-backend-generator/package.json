@@ -1,6 +1,6 @@
 {
   "name": "@recognizegroup/sc3000-kotlin-spring-backend-generator",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "repository": "https://github.com/recognizegroup/super-cheetah-3000",
   "main": "dist/index.js",
   "dependencies": {},

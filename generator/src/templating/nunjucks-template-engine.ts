@@ -1,6 +1,7 @@
 import {TemplateEngine} from './template-engine'
 import * as nunjucks from 'nunjucks'
 import {StringModificationHelper} from '../helpers/string-modification-helper'
+import {EntityFieldHelper} from '../helpers/entity-field-helper'
 
 export class NunjucksTemplateEngine implements TemplateEngine {
   constructor(private root: string) {}
@@ -37,6 +38,8 @@ export class NunjucksTemplateEngine implements TemplateEngine {
     environment.addFilter('urlCase', StringModificationHelper.toUrlCase.bind(StringModificationHelper))
     environment.addFilter('plural', StringModificationHelper.toPlural.bind(StringModificationHelper))
     environment.addFilter('json', value => JSON.stringify(value, null, 2))
+    environment.addFilter('flattenEntityFieldsForTestResults', EntityFieldHelper.flattenEntityFieldsForTestResults.bind(EntityFieldHelper))
+    environment.addFilter('findRelatedEntities', EntityFieldHelper.findRelatedEntities.bind(EntityFieldHelper))
 
     return environment
   }
