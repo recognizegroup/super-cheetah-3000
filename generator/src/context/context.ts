@@ -1,17 +1,20 @@
 import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
 import {TestDataManager} from '../test-data/test-data-manager'
+import {IncrementalDataHandler} from '../templating/incremental-data-handler'
 
 export class Context {
     private _project: Project;
     private _filesystem: Filesystem;
     private _testData: TestDataManager;
+    private _incrementalDataHandler: IncrementalDataHandler;
     private _inputs: Record<string, unknown> = {};
 
-    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, inputs: Record<string, unknown> }) {
+    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, incrementalDataHandler: IncrementalDataHandler, inputs: Record<string, unknown> }) {
       this._project = object.project
       this._filesystem = object.filesystem
       this._testData = object.testData
+      this._incrementalDataHandler = object.incrementalDataHandler
       this._inputs = object.inputs
     }
 
@@ -37,6 +40,14 @@ export class Context {
 
     set testData(value: TestDataManager) {
       this._testData = value
+    }
+
+    get incrementalDataHandler(): IncrementalDataHandler {
+      return this._incrementalDataHandler
+    }
+
+    set incrementalDataHandler(value: IncrementalDataHandler) {
+      this._incrementalDataHandler = value
     }
 
     findInputValue<T>(name: string): T | undefined {

@@ -9,6 +9,7 @@ import {
   Input,
   LocalFilesystem, Project, ProjectContext,
 } from '../../src'
+import {IncrementalDataHandler} from '../../src/templating/incremental-data-handler'
 
 class ConcreteCodeProvider extends CodeProvider<Context> {
   constructor(generator: Generator) {
@@ -21,6 +22,10 @@ class ConcreteCodeProvider extends CodeProvider<Context> {
 
   async generate(_context: Context): Promise<void> {
     // Do something here to generate code for the given context
+  }
+
+  async renderIncrementalData(): Promise<void> {
+    // Do something here to render incremental data
   }
 }
 
@@ -59,6 +64,7 @@ describe('code provider', () => {
 
       const filesystem = new LocalFilesystem(root)
       const testData = new FakerTestDataManager()
+      const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
 
       const project: Project = {
         client: 'recognize',
@@ -70,6 +76,7 @@ describe('code provider', () => {
         project,
         filesystem,
         testData,
+        incrementalDataHandler,
         inputs: {
           directory: '/tmp/test',
         },

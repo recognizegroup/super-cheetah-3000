@@ -1,7 +1,6 @@
 import {Filesystem} from '../io/filesystem'
 import {TemplateMetadata} from '../models/template-metadata'
 import matter from 'gray-matter'
-import {EjsTemplateEngine} from '../templating/ejs-template-engine'
 import {Generator} from '../models/generator'
 import {LocalFilesystem} from '../io/local-filesystem'
 import {TemplateEngine} from '../templating/template-engine'
@@ -56,6 +55,10 @@ export class Renderer {
         for (const file of group) {
           const engine = this.getTemplateEngine(file.path)
 
+          if (this.context) {
+            await engine?.setup(this.context!.incrementalDataHandler)
+          }
+
           if (!engine) {
             await filesystem?.write(
               file.outputPath,
@@ -80,10 +83,11 @@ export class Renderer {
           )
 
           const variables = this.buildVariables({constants, dependencies})
+          const output = engine.transformFilename(file.outputPath)
 
-          const content = await engine.render(file.content.toString(), variables)
+          const content = await engine.render(file.content.toString(), variables, output)
           await filesystem?.write(
-            engine.transformFilename(file.outputPath),
+            output,
             Buffer.from(content),
             file.permissions,
           )
@@ -237,7 +241,6 @@ export class Renderer {
 
     private getTemplateEngine(file: string): TemplateEngine | null {
       return [
-        new EjsTemplateEngine(this.generator.metaData.templateRoot),
         new NunjucksTemplateEngine(this.generator.metaData.templateRoot),
       ].find(it => it.supports(file)) ?? null
     }

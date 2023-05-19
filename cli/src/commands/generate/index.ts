@@ -13,6 +13,7 @@ import {
 import {GeneratorLoader} from '../../generators/generator-loader'
 import {parseInputs} from '../../datamodel/input-validation'
 import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
+import {IncrementalDataHandler} from '@recognizebv/sc3000-generator/dist/templating/incremental-data-handler'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -41,7 +42,10 @@ $ oex generate --force
     const testData = new FakerTestDataManager()
     const filesystem = new LocalFilesystem(path)
     const lockFileManager = new LockFileManager(path)
+    const incrementalDataHandler = new IncrementalDataHandler(lockFileManager, filesystem)
     let lockFile = await lockFileManager.readLockFile()
+
+    incrementalDataHandler.loadFromLockFile(lockFile)
 
     let projectCodeProviderInvocations = 0
     let entityCodeProviderInvocations = 0
@@ -57,12 +61,13 @@ $ oex generate --force
           project: definition.project,
           filesystem,
           testData,
+          incrementalDataHandler,
           inputs,
         })
 
-        if (!lockFileManager.hasGeneratedProjectWithGenerator(lockFile, generator)) {
+        if (!await lockFileManager.hasGeneratedProjectWithGenerator(generator)) {
           await projectCodeProvider?.render(context)
-          lockFile = await lockFileManager.addGeneratedProject(lockFile, generator)
+          lockFile = await lockFileManager.addGeneratedProject(generator)
           projectCodeProviderInvocations++
         }
 
@@ -72,12 +77,13 @@ $ oex generate --force
             filesystem,
             testData,
             entity,
+            incrementalDataHandler,
             inputs,
           })
 
-          if (!lockFileManager.hasGeneratedEntityWithGenerator(lockFile, generator, entity)) {
+          if (!await lockFileManager.hasGeneratedEntityWithGenerator(generator, entity)) {
             await entityCodeProvider?.render(entityContext)
-            lockFile = await lockFileManager.addGeneratedEntity(lockFile, generator, entity)
+            lockFile = await lockFileManager.addGeneratedEntity(generator, entity)
             entityCodeProviderInvocations++
           }
         }
