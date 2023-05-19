@@ -10,9 +10,10 @@ import {
   ProjectCodeProvider,
   ProjectContext,
   Context,
-  RenderHookType, EjsTemplateEngine,
+  RenderHookType, NunjucksTemplateEngine,
 } from '../../src'
 import * as commandWrapper from '../../src/util/command-wrapper'
+import {IncrementalDataHandler} from '../../src/templating/incremental-data-handler'
 
 describe('renderer', () => {
   let sandbox: SinonSandbox
@@ -26,11 +27,13 @@ describe('renderer', () => {
 
   const filesystem = sinon.createStubInstance(LocalFilesystem)
   const testData = sinon.createStubInstance(FakerTestDataManager)
+  const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
 
   const context = new ProjectContext({
     project,
     filesystem,
     testData,
+    incrementalDataHandler,
     inputs: {
       directory: '/tmp',
     },
@@ -233,20 +236,20 @@ constants:
 ---
 Test file`.trim()
 
-      sandbox.stub(EjsTemplateEngine.prototype, 'render').resolves('Test file')
+      sandbox.stub(NunjucksTemplateEngine.prototype, 'render').resolves('Test file')
       filesystem.read.resolves(Buffer.from(fileContent))
       filesystem.fetchPermissions.resolves(0o644)
 
       sandbox.stub(renderer, 'getGeneratorTemplateFilesystem').returns(filesystem)
 
       renderer.setContext(context)
-      const file = await renderer.processMetadata('foo/bar.ejs', 'output/foo/bar.ejs')
+      const file = await renderer.processMetadata('foo/bar.njs', 'output/foo/bar.njs')
 
       const expectedFile: TemplateMetadata = {
         id: 'sample',
-        path: 'foo/bar.ejs',
+        path: 'foo/bar.njs',
         permissions: 0o644,
-        outputPath: 'output/foo/bar.ejs',
+        outputPath: 'output/foo/bar.njs',
         content: Buffer.from('Test file'),
         constants: {
           foo: 'bar',
@@ -290,17 +293,17 @@ Test file`.trim()
 
       const processMetadataStub = sandbox.stub(renderer, 'processMetadata').resolves({
         id: 'sample',
-        path: 'sample.kt.ejs',
+        path: 'sample.kt.njs',
         permissions: 0o644,
         outputPath: 'sample.kt',
-        content: Buffer.from('Test file one (<%= constants.foo %>)'),
+        content: Buffer.from('Test file one ({{ constants.foo }})'),
         constants: {
           foo: 'bar',
         },
         dependencies: [],
       })
 
-      await renderer.addFile('sample.kt.ejs', 'sample.kt')
+      await renderer.addFile('sample.kt.njs', 'sample.kt')
 
       processMetadataStub.restore()
       sandbox.stub(renderer, 'processMetadata').resolves({
@@ -328,29 +331,29 @@ Test file`.trim()
 
       const processMetadataStub = sandbox.stub(renderer, 'processMetadata').resolves({
         id: 'sample',
-        path: 'sample.kt.ejs',
+        path: 'sample.kt.njs',
         permissions: 0o644,
         outputPath: 'sample.kt',
-        content: Buffer.from('Test file one (<%= constants.foo %>)'),
+        content: Buffer.from('Test file one ({{ constants.foo }})'),
         constants: {
           foo: 'bar',
         },
         dependencies: [],
       })
 
-      await renderer.addFile('sample.kt.ejs', 'sample.kt')
+      await renderer.addFile('sample.kt.njs', 'sample.kt')
 
       processMetadataStub.restore()
       sandbox.stub(renderer, 'processMetadata').resolves({
         id: 'second',
-        path: 'second.kt.ejs',
+        path: 'second.kt.njs',
         permissions: 0o644,
         outputPath: 'second.kt',
-        content: Buffer.from('With a dependency (<%= dependencies.sample.foo %>)'),
+        content: Buffer.from('With a dependency ({{ dependencies.sample.foo }})'),
         constants: {},
         dependencies: ['sample'],
       })
-      await renderer.addFile('second.kt.ejs', 'second.kt')
+      await renderer.addFile('second.kt.njs', 'second.kt')
 
       await renderer.render()
 

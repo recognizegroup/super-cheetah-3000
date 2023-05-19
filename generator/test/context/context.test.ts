@@ -6,6 +6,8 @@ import {
   Project,
   ProjectContext,
 } from '../../src'
+import sinon from 'sinon'
+import {IncrementalDataHandler} from '../../src/templating/incremental-data-handler'
 
 describe('context', () => {
   const project: Project = {
@@ -19,11 +21,13 @@ describe('context', () => {
   it('should be able construct a project context and build variables', () => {
     const filesystem = new LocalFilesystem(sampleRoot)
     const testData = new FakerTestDataManager()
+    const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
 
     const context = new ProjectContext({
       project,
       filesystem,
       testData,
+      incrementalDataHandler,
       inputs: {
         directory: '/tmp',
       },
@@ -32,6 +36,7 @@ describe('context', () => {
     expect(context.project).to.equal(project)
     expect(context.filesystem).to.equal(filesystem)
     expect(context.testData).to.equal(testData)
+    expect(context.incrementalDataHandler).to.equal(incrementalDataHandler)
     expect(context.findInputValue('directory')).to.equal('/tmp')
 
     const variables = context.buildVariables()
@@ -47,12 +52,14 @@ describe('context', () => {
 
     const filesystem = new LocalFilesystem(sampleRoot)
     const testData = new FakerTestDataManager()
+    const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
 
     const context = new EntityContext({
       project,
       filesystem,
       testData,
       entity,
+      incrementalDataHandler,
       inputs: {
         directory: '/tmp',
       },
@@ -62,6 +69,7 @@ describe('context', () => {
     expect(context.filesystem).to.equal(filesystem)
     expect(context.testData).to.equal(testData)
     expect(context.entity).to.equal(entity)
+    expect(context.incrementalDataHandler).to.equal(incrementalDataHandler)
     expect(context.findInputValue('directory')).to.equal('/tmp')
 
     const variables = context.buildVariables()
@@ -79,11 +87,13 @@ describe('context', () => {
 
     const filesystem = new LocalFilesystem(sampleRoot)
     const testData = new FakerTestDataManager()
+    const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
 
     const context = new EntityContext({
       project,
       filesystem,
       testData,
+      incrementalDataHandler,
       entity,
       inputs: {
         directory: '/tmp',
@@ -108,11 +118,13 @@ describe('context', () => {
 
     const filesystem = new LocalFilesystem(sampleRoot)
     const testData = new FakerTestDataManager()
+    const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
 
     const context = new EntityContext({
       project,
       filesystem,
       testData,
+      incrementalDataHandler,
       entity,
       inputs: {
         directory: '/tmp',

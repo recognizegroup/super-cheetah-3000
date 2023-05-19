@@ -2,6 +2,7 @@ import {LockFile} from '../models/lock-file'
 import {writeFile, readFile} from 'node:fs/promises'
 import {Generator} from '../models/generator'
 import {Entity} from '../models/entity'
+import {IncrementalDataTemplatePiece} from '../models/incremental-data-template-piece'
 
 export class LockFileManager {
   readonly lockFileName = 'sc3000.lock.json'
@@ -25,7 +26,8 @@ export class LockFileManager {
     return object
   }
 
-  public async addGeneratedEntity(lockFile: LockFile | null, generator: Generator, entity: Entity): Promise<LockFile> {
+  public async addGeneratedEntity(generator: Generator, entity: Entity): Promise<LockFile> {
+    const lockFile = await this.readLockFile()
     const base = lockFile ?? this.createBaseLockFile()
 
     const generatorItem = base.generated.find(it => it.generator === generator.metaData.name)
@@ -45,7 +47,8 @@ export class LockFileManager {
     return base
   }
 
-  public async addGeneratedProject(lockFile: LockFile | null, generator: Generator): Promise<LockFile> {
+  public async addGeneratedProject(generator: Generator): Promise<LockFile> {
+    const lockFile = await this.readLockFile()
     const base = lockFile ?? this.createBaseLockFile()
 
     const generatorItem = base.generated.find(it => it.generator === generator.metaData.name)
@@ -56,6 +59,24 @@ export class LockFileManager {
         generator: generator.metaData.name,
         project: true,
       })
+    }
+
+    this.updateLockFileMetadata(base)
+    await this.writeLockFile(base)
+
+    return base
+  }
+
+  public async addIncrementalData(piece: IncrementalDataTemplatePiece) {
+    const lockFile = await this.readLockFile()
+    const base = lockFile ?? this.createBaseLockFile()
+    const existing = base.incrementalData?.find(it => it.id === piece.id)
+
+    if (existing) {
+      existing.body = piece.body
+    } else {
+      base.incrementalData = base.incrementalData ?? []
+      base.incrementalData.push(piece)
     }
 
     this.updateLockFileMetadata(base)
@@ -82,7 +103,8 @@ export class LockFileManager {
     }
   }
 
-  public hasGeneratedEntityWithGenerator(lockFile: LockFile | null, generator: Generator, entity: Entity): boolean {
+  public async hasGeneratedEntityWithGenerator(generator: Generator, entity: Entity): Promise<boolean> {
+    const lockFile = await this.readLockFile()
     const generatorName = generator.metaData.name
     const entityName = entity.name
 
@@ -91,7 +113,8 @@ export class LockFileManager {
     }) ?? false
   }
 
-  public hasGeneratedProjectWithGenerator(lockFile: LockFile | null, generator: Generator): boolean {
+  public async hasGeneratedProjectWithGenerator(generator: Generator): Promise<boolean> {
+    const lockFile = await this.readLockFile()
     const generatorName = generator.metaData.name
 
     return lockFile?.generated.some(generatedItem => {
@@ -114,7 +137,7 @@ export class LockFileManager {
         return false
       }
 
-      return Array.isArray(generatedItem.entities)
+      return generatedItem.project === true || Array.isArray(generatedItem.entities)
     })
   }
 }

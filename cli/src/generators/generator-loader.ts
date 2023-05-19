@@ -42,7 +42,8 @@ export class GeneratorLoader {
       })
 
       // Now, load the generator by importing it
-      const {default: GeneratorClass} = await import(join(generatorDirectory, 'node_modules', generatorName))
+      // const {default: GeneratorClass} = await import(join(generatorDirectory, 'node_modules', generatorName))
+      const {default: GeneratorClass} = await import('../../../generators/kotlin-spring-backend-generator')
       const instance = new GeneratorClass() as Generator
 
       result.push(instance)

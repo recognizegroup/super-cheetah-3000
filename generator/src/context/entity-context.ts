@@ -4,11 +4,12 @@ import {Operations} from '../models/operations'
 import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
 import {TestDataManager} from '../test-data/test-data-manager'
+import {IncrementalDataHandler} from '../templating/incremental-data-handler'
 
 export class EntityContext extends Context {
     private _entity!: Entity;
 
-    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, entity: Entity, inputs: Record<string, unknown> }) {
+    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, entity: Entity, incrementalDataHandler: IncrementalDataHandler, inputs: Record<string, unknown> }) {
       super(object)
       this.entity = object.entity
     }
