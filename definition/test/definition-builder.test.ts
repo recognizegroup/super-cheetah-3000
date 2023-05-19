@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {DefinitionBuilder} from '../src/definition-builder'
-import {Entity, Project, ProjectGenerator} from '@recognizebv/sc3000-generator'
+import {Entity, IdentityProviderType, Project, ProjectGenerator} from '@recognizebv/sc3000-generator'
 
 describe('definition builder', () => {
   let definitionBuilder: DefinitionBuilder
@@ -16,6 +16,16 @@ describe('definition builder', () => {
   const generatorMock: ProjectGenerator = {
     packageName: 'My Generator',
     inputs: {},
+  }
+  const securityConfigMock = {
+    roles: ['admin', 'user'],
+    identityProvider: {
+      type: IdentityProviderType.AZURE_AD,
+      properties: {
+        clientId: '1234',
+        tenantId: '5678',
+      },
+    },
   }
 
   beforeEach(() => {
@@ -48,5 +58,12 @@ describe('definition builder', () => {
     definitionBuilder.workingDirectory = workingDirectory
 
     expect(definitionBuilder.workingDirectory).to.equal(workingDirectory)
+  })
+
+  it('should add a security configuration', () => {
+    const result = definitionBuilder.withSecurityConfiguration(securityConfigMock)
+
+    expect(result).to.equal(definitionBuilder)
+    expect(definitionBuilder.securityConfiguration).to.deep.equal(securityConfigMock)
   })
 })
