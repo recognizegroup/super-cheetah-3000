@@ -89,4 +89,18 @@ describe('faker test data manager', () => {
     expect(testData[field.name].name).to.be.a('string')
     expect(testData[field.name].description).to.be.a('string')
   })
+
+  it('should find test data for a given path', () => {
+    const testData = {
+      nested: {
+        array: [
+          {
+            sample: 'value',
+          },
+        ],
+      },
+    }
+
+    expect(testDataManager.findTestDataForPath(testData, 'nested.array[0].sample')).to.equal('value')
+  })
 })

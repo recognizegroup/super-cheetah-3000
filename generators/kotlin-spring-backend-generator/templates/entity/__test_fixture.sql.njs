@@ -1,20 +1,12 @@
 {% set testDataEntity = testData.fetchTestDataForEntity(entity, 1) %}
+{% set testDataEntityCreate = testData.fetchTestDataForEntity(entity, 2) %}
+{% set testDataEntityUpdate = testData.fetchTestDataForEntity(entity, 3) %}
 {% import 'partials/sql.njs' as sql %}
 -- Create sample data
-INSERT INTO {{ entity.name | snakeCase }} (
-    id,{% for field in entity.fields %}
-    {{ field.name | snakeCase }},
-    {%- endfor %}
-    created_at,
-    updated_at
-)
-VALUES (
-    1,{% for field in entity.fields %}
-    {{ sql.wrapValue(field.type, testDataEntity[field.name]) }},
-    {%- endfor %}
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-);
+{% for related in (entity | findRelatedEntities) %}
+{{ sql.testDataInsert(related.entity, testData.findTestDataForPath(testDataEntity, related.path)) }}
+{{ sql.testDataInsert(related.entity, testData.findTestDataForPath(testDataEntityCreate, related.path)) }}
+{{ sql.testDataInsert(related.entity, testData.findTestDataForPath(testDataEntityUpdate, related.path)) }}
+{% endfor %}
 
-
-SELECT setval('public.{{ entity.name | snakeCase }}_seq', 100);
+{{ sql.testDataInsert(entity, testDataEntity) }}

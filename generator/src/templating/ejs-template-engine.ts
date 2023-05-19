@@ -1,6 +1,7 @@
 import {TemplateEngine} from './template-engine'
 import * as ejs from 'ejs'
 import {StringModificationHelper} from '../helpers/string-modification-helper'
+import {EntityFieldHelper} from '../helpers/entity-field-helper'
 
 export class EjsTemplateEngine implements TemplateEngine {
   constructor(private root: string) {}
@@ -34,6 +35,8 @@ export class EjsTemplateEngine implements TemplateEngine {
       toSentenceCase: StringModificationHelper.toSentenceCase,
       toUrlCase: StringModificationHelper.toUrlCase,
       toPlural: StringModificationHelper.toPlural,
+      flattenEntityFieldsForTestResults: EntityFieldHelper.flattenEntityFieldsForTestResults,
+      findRelatedEntities: EntityFieldHelper.findRelatedEntities,
     }
   }
 }
