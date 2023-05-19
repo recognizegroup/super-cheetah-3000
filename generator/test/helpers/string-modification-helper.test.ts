@@ -81,4 +81,14 @@ describe('string modification helper', () => {
       expect(StringModificationHelper.toUrlCase('HelloWorld')).to.equal('hello-worlds')
     })
   })
+
+  describe('to constant case', () => {
+    it('should convert a space-separated string to constant case', () => {
+      expect(StringModificationHelper.toConstantCase('Hello World')).to.equal('HELLO_WORLD')
+    })
+
+    it('should convert a pascal case string to constant case', () => {
+      expect(StringModificationHelper.toConstantCase('HelloWorld')).to.equal('HELLO_WORLD')
+    })
+  })
 })

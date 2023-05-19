@@ -10,7 +10,7 @@ import {
   ProjectCodeProvider,
   ProjectContext,
   Context,
-  RenderHookType, NunjucksTemplateEngine,
+  RenderHookType, NunjucksTemplateEngine, IdentityProviderType,
 } from '../../src'
 import * as commandWrapper from '../../src/util/command-wrapper'
 import {IncrementalDataHandler} from '../../src/templating/incremental-data-handler'
@@ -25,6 +25,17 @@ describe('renderer', () => {
     team: 'team-technology',
   }
 
+  const securityConfiguration = {
+    identityProvider: {
+      type: IdentityProviderType.AZURE_AD,
+      properties: {
+        clientId: '1234',
+        tenantId: '1234',
+      },
+    },
+    roles: [],
+  }
+
   const filesystem = sinon.createStubInstance(LocalFilesystem)
   const testData = sinon.createStubInstance(FakerTestDataManager)
   const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
@@ -34,6 +45,7 @@ describe('renderer', () => {
     filesystem,
     testData,
     incrementalDataHandler,
+    securityConfiguration,
     inputs: {
       directory: '/tmp',
     },
@@ -187,6 +199,7 @@ describe('renderer', () => {
         },
         project,
         testData,
+        security: securityConfiguration,
       })
     })
   })

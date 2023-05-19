@@ -42,6 +42,7 @@ describe('context', () => {
     const variables = context.buildVariables()
     expect(variables).to.have.property('project')
     expect(variables).to.have.property('testData')
+    expect(variables).to.have.property('security')
   })
 
   it('should be able construct an entity context and build variables', () => {
@@ -101,40 +102,9 @@ describe('context', () => {
     })
 
     expect(context.entity.operations).not.to.be.undefined
-    expect(context.entity.operations?.create).to.be.true
-    expect(context.entity.operations?.read).to.be.true
-    expect(context.entity.operations?.update).to.be.true
-    expect(context.entity.operations?.delete).to.be.true
-  })
-
-  it('should merge operations if explicitely defined', () => {
-    const entity = {
-      name: 'Project',
-      fields: [],
-      operations: {
-        read: false,
-      },
-    }
-
-    const filesystem = new LocalFilesystem(sampleRoot)
-    const testData = new FakerTestDataManager()
-    const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
-
-    const context = new EntityContext({
-      project,
-      filesystem,
-      testData,
-      incrementalDataHandler,
-      entity,
-      inputs: {
-        directory: '/tmp',
-      },
-    })
-
-    expect(context.entity.operations).not.to.be.undefined
-    expect(context.entity.operations?.create).to.be.true
-    expect(context.entity.operations?.read).to.be.false
-    expect(context.entity.operations?.update).to.be.true
-    expect(context.entity.operations?.delete).to.be.true
+    expect(context.entity.operations?.create.enabled).to.be.true
+    expect(context.entity.operations?.read.enabled).to.be.true
+    expect(context.entity.operations?.update.enabled).to.be.true
+    expect(context.entity.operations?.delete.enabled).to.be.true
   })
 })

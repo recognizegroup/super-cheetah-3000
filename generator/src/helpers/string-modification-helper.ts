@@ -24,6 +24,10 @@ export const StringModificationHelper = {
     .join('_')
   },
 
+  toConstantCase(value: string): string {
+    return this.toSnakeCase(value).toUpperCase()
+  },
+
   toTitleCase(value: string): string {
     return value
     .split(/[\s-]/)

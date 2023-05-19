@@ -20,3 +20,11 @@ spring.jackson.date-format=yyyy-MM-dd'T'HH:mm:ss.SSSZ
 # General
 spring.main.allow-bean-definition-overriding=true
 server.error.whitelabel.enabled=false
+{% if security.identityProvider.type == "azure-ad" %}
+# Active Directory
+spring.cloud.azure.active-directory.enabled=true
+spring.cloud.azure.active-directory.session-stateless=true
+spring.cloud.azure.active-directory.credential.client-id=${AZURE_APP_ID}
+spring.cloud.azure.active-directory.app-id-uri=api://${AZURE_APP_ID}
+spring.cloud.azure.active-directory.profile.tenant-id=${AZURE_TENANT_ID}
+{% endif %}

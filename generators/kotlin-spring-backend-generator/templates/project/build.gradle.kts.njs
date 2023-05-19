@@ -26,6 +26,8 @@ repositories {
 	mavenCentral()
 }
 
+extra["springCloudAzureVersion"] = "5.0.0"
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -36,6 +38,12 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.hibernate:hibernate-validator:6.2.0.Final")
+  {% if security.identityProvider.type == "azure-ad" %}
+	implementation("org.springframework.boot:spring-boot-starter-security")
+  implementation("org.springframework.security:spring-security-oauth2-client")
+  implementation("org.springframework.security:spring-security-oauth2-jose")
+  implementation("com.azure.spring:spring-cloud-azure-starter-active-directory")
+  {% endif %}
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -43,12 +51,18 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 
 	liquibaseRuntime("info.picocli:picocli:4.6.3")
-    liquibaseRuntime("org.liquibase:liquibase-core")
-    liquibaseRuntime("org.postgresql:postgresql")
-    liquibaseRuntime("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    liquibaseRuntime("org.liquibase.ext:liquibase-hibernate6:4.19.0")
-    liquibaseRuntime("org.springframework.boot:spring-boot-starter-data-jpa")
-    liquibaseRuntime(sourceSets.getByName("main").output)
+  liquibaseRuntime("org.liquibase:liquibase-core")
+  liquibaseRuntime("org.postgresql:postgresql")
+  liquibaseRuntime("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+  liquibaseRuntime("org.liquibase.ext:liquibase-hibernate6:4.19.0")
+  liquibaseRuntime("org.springframework.boot:spring-boot-starter-data-jpa")
+  liquibaseRuntime(sourceSets.getByName("main").output)
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("com.azure.spring:spring-cloud-azure-dependencies:${property("springCloudAzureVersion")}")
+    }
 }
 
 tasks.withType<KotlinCompile> {

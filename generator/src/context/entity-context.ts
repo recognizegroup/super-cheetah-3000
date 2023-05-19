@@ -5,11 +5,12 @@ import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
 import {TestDataManager} from '../test-data/test-data-manager'
 import {IncrementalDataHandler} from '../templating/incremental-data-handler'
+import {SecurityConfiguration} from '../models/security-configuration'
 
 export class EntityContext extends Context {
     private _entity!: Entity;
 
-    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, entity: Entity, incrementalDataHandler: IncrementalDataHandler, inputs: Record<string, unknown> }) {
+    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, entity: Entity, incrementalDataHandler: IncrementalDataHandler, securityConfiguration?: SecurityConfiguration, inputs: Record<string, unknown> }) {
       super(object)
       this.entity = object.entity
     }
@@ -20,10 +21,11 @@ export class EntityContext extends Context {
 
     public set entity(entity: Entity) {
       const baseOperations: Operations = {
-        create: true,
-        read: true,
-        update: true,
-        delete: true,
+        create: {enabled: true, roles: []},
+        read: {enabled: true, roles: []},
+        update: {enabled: true, roles: []},
+        delete: {enabled: true, roles: []},
+        entity: {roles: []},
       }
 
       entity.operations = entity.operations ? {

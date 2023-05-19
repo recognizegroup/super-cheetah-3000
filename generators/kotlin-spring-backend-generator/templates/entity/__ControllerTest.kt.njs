@@ -2,11 +2,23 @@
 id: controller-test
 dependencies: [entity, controller]
 ---
+{% macro mockUser(type) -%}
+{%- set comma = joiner(', ') -%}
+{%- set roles = entity.operations.entity.roles | concat(entity.operations[type].roles) -%}
+{%- if roles | length > 0 -%}
+@WithMockUser(username = "j.doe@recognize.nl", roles = [{%- for role in roles -%}
+  {{ comma() }}Roles.{{ role | constantCase }}
+{%- endfor -%}])
+{%- else -%}
+@WithMockUser(username = "j.doe@recognize.nl", roles = [])
+{%- endif -%}
+{%- endmacro %}
 {% import 'partials/kotlin.njs' as kotlin %}
 package {{ variables.packageName }}.controller
 
 import {{ dependencies.entity.import }}
 import {{ variables.packageName }}.AbstractIntegrationTest
+import {{ variables.packageName }}.security.Roles
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Test
@@ -17,10 +29,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.security.test.context.support.WithMockUser
 
 internal class {{ dependencies.entity.name }}ControllerTest : AbstractIntegrationTest() {
 {% set baseTestData = testData.fetchTestDataForEntity(entity, 1) %}
-{% if entity.operations.read %}
+{% if entity.operations.read.enabled %}
+    {{ mockUser('read') }}
     @Test
     @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
     fun `Lists a set of {{ entity.name }} items`() {
@@ -32,8 +46,17 @@ internal class {{ dependencies.entity.name }}ControllerTest : AbstractIntegratio
             .andExpect(jsonPath("$.content[0].{{ flattened.name }}", equalTo({{ kotlin.wrapValue(flattened.field.type, testData.findTestDataForPath(baseTestData, flattened.name)) }})))
             {% endfor %}
     }
+
+    @Test
+    @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
+    fun `Can not list a set of {{ entity.name }} items when not authenticated`() {
+        mockMvc
+            .perform(get("{{ dependencies.controller.url }}"))
+            .andExpect(status().isUnauthorized)
+    }
 {% endif %}
-{% if entity.operations.read %}
+{% if entity.operations.read.enabled %}
+    {{ mockUser('read') }}
     @Test
     @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
     fun `Retrieve a single {{ entity.name }}`() {
@@ -45,6 +68,7 @@ internal class {{ dependencies.entity.name }}ControllerTest : AbstractIntegratio
             {% endfor %}
     }
 
+    {{ mockUser('read') }}
     @Test
     @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
     fun `Throws a not-found error when a {{ entity.name }} does not exist`() {
@@ -53,7 +77,8 @@ internal class {{ dependencies.entity.name }}ControllerTest : AbstractIntegratio
             .andExpect(status().isNotFound)
     }
 {% endif %}
-{% if entity.operations.create %}
+{% if entity.operations.create.enabled %}
+    {{ mockUser('create') }}
     @Test
     @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
     fun `Create a {{ entity.name }}`() {
@@ -74,7 +99,8 @@ internal class {{ dependencies.entity.name }}ControllerTest : AbstractIntegratio
             {% endfor %}
     }
 {% endif %}
-{% if entity.operations.update %}
+{% if entity.operations.update.enabled %}
+    {{ mockUser('update') }}
     @Test
     @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
     fun `Updates a {{ entity.name }}`() {
@@ -95,7 +121,8 @@ internal class {{ dependencies.entity.name }}ControllerTest : AbstractIntegratio
             {% endfor %}
     }
 {% endif %}
-{% if entity.operations.delete %}
+{% if entity.operations.delete.enabled %}
+    {{ mockUser('delete') }}
     @Test
     @Sql(scripts = ["classpath:fixtures/{{ entity.name | kebabCase }}.sql"])
     fun `Deletes a {{ entity.name }}`() {

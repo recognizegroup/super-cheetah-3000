@@ -38,6 +38,7 @@ $ oex generate --force
 
     const generators = await generatorLoader.loadProjectGenerators(definition, token)
     const path = definition.workingDirectory
+    const securityConfiguration = definition.securityConfiguration
 
     const testData = new FakerTestDataManager()
     const filesystem = new LocalFilesystem(path)
@@ -62,6 +63,7 @@ $ oex generate --force
           filesystem,
           testData,
           incrementalDataHandler,
+          securityConfiguration,
           inputs,
         })
 
@@ -78,6 +80,7 @@ $ oex generate --force
             testData,
             entity,
             incrementalDataHandler,
+            securityConfiguration,
             inputs,
           })
 

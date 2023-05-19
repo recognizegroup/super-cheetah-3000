@@ -51,8 +51,10 @@ export class NunjucksTemplateEngine implements TemplateEngine {
     environment.addFilter('titleCase', StringModificationHelper.toTitleCase.bind(StringModificationHelper))
     environment.addFilter('sentenceCase', StringModificationHelper.toSentenceCase.bind(StringModificationHelper))
     environment.addFilter('urlCase', StringModificationHelper.toUrlCase.bind(StringModificationHelper))
+    environment.addFilter('constantCase', StringModificationHelper.toConstantCase.bind(StringModificationHelper))
     environment.addFilter('plural', StringModificationHelper.toPlural.bind(StringModificationHelper))
     environment.addFilter('json', value => JSON.stringify(value, null, 2))
+    environment.addFilter('concat', (value, second) => [...value, ...second])
     environment.addFilter('flattenEntityFieldsForTestResults', EntityFieldHelper.flattenEntityFieldsForTestResults.bind(EntityFieldHelper))
     environment.addFilter('findRelatedEntities', EntityFieldHelper.findRelatedEntities.bind(EntityFieldHelper))
     environment.addExtension('incremental', {

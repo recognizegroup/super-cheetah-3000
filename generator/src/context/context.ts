@@ -2,19 +2,22 @@ import {Project} from '../models/project'
 import {Filesystem} from '../io/filesystem'
 import {TestDataManager} from '../test-data/test-data-manager'
 import {IncrementalDataHandler} from '../templating/incremental-data-handler'
+import {SecurityConfiguration} from '../models/security-configuration'
 
 export class Context {
     private _project: Project;
     private _filesystem: Filesystem;
     private _testData: TestDataManager;
     private _incrementalDataHandler: IncrementalDataHandler;
+    private _securityConfiguration?: SecurityConfiguration;
     private _inputs: Record<string, unknown> = {};
 
-    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, incrementalDataHandler: IncrementalDataHandler, inputs: Record<string, unknown> }) {
+    constructor(object: { project: Project, filesystem: Filesystem, testData: TestDataManager, incrementalDataHandler: IncrementalDataHandler, securityConfiguration?: SecurityConfiguration, inputs: Record<string, unknown> }) {
       this._project = object.project
       this._filesystem = object.filesystem
       this._testData = object.testData
       this._incrementalDataHandler = object.incrementalDataHandler
+      this._securityConfiguration = object.securityConfiguration
       this._inputs = object.inputs
     }
 
@@ -50,6 +53,14 @@ export class Context {
       this._incrementalDataHandler = value
     }
 
+    get securityConfiguration(): SecurityConfiguration | undefined {
+      return this._securityConfiguration
+    }
+
+    set securityConfiguration(value: SecurityConfiguration | undefined) {
+      this._securityConfiguration = value
+    }
+
     findInputValue<T>(name: string): T | undefined {
       return this._inputs[name] as T
     }
@@ -58,6 +69,7 @@ export class Context {
       return {
         project: this.project,
         testData: this.testData,
+        security: this.securityConfiguration,
       }
     }
 }

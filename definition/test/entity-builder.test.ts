@@ -80,79 +80,145 @@ describe('entity builder', () => {
     const result = entityBuilder.enableRead()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({read: true})
+    expect(entityBuilder.operations.read.enabled).to.equal(true)
   })
 
   it('should enable create operation', () => {
     const result = entityBuilder.enableCreate()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({create: true})
+    expect(entityBuilder.operations.create.enabled).to.equal(true)
   })
 
   it('should enable update operation', () => {
     const result = entityBuilder.enableUpdate()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({update: true})
+    expect(entityBuilder.operations.update.enabled).to.equal(true)
   })
 
   it('should enable delete operation', () => {
     const result = entityBuilder.enableDelete()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({delete: true})
+    expect(entityBuilder.operations.read.enabled).to.equal(true)
   })
 
   it('should enable all operations', () => {
     const result = entityBuilder.enableAllOperations()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({
-      read: true,
-      create: true,
-      update: true,
-      delete: true,
-    })
+    expect(entityBuilder.operations.create.enabled).to.equal(true)
+    expect(entityBuilder.operations.read.enabled).to.equal(true)
+    expect(entityBuilder.operations.update.enabled).to.equal(true)
+    expect(entityBuilder.operations.delete.enabled).to.equal(true)
   })
 
   it('should disable read operation', () => {
     const result = entityBuilder.disableRead()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({read: false})
+    expect(entityBuilder.operations.read.enabled).to.equal(false)
   })
 
   it('should disable create operation', () => {
     const result = entityBuilder.disableCreate()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({create: false})
+    expect(entityBuilder.operations.create.enabled).to.equal(false)
   })
 
   it('should disable update operation', () => {
     const result = entityBuilder.disableUpdate()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({update: false})
+    expect(entityBuilder.operations.update.enabled).to.equal(false)
   })
 
   it('should disable delete operation', () => {
     const result = entityBuilder.disableDelete()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({delete: false})
+    expect(entityBuilder.operations.delete.enabled).to.equal(false)
   })
 
   it('should disable all operations', () => {
     const result = entityBuilder.disableAllOperations()
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.operations).to.deep.equal({
-      read: false,
-      create: false,
-      update: false,
-      delete: false,
-    })
+    expect(entityBuilder.operations.create.enabled).to.equal(false)
+    expect(entityBuilder.operations.read.enabled).to.equal(false)
+    expect(entityBuilder.operations.update.enabled).to.equal(false)
+    expect(entityBuilder.operations.delete.enabled).to.equal(false)
+  })
+
+  it('should require a role for read operation', () => {
+    const result = entityBuilder.requireReadRole('admin')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.read.roles).to.deep.equal(['admin'])
+  })
+
+  it('should require a roles for read operation', () => {
+    const result = entityBuilder.requireReadRoles('admin', 'project-manager')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.read.roles).to.deep.equal(['admin', 'project-manager'])
+  })
+
+  it('should require a role for create operation', () => {
+    const result = entityBuilder.requireCreateRole('admin')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.create.roles).to.deep.equal(['admin'])
+  })
+
+  it('should require a roles for create operation', () => {
+    const result = entityBuilder.requireCreateRoles('admin', 'project-manager')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.create.roles).to.deep.equal(['admin', 'project-manager'])
+  })
+
+  it('should require a role for update operation', () => {
+    const result = entityBuilder.requireUpdateRole('admin')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.update.roles).to.deep.equal(['admin'])
+  })
+
+  it('should require a roles for update operation', () => {
+    const result = entityBuilder.requireUpdateRoles('admin', 'project-manager')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.update.roles).to.deep.equal(['admin', 'project-manager'])
+  })
+
+  it('should require a role for delete operation', () => {
+    const result = entityBuilder.requireDeleteRole('admin')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.delete.roles).to.deep.equal(['admin'])
+  })
+
+  it('should require a roles for delete operation', () => {
+    const result = entityBuilder.requireDeleteRoles('admin', 'project-manager')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.delete.roles).to.deep.equal(['admin', 'project-manager'])
+  })
+
+  it('should require role for all operations', () => {
+    const result = entityBuilder.requireRoleForEntity('admin')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.entity.roles).to.deep.equal(['admin'])
+  })
+
+  it('should require roles for all operations', () => {
+    const result = entityBuilder.requireRolesForEntity('admin', 'project-manager')
+
+    expect(result).to.equal(entityBuilder)
+    expect(entityBuilder.operations.entity.roles).to.deep.equal(['admin', 'project-manager'])
   })
 })
