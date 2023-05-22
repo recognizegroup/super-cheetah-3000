@@ -7,6 +7,7 @@ import {GeneratorLoader} from '../../../src/generators/generator-loader'
 import * as definition from '../../../src/datamodel/definition'
 import {DataType, EntityCodeProvider, ProjectCodeProvider} from '@recognizebv/sc3000-generator'
 import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
+import {CheetahLoader} from '../../../src/loader/cheetah-loader'
 
 describe('generate', () => {
   const stubTokenResponse: TokenResponse = {
@@ -32,6 +33,7 @@ describe('generate', () => {
     sandbox.stub(LockFileManager.prototype, 'hasGeneratedEntityWithGenerator').callsFake(async () => false)
     sandbox.stub(LockFileManager.prototype, 'hasGeneratedProjectWithGenerator').callsFake(async () => false)
     sandbox.stub(LockFileManager.prototype, 'writeLockFile').callsFake(async () => {})
+    sandbox.stub(CheetahLoader.prototype, 'start').callsFake(async () => {})
     sandbox.stub(GeneratorLoader.prototype, 'loadProjectGenerators').callsFake(async () => [
       {
         entityCodeProvider,

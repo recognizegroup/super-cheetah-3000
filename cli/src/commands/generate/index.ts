@@ -14,6 +14,7 @@ import {GeneratorLoader} from '../../generators/generator-loader'
 import {parseInputs} from '../../datamodel/input-validation'
 import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
 import {IncrementalDataHandler} from '@recognizebv/sc3000-generator/dist/templating/incremental-data-handler'
+import {CheetahLoader} from '../../loader/cheetah-loader'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -33,6 +34,8 @@ $ oex generate --force
     await checkDefinitionFileExistsInCurrentDirectory()
     const token = await this.ensureAuthenticated()
 
+    const loader = new CheetahLoader()
+
     const definition = await parseDefinitionFileInCurrentDirectory()
     const generatorLoader = new GeneratorLoader(this.environment)
 
@@ -50,6 +53,8 @@ $ oex generate --force
 
     let projectCodeProviderInvocations = 0
     let entityCodeProviderInvocations = 0
+
+    await loader.start()
 
     for (const generator of generators) {
       const {metaData, entityCodeProvider, projectCodeProvider} = generator
@@ -99,6 +104,8 @@ $ oex generate --force
         throw error
       }
     }
+
+    await loader.stop()
 
     if (projectCodeProviderInvocations === 0 && entityCodeProviderInvocations === 0) {
       this.log('⚠️  No new entities or projects.')
