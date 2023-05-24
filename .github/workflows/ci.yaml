@@ -41,6 +41,9 @@ jobs:
   test-definition:
     runs-on: ubuntu-latest
     name: Test Definition
+    defaults:
+      run:
+        working-directory: definition/
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -62,6 +65,9 @@ jobs:
   test-generator:
     runs-on: ubuntu-latest
     name: Test Generator
+    defaults:
+      run:
+        working-directory: generator/
     steps:
       - name: Checkout
         uses: actions/checkout@v3
