@@ -7,7 +7,6 @@ import {
 } from '@recognizebv/sc3000-generator';
 import {EntityCodeProvider} from './providers/entity-code-provider';
 import {ProjectCodeProvider} from './providers/project-code-provider';
-import {Output} from "@recognizebv/sc3000-generator/dist/models/output";
 
 export class KotlinSpringBackendGenerator implements Generator {
     get metaData() {

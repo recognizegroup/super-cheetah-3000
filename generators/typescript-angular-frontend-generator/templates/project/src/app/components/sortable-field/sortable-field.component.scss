@@ -1,0 +1,17 @@
+.field {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.field.enabled {
+  cursor: pointer;
+}
+
+.field.active {
+  color: var(--vwui--color--primary);
+}
+
+.table-sort-icon-desc .desc, .table-sort-icon-asc .asc {
+  fill: var(--vwui--color--primary);
+}

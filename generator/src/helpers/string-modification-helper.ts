@@ -1,7 +1,7 @@
 export const StringModificationHelper = {
   toPascalCase(value: string): string {
     return value
-    .split(/[\s-]/)
+    .split(/(?=[A-Z])|\s+|-+/)
     .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
     .join('')
   },

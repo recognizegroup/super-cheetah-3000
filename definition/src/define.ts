@@ -17,8 +17,8 @@ export const createDefinition = (): DefinitionBuilder => {
   return new DefinitionBuilder()
 }
 
-export const useGenerator = (packageName: string): GeneratorBuilder => {
-  return new GeneratorBuilder(packageName)
+export const useGenerator = (packageLocation: string, version = 'latest'): GeneratorBuilder => {
+  return new GeneratorBuilder(packageLocation, version)
 }
 
 export const configureSecurity = (): SecurityConfigurationBuilder => {

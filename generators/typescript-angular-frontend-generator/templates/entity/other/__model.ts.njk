@@ -1,0 +1,14 @@
+---
+id: model
+constants:
+  name: '{{ entity.name | pascalCase }}'
+---
+{% import 'partials/typescript.njk' as ts %}
+{{ ts.relatedImports(entity) }}
+
+export interface {{ constants.name }} {
+  id: number
+  {% for field in entity.fields %}
+  {{ field.name }}{% if not field.required %}?{% endif %}: {{ ts.dataType(field.type) }};
+  {%- endfor %}
+}

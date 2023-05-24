@@ -1,4 +1,5 @@
 export interface ProjectGenerator {
-  packageName: string;
+  packageLocation: string;
+  version: string;
   inputs: Record<string, unknown>;
 }

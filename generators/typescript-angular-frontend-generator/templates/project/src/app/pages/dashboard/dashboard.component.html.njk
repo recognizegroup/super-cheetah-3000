@@ -1,0 +1,18 @@
+<vwui-header>
+  Overview
+</vwui-header>
+
+<p>
+  This is your dashboard. You can use this page to quickly navigate to all pages in the application.
+</p>
+
+<vwui-title>Entities</vwui-title>
+<ul>
+  {% incremental id="dashboard" %}
+  <li>
+    <a routerLink="/{{ entity.name | urlCase }}">
+      {{ entity.name | plural | titleCase }}
+    </a>
+  </li>
+  {% endincremental %}
+</ul>

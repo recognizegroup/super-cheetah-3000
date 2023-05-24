@@ -7,6 +7,8 @@ import {GeneratorLoader} from '../../../src/generators/generator-loader'
 import * as definition from '../../../src/datamodel/definition'
 import {DataType, EntityCodeProvider, ProjectCodeProvider} from '@recognizebv/sc3000-generator'
 import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
+import {CheetahLoader} from '../../../src/loader/cheetah-loader'
+import {DefaultLoader} from '../../../src/loader/default-loader'
 
 describe('generate', () => {
   const stubTokenResponse: TokenResponse = {
@@ -32,6 +34,10 @@ describe('generate', () => {
     sandbox.stub(LockFileManager.prototype, 'hasGeneratedEntityWithGenerator').callsFake(async () => false)
     sandbox.stub(LockFileManager.prototype, 'hasGeneratedProjectWithGenerator').callsFake(async () => false)
     sandbox.stub(LockFileManager.prototype, 'writeLockFile').callsFake(async () => {})
+    sandbox.stub(CheetahLoader.prototype, 'start').callsFake(async () => {})
+    sandbox.stub(DefaultLoader.prototype, 'start').callsFake(async () => {})
+    sandbox.stub(DefaultLoader.prototype, 'update').callsFake(async () => {})
+    sandbox.stub(DefaultLoader.prototype, 'stop').callsFake(async () => {})
     sandbox.stub(GeneratorLoader.prototype, 'loadProjectGenerators').callsFake(async () => [
       {
         entityCodeProvider,
@@ -79,7 +85,7 @@ describe('generate', () => {
       ],
       workingDirectory: '/tmp',
       generators: [
-        {packageName: '@recognizegroup/kotlin', inputs: {directory: 'tmp'}},
+        {packageLocation: '@recognizegroup/kotlin', version: '^1.0', inputs: {directory: 'tmp'}},
       ],
     }))
   })

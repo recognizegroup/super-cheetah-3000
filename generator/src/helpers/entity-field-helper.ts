@@ -1,8 +1,14 @@
 import {Entity} from '../models/entity'
 import {RelationshipParity} from '../enums/relationship-parity'
 import {Field} from '../models/field'
+import {DataType} from '../enums/data-type'
 
 export class EntityFieldHelper {
+  public static mainProperty(entity: Entity): Field {
+    return entity.fields.find(field => field.mainProperty) ??
+      {name: 'id', type: DataType.integer, mainProperty: true}
+  }
+
   public static flattenEntityFieldsForTestResults(entity: Entity, prefix = '', collectionFields = 1): { name: string, field: Field }[] {
     const fields: { name: string, field: Field }[] = []
 

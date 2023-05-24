@@ -26,10 +26,19 @@ describe('define', () => {
   })
 
   it('useGenerator should create an instance of GeneratorBuilder', () => {
-    const packageName = 'my-package'
-    const generatorBuilder = useGenerator(packageName)
+    const packageLocation = 'my-package'
+    const generatorBuilder = useGenerator(packageLocation)
     expect(generatorBuilder).to.be.an.instanceOf(GeneratorBuilder)
-    expect(generatorBuilder.packageName).to.equal(packageName)
+    expect(generatorBuilder.packageLocation).to.equal(packageLocation)
+    expect(generatorBuilder.version).to.equal('latest')
+  })
+
+  it('useGenerator should create an instance of GeneratorBuilder with a version constraint', () => {
+    const packageLocation = 'my-package'
+    const generatorBuilder = useGenerator(packageLocation, '^1.0')
+    expect(generatorBuilder).to.be.an.instanceOf(GeneratorBuilder)
+    expect(generatorBuilder.packageLocation).to.equal(packageLocation)
+    expect(generatorBuilder.version).to.equal('^1.0')
   })
 
   it('configureSecurity should create an instance of SecurityConfigurationBuilder', () => {

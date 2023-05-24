@@ -14,8 +14,9 @@ describe('definition builder', () => {
     fields: [],
   }
   const generatorMock: ProjectGenerator = {
-    packageName: 'My Generator',
+    packageLocation: 'My Generator',
     inputs: {},
+    version: '^1.0.0',
   }
   const securityConfigMock = {
     roles: ['admin', 'user'],

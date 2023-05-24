@@ -35,16 +35,27 @@ export class GeneratorLoader {
     // For every generator, install it by running `npm install <generator>`
     // Then, load the generator by importing it
     for (const generator of generators) {
-      const generatorName = generator.packageName
+      const packageLocation = generator.packageLocation
 
-      await exec(`npm install ${generatorName} --registry=https://${this.environment.registryUrl}`, {
-        cwd: generatorDirectory,
-      })
+      // Check if the packageLocation seems to be a valid npm package name, both scoped and unscoped
+      const scopedMatch = packageLocation.match(/^@[^/]+\/[^/]+$/)
+      const unscopedMatch = packageLocation.match(/^[^/]+$/)
 
-      // Now, load the generator by importing it
-      const {default: GeneratorClass} = await import(join(generatorDirectory, 'node_modules', generatorName))
+      let GeneratorClass: any
+
+      if (!scopedMatch && !unscopedMatch) {
+        const path = join(definition.workingDirectory, packageLocation)
+        GeneratorClass = (await import(path)).default
+      } else {
+        await exec(`npm install ${packageLocation}@${generator.version} --registry=https://${this.environment.registryUrl}`, {
+          cwd: generatorDirectory,
+        })
+
+        // Now, load the generator by importing it
+        GeneratorClass = (await import(join(generatorDirectory, 'node_modules', packageLocation))).default
+      }
+
       const instance = new GeneratorClass() as Generator
-
       result.push(instance)
     }
 

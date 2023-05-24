@@ -1,0 +1,4 @@
+<div (click)="toggle()" class="field" [class.enabled]="enabled" [class.active]="active">
+    <ng-content></ng-content>
+    <div *ngIf="enabled" inlineSVG="/assets/icons/sort.svg" class="icon" [class.table-sort-icon-asc]="asc" [class.table-sort-icon-desc]="desc"></div>
+</div>
