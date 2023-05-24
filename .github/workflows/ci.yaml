@@ -131,10 +131,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - name: Install dependencies
-        run: yarn
       - name: Prepare generator
         run: cd ../generator && yarn && yarn build && cd ../definition
+      - name: Install dependencies
+        run: yarn
       - name: Build
         run: yarn build
       - name: Change version to ${{ github.ref_name }}
@@ -143,3 +143,40 @@ jobs:
         run: echo "//registry.yarnpkg.com/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
       - name: Publish
         run: yarn publish --access public
+
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create release
+    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Link and prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../cli
+      - name: Install dependencies
+        run: yarn
+      - name: Write release version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Change version
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: ${{ env.VERSION }}
+      - name: Build
+        run: yarn build
+      - name: Pack MacOS
+        run: npx oclif pack macos
+      - uses: softprops/action-gh-release@v1
+        with:
+          prerelease: ${{ contains(github.ref, '-beta') }}
+          generate_release_notes: true
+          files: |
+            cli/dist/*.tar.gz
+            cli/dist/*.tar.xz
