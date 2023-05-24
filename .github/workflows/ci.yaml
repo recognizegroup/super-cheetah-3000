@@ -149,6 +149,9 @@ jobs:
     name: Create release
     needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    defaults:
+      run:
+        working-directory: cli/
     steps:
       - name: Checkout
         uses: actions/checkout@v3
