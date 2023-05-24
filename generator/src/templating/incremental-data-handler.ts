@@ -4,6 +4,7 @@ import {LockFileManager} from '../lock-file/lock-file-manager'
 import {Filesystem} from '../io/filesystem'
 import {NunjucksTemplateEngine} from './nunjucks-template-engine'
 import {EntityContext} from '../context/entity-context'
+import {Generator} from '../models/generator'
 
 export class IncrementalDataHandler {
   private dataPieces: IncrementalDataTemplatePiece[] = []
@@ -18,8 +19,8 @@ export class IncrementalDataHandler {
     return this.dataPieces
   }
 
-  async renderIncrementalData(context: EntityContext) {
-    const engine = new NunjucksTemplateEngine()
+  async renderIncrementalData(context: EntityContext, generator: Generator) {
+    const engine = new NunjucksTemplateEngine(generator.metaData.templateRoot)
     await engine.setup(this)
 
     for (const piece of this.dataPieces) {
@@ -33,8 +34,8 @@ export class IncrementalDataHandler {
     }
   }
 
-  async registerDataPiece(id: string, body: string, path: string): Promise<string> {
-    const marker = this.createMarker(id)
+  async registerDataPiece(id: string, body: string, path: string, markerLanguage: string): Promise<string> {
+    const marker = this.createMarker(id, markerLanguage)
     const piece = {
       id,
       marker,
@@ -49,9 +50,16 @@ export class IncrementalDataHandler {
     return marker
   }
 
-  createMarker(id: string): string {
+  createMarker(id: string, markerLanguage: string): string {
     const random = Math.random().toString(36).slice(7)
 
-    return `<!-- SC3000: ${id}-${random} do not remove this line -->`
+    switch (markerLanguage) {
+    case 'html':
+      return `<!-- SC3000: ${id}-${random} do not remove this line -->`
+    case 'ts':
+      return `// SC3000: ${id}-${random} do not remove this line`
+    default:
+      throw new Error(`Unknown marker language: ${markerLanguage}`)
+    }
   }
 }

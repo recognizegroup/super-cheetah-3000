@@ -200,6 +200,9 @@ describe('renderer', () => {
         project,
         testData,
         security: securityConfiguration,
+        inputs: {
+          directory: '/tmp',
+        },
       })
     })
   })
@@ -256,13 +259,13 @@ Test file`.trim()
       sandbox.stub(renderer, 'getGeneratorTemplateFilesystem').returns(filesystem)
 
       renderer.setContext(context)
-      const file = await renderer.processMetadata('foo/bar.njs', 'output/foo/bar.njs')
+      const file = await renderer.processMetadata('foo/bar.njk', 'output/foo/bar.njk')
 
       const expectedFile: TemplateMetadata = {
         id: 'sample',
-        path: 'foo/bar.njs',
+        path: 'foo/bar.njk',
         permissions: 0o644,
-        outputPath: 'output/foo/bar.njs',
+        outputPath: 'output/foo/bar.njk',
         content: Buffer.from('Test file'),
         constants: {
           foo: 'bar',
@@ -306,7 +309,7 @@ Test file`.trim()
 
       const processMetadataStub = sandbox.stub(renderer, 'processMetadata').resolves({
         id: 'sample',
-        path: 'sample.kt.njs',
+        path: 'sample.kt.njk',
         permissions: 0o644,
         outputPath: 'sample.kt',
         content: Buffer.from('Test file one ({{ constants.foo }})'),
@@ -316,7 +319,7 @@ Test file`.trim()
         dependencies: [],
       })
 
-      await renderer.addFile('sample.kt.njs', 'sample.kt')
+      await renderer.addFile('sample.kt.njk', 'sample.kt')
 
       processMetadataStub.restore()
       sandbox.stub(renderer, 'processMetadata').resolves({
@@ -344,7 +347,7 @@ Test file`.trim()
 
       const processMetadataStub = sandbox.stub(renderer, 'processMetadata').resolves({
         id: 'sample',
-        path: 'sample.kt.njs',
+        path: 'sample.kt.njk',
         permissions: 0o644,
         outputPath: 'sample.kt',
         content: Buffer.from('Test file one ({{ constants.foo }})'),
@@ -354,19 +357,19 @@ Test file`.trim()
         dependencies: [],
       })
 
-      await renderer.addFile('sample.kt.njs', 'sample.kt')
+      await renderer.addFile('sample.kt.njk', 'sample.kt')
 
       processMetadataStub.restore()
       sandbox.stub(renderer, 'processMetadata').resolves({
         id: 'second',
-        path: 'second.kt.njs',
+        path: 'second.kt.njk',
         permissions: 0o644,
         outputPath: 'second.kt',
         content: Buffer.from('With a dependency ({{ dependencies.sample.foo }})'),
         constants: {},
         dependencies: ['sample'],
       })
-      await renderer.addFile('second.kt.njs', 'second.kt')
+      await renderer.addFile('second.kt.njk', 'second.kt')
 
       await renderer.render()
 

@@ -3,6 +3,7 @@ import * as nunjucks from 'nunjucks'
 import {StringModificationHelper} from '../helpers/string-modification-helper'
 import {EntityFieldHelper} from '../helpers/entity-field-helper'
 import {IncrementalDataHandler} from './incremental-data-handler'
+import {Entity} from '../models/entity'
 
 export class NunjucksTemplateEngine implements TemplateEngine {
   private environment: nunjucks.Environment = this.buildEnvironment()
@@ -33,11 +34,11 @@ export class NunjucksTemplateEngine implements TemplateEngine {
   }
 
   supports(path: string): boolean {
-    return path.endsWith('.njs')
+    return path.endsWith('.njk')
   }
 
   transformFilename(path: string): string {
-    return path.replace(/\.njs$/, '')
+    return path.replace(/\.njk$/, '')
   }
 
   buildEnvironment(incrementalDataHandler?: IncrementalDataHandler): nunjucks.Environment {
@@ -55,6 +56,7 @@ export class NunjucksTemplateEngine implements TemplateEngine {
     environment.addFilter('plural', StringModificationHelper.toPlural.bind(StringModificationHelper))
     environment.addFilter('json', value => JSON.stringify(value, null, 2))
     environment.addFilter('concat', (value, second) => [...value, ...second])
+    environment.addFilter('mainProperty', (entity: Entity) => EntityFieldHelper.mainProperty(entity))
     environment.addFilter('flattenEntityFieldsForTestResults', EntityFieldHelper.flattenEntityFieldsForTestResults.bind(EntityFieldHelper))
     environment.addFilter('findRelatedEntities', EntityFieldHelper.findRelatedEntities.bind(EntityFieldHelper))
     environment.addExtension('incremental', {
@@ -93,12 +95,15 @@ export class NunjucksTemplateEngine implements TemplateEngine {
           }
         }
 
-        this.body = str.trim()
+        const argId = args.children[0]?.children[0]?.value?.value
+
+        this.body = this.body ?? {}
+        this.body[argId] = str.trim()
 
         return new nodes.CallExtensionAsync(this, 'run', args, [])
       },
-      async run({ctx}: any, id, callback) {
-        const marker = await incrementalDataHandler?.registerDataPiece(id, this.body, ctx.outputFile)
+      async run({ctx}: any, {id, lang: markerLanguage}, callback) {
+        const marker = await incrementalDataHandler?.registerDataPiece(id, this.body[id], ctx.outputFile, markerLanguage ?? 'html')
 
         callback(null, new nunjucks.runtime.SafeString(marker ?? ''))
       },

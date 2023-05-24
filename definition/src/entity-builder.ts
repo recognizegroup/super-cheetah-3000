@@ -1,5 +1,7 @@
 import {DataType, Entity, Field, Operations, RelationshipParity, Role} from '@recognizebv/sc3000-generator'
 
+export type Options = { required?: boolean, sortable?: boolean, searchable?: boolean, mainProperty?: boolean, visibleInList?: boolean }
+
 export class EntityBuilder implements Entity {
   public name: string
   public fields: Field[] = []
@@ -11,63 +13,91 @@ export class EntityBuilder implements Entity {
     entity: {roles: []},
   };
 
+  public properties: Record<string, any> = {}
+
   constructor(name: string) {
     this.name = name
   }
 
-  public addField(name: string, type: DataType & string, options?: { required?: boolean }): EntityBuilder {
+  public withProperty(name: string, value: any): EntityBuilder {
+    this.properties[name] = value
+
+    return this
+  }
+
+  public addField(name: string, type: DataType & string, options?: Options): EntityBuilder {
     this.fields.push({
       name,
       type,
       required: options?.required ?? false,
+      sortable: options?.sortable ?? true,
+      searchable: options?.searchable ?? true,
+      mainProperty: options?.mainProperty ?? false,
+      visibleInList: options?.visibleInList ?? true,
     })
 
     return this
   }
 
-  public addOneToMany(field: string, target: Entity): EntityBuilder {
+  public addOneToMany(field: string, target: Entity, options?: Options): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.oneToMany,
       },
+      sortable: options?.sortable ?? true,
+      searchable: options?.searchable ?? true,
+      mainProperty: options?.mainProperty ?? false,
+      visibleInList: options?.visibleInList ?? true,
     })
 
     return this
   }
 
-  public addManyToOne(field: string, target: Entity): EntityBuilder {
+  public addManyToOne(field: string, target: Entity, options?: Options): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.manyToOne,
       },
+      sortable: options?.sortable ?? true,
+      searchable: options?.searchable ?? true,
+      mainProperty: options?.mainProperty ?? false,
+      visibleInList: options?.visibleInList ?? true,
     })
 
     return this
   }
 
-  public addManyToMany(field: string, target: Entity): EntityBuilder {
+  public addManyToMany(field: string, target: Entity, options?: Options): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.manyToMany,
       },
+      sortable: options?.sortable ?? true,
+      searchable: options?.searchable ?? true,
+      mainProperty: options?.mainProperty ?? false,
+      visibleInList: options?.visibleInList ?? true,
     })
 
     return this
   }
 
-  public addOneToOne(field: string, target: Entity): EntityBuilder {
+  public addOneToOne(field: string, target: Entity, options?: Options): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.oneToOne,
       },
+      sortable: options?.sortable ?? true,
+      searchable: options?.searchable ?? true,
+      mainProperty: options?.mainProperty ?? false,
+      visibleInList: options?.visibleInList ?? true,
     })
 
     return this

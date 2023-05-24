@@ -8,7 +8,8 @@
     "watch:definition": "cd definition/ && yarn watch",
     "watch:generator": "cd generator/ && yarn watch",
     "watch:generator:kotlin-spring-backend": "cd generators/kotlin-spring-backend-generator/ && yarn watch",
-    "watch:all": "concurrently \"yarn watch:cli\" \"yarn watch:generator\" \"yarn watch:generator:kotlin-spring-backend\" \"yarn watch:definition\""
+    "watch:generator:typescript-angular-frontend": "cd generators/typescript-angular-frontend-generator/ && yarn watch",
+    "watch:all": "concurrently \"yarn watch:cli\" \"yarn watch:generator\" \"yarn watch:generator:kotlin-spring-backend\" \"yarn watch:definition\" \"yarn watch:generator:typescript-angular-frontend\""
   },
   "keywords": [],
   "author": "",

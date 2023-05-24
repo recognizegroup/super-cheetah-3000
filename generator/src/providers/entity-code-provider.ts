@@ -9,6 +9,6 @@ export abstract class EntityCodeProvider extends CodeProvider<EntityContext> {
   }
 
   async renderIncrementalData(incrementalDataHandler: IncrementalDataHandler, context: EntityContext): Promise<void> {
-    await incrementalDataHandler.renderIncrementalData(context)
+    await incrementalDataHandler.renderIncrementalData(context, this.generator)
   }
 }

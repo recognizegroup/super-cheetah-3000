@@ -1,0 +1,12 @@
+<vwui-modal-header>
+    Confirmation
+</vwui-modal-header>
+<vwui-modal-body>
+    Are you sure you want to delete <strong>{{ item }}</strong>? This action cannot be undone.
+</vwui-modal-body>
+<vwui-modal-footer>
+    <vwui-button (click)="modal.close()">Cancel</vwui-button>
+    <vwui-button type="button" class="is-primary" (click)="doDelete()" [loading]="loading">
+        Delete
+    </vwui-button>
+</vwui-modal-footer>

@@ -5,4 +5,5 @@ export interface Entity {
     name: string;
     operations?: Operations;
     fields: Field[];
+    properties?: Record<string, any>;
 }

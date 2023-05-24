@@ -1,7 +1,7 @@
 import {LockFile} from '../../src/models/lock-file'
 import {IncrementalDataHandler} from '../../src/templating/incremental-data-handler'
 import sinon from 'sinon'
-import {EntityContext, FakerTestDataManager, LocalFilesystem, Project} from '../../src'
+import {EntityContext, FakerTestDataManager, Generator, LocalFilesystem, Project} from '../../src'
 import {LockFileManager} from '../../src/lock-file/lock-file-manager'
 import {expect} from 'chai'
 
@@ -39,9 +39,30 @@ describe('incremental data handler', () => {
     expect(handler.getDataPieces()).to.deep.equal(lockFile.incrementalData)
   })
 
-  it('should register a data piece', async () => {
-    const marker = await handler.registerDataPiece('1234567890', 'test', 'test.txt')
-    const validateMarkerRegex = /<!-- sc3000: 1234567890-[\da-z]{5,6} do not remove this line -->/gi
+  it('should register a html data piece', async () => {
+    const marker = await handler.registerDataPiece('1234567890', 'test', 'test.txt', 'html')
+    const validateMarkerRegex = /<!-- sc3000: 1234567890-[\da-z]+ do not remove this line -->/gi
+
+    expect(marker).to.match(validateMarkerRegex)
+    expect(handler.getDataPieces()).to.deep.equal([
+      {
+        id: '1234567890',
+        marker,
+        body: 'test',
+        outputFile: 'test.txt',
+      },
+    ])
+    sinon.assert.calledOnceWithExactly(lockFileManagerStub.addIncrementalData, {
+      id: '1234567890',
+      marker,
+      body: 'test',
+      outputFile: 'test.txt',
+    })
+  })
+
+  it('should register a ts data piece', async () => {
+    const marker = await handler.registerDataPiece('1234567890', 'test', 'test.txt', 'ts')
+    const validateMarkerRegex = /\/\/ sc3000: 1234567890-[\da-z]+ do not remove this line/gi
 
     expect(marker).to.match(validateMarkerRegex)
     expect(handler.getDataPieces()).to.deep.equal([
@@ -77,6 +98,7 @@ describe('incremental data handler', () => {
 
     const testData = sinon.createStubInstance(FakerTestDataManager)
     const incrementalDataHandler = sinon.createStubInstance(IncrementalDataHandler)
+    const generator: Generator = {metaData: {name: 'generator1'}} as any
 
     const project: Project = {
       client: 'recognize',
@@ -102,7 +124,7 @@ describe('incremental data handler', () => {
       },
     })
 
-    await handler.renderIncrementalData(context)
+    await handler.renderIncrementalData(context, generator)
 
     const result = `body Project
 <!-- SC3000: 1234567890 do not remove this line -->`

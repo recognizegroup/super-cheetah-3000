@@ -3,14 +3,15 @@ import {GeneratorBuilder} from '../src/generator-builder'
 
 describe('generator builder', () => {
   let generatorBuilder: GeneratorBuilder
-  const packageName = 'my-package'
+  const packageLocation = 'my-package'
 
   beforeEach(() => {
-    generatorBuilder = new GeneratorBuilder(packageName)
+    generatorBuilder = new GeneratorBuilder(packageLocation, '^1.0')
   })
 
-  it('should set the package name', () => {
-    expect(generatorBuilder.packageName).to.equal(packageName)
+  it('should set the package name and version', () => {
+    expect(generatorBuilder.packageLocation).to.equal(packageLocation)
+    expect(generatorBuilder.version).to.equal('^1.0')
   })
 
   it('should add an input', () => {

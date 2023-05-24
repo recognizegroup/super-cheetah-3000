@@ -1,0 +1,74 @@
+---
+id: list-component
+constants:
+  name: '{{ entity.name | plural | pascalCase }}Component'
+dependencies: [service, model]
+---
+import { HttpParams } from '@angular/common/http';
+import { Component, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, Observable, combineLatest, map, switchMap, firstValueFrom, Subscription } from 'rxjs';
+import { {{ dependencies.model.name }} } from 'src/app/models/{{ entity.name | kebabCase }}';
+import { {{ dependencies.service.name }} } from 'src/app/services/{{ entity.name | kebabCase }}.service';
+import { Paginator } from 'src/app/util/paginator';
+import { DeleteConfirmationModalComponent } from 'src/app/components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { VwuiModalService } from '@recognizebv/vwui-angular';
+import { Sort } from '../../models/sort';
+import { FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-{{ entity.name | plural | kebabCase }}',
+  templateUrl: './{{ entity.name | plural | kebabCase }}.component.html',
+  styleUrls: ['./{{ entity.name | plural | kebabCase }}.component.scss']
+})
+export class {{ constants.name }} implements OnDestroy {
+  private refresh$ = new BehaviorSubject(null);
+  private subscriptions: Subscription[] = [];
+  searchControl = new FormControl(this.route.snapshot.queryParams['search']);
+  sort$ = new BehaviorSubject<Sort | null>(null);
+  paginator$: Observable<Paginator<{{ dependencies.model.name }}>> = combineLatest([this.refresh$, this.sort$, this.route.queryParams]).pipe(
+      switchMap(([, sort, queryParams]) => {
+          let requestParams = new HttpParams();
+
+          if (queryParams['search']) {
+              requestParams = requestParams.set('search', queryParams['search']);
+          }
+
+          const paginator = new Paginator(page => this.{{ entity.name | camelCase }}Service.list(page, sort, requestParams));
+
+          return paginator.content$.pipe(map(() => paginator));
+      })
+  );
+
+  constructor(private {{ entity.name | camelCase }}Service: {{ dependencies.service.name }}, private route: ActivatedRoute, private vwuiModalService: VwuiModalService, private router: Router) {
+      this.subscriptions.push(
+          this.searchControl.valueChanges.subscribe(search => this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: {...this.route.snapshot.queryParams, search},
+              replaceUrl: true,
+          }))
+      );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  updateSort(sort: Sort | null) {
+    this.sort$.next(sort);
+  }
+
+  async delete(item: {{ dependencies.model.name }}) {
+    const modal = this.vwuiModalService.open(DeleteConfirmationModalComponent, {
+      data: {
+        item: item.{{ (entity | mainProperty).name | camelCase }},
+        removalFn: () => firstValueFrom(this.{{ entity.name | camelCase }}Service.delete(item.id!!)),
+      }
+    });
+    const value = await firstValueFrom(modal.afterClosed);
+
+    if (value) {
+      this.refresh$.next(null);
+    }
+  }
+}

@@ -1,0 +1,8 @@
+<vwui-pagination
+        [totalItems]="paginator.totalElements"
+        [totalPages]="paginator.totalPages"
+        [currentPage]="paginator.currentPage + 1"
+        [firstItem]="paginator.firstItem"
+        [lastItem]="paginator.lastItem"
+        (vwuiPaginationChange)="paginator.setPage($event.detail - 1)"
+></vwui-pagination>

@@ -56,6 +56,9 @@
     "topics": {},
     "hooks": {
       "init": "./dist/hooks/init/environment"
+    },
+    "macos": {
+      "identifier": "com.recognize.sc3000.cli"
     }
   },
   "scripts": {

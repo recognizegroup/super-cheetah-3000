@@ -13,6 +13,8 @@ export class CheetahLoader implements Loader {
     this.moveText(this.loaderContent)
   }
 
+  async update(_status: string): Promise<void> {}
+
   async stop(): Promise<void> {
     clearInterval(this.interval)
     console.log('\n')

@@ -33,10 +33,10 @@ describe('nunjucks template engine', () => {
   })
 
   describe('supports', () => {
-    it('should support .njs file extension', () => {
+    it('should support .njk file extension', () => {
       // Arrange
       const engine = new NunjucksTemplateEngine('views')
-      const path = 'index.njs'
+      const path = 'index.njk'
 
       // Act
       const isSupported = engine.supports(path)
@@ -50,7 +50,7 @@ describe('nunjucks template engine', () => {
     it('should transform .ejs file extension to empty string', () => {
       // Arrange
       const engine = new NunjucksTemplateEngine('views')
-      const path = 'index.njs'
+      const path = 'index.njk'
       const expectedPath = 'index'
 
       // Act

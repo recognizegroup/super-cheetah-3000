@@ -1,0 +1,19 @@
+<ng-select
+  class="item-select"
+  [attr.id]="inputId ?? null"
+  [items]="static ?? (items$ | async)"
+  (scrollToEnd)="loadMore()"
+  [typeahead]="typeaheadSubject"
+  [bindLabel]="options.labelKey"
+  [clearable]="options.clearable ?? true"
+  [searchable]="options.searchable ?? true"
+  [compareWith]="compareFn"
+  [hideSelected]="options.hideSelected ?? false"
+  [placeholder]="placeholder"
+  [multiple]="multiple"
+  [readonly]="readonly"
+  [formControl]="control">
+  <ng-template ng-option-tmp ng-label-tmp let-item="item">
+    <div>{{ item[options.labelKey] }}</div>
+  </ng-template>
+</ng-select>

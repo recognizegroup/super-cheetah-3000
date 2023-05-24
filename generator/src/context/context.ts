@@ -70,6 +70,7 @@ export class Context {
         project: this.project,
         testData: this.testData,
         security: this.securityConfiguration,
+        inputs: this._inputs,
       }
     }
 }

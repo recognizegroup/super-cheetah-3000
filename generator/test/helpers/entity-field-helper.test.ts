@@ -47,4 +47,30 @@ describe('entity field helper', () => {
     const result = EntityFieldHelper.findRelatedEntities(entity, [], '', 1)
     expect(result).to.deep.equal(expectedResult)
   })
+
+  it('should find the main property', () => {
+    const entity: Entity = {
+      name: 'EntityA',
+      fields: [
+        {name: 'field1', type: DataType.string},
+        {name: 'field2', type: DataType.string, mainProperty: true},
+      ],
+    }
+
+    const expectedResult = {name: 'field2', type: 'string', mainProperty: true}
+    expect(EntityFieldHelper.mainProperty(entity)).to.deep.equal(expectedResult)
+  })
+
+  it('should find the main property but return ID if nothing is found', () => {
+    const entity: Entity = {
+      name: 'EntityA',
+      fields: [
+        {name: 'field2', type: DataType.string},
+        {name: 'field1', type: DataType.string},
+      ],
+    }
+
+    const expectedResult = {name: 'id', type: 'integer', mainProperty: true}
+    expect(EntityFieldHelper.mainProperty(entity)).to.deep.equal(expectedResult)
+  })
 })
