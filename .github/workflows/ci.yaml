@@ -27,8 +27,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && yarn link && cd ../cli && yarn link @recognizebv/sc3000-generator
+      - name: Prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../cli
       - name: Install dependencies
         run: yarn
       - name: Build
@@ -51,8 +51,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && yarn link && cd ../definition && yarn link @recognizebv/sc3000-generator
+      - name: Prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../definition
       - name: Install dependencies
         run: yarn
       - name: Build

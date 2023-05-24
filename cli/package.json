@@ -23,6 +23,7 @@
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.4.3",
     "@oclif/plugin-update": "^3.1.9",
+    "@recognizebv/sc3000-generator": "../generator",
     "chalk": "^4.1.2"
   },
   "devDependencies": {
