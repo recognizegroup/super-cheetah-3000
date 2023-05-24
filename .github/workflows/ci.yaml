@@ -1,4 +1,4 @@
-name: CLI
+name: CI
 on:
   workflow_dispatch:
   pull_request:
@@ -83,3 +83,29 @@ jobs:
         run: yarn build
       - name: Test
         run: yarn test
+
+  publish-generator:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    name: Publish Generator
+    needs: [test-generator, test-cli, test-definition]
+    defaults:
+      run:
+        working-directory: generator/
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${{ github.ref_name#v }} --no-git-tag-version
+      - name: Publish
+        run: yarn publish --access public
