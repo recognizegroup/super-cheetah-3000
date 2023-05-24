@@ -11,9 +11,8 @@ import {ProjectCodeProvider} from './providers/project-code-provider';
 export class TypescriptAngularFrontendGenerator implements Generator {
     get metaData() {
         return {
-            name: "Typescript Angular Frontend",
+            name: "@recognizegroup/sc3000-typescript-angular-frontend-generator",
             description: "A generator for Typescript Angular Frontends",
-            version: "0.0.1-alpha",
             authors: ["Recognize", "Bart Wesselink"],
             templateRoot: __dirname + "/../templates/",
         }
