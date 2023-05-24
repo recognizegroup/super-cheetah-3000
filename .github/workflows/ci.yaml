@@ -107,6 +107,6 @@ jobs:
       - name: Build
         run: yarn build
       - name: Change version to ${{ github.ref_name }}
-        run: yarn version --new-version ${TAG#v}
+        run: yarn version --new-version ${TAG#v} --no-git-tag-version
       - name: Publish
         run: yarn publish --access public
