@@ -2,7 +2,7 @@
   "name": "@recognizebv/sc3000-definition",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "private": true,
+  "private": false,
   "types": "dist/index.d.ts",
   "engines": {
     "node": ">=18.0.0"
