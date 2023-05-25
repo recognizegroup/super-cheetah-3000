@@ -25,7 +25,8 @@
     "@oclif/plugin-update": "^3.1.9",
     "@recognizebv/sc3000-definition": "../definition",
     "@recognizebv/sc3000-generator": "../generator",
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "temp": "^0.9.4"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.11",
@@ -33,6 +34,7 @@
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.18.20",
+    "@types/temp": "^0.9.1",
     "chai": "^4",
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4",

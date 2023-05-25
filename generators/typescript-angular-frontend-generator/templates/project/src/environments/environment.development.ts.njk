@@ -1,9 +1,0 @@
-export const environment = {
-  backend: '{{ inputs.backendUrl }}',
-  auth: {
-    enabled: {% if security.identityProvider.type == 'azure-ad' %}true{% else %}false{% endif %},
-    clientId: '{{ security.identityProvider.properties.clientId }}',
-    tenantId: 'https://login.microsoftonline.com/{{ security.identityProvider.properties.tenantId }}',
-    redirectUri: 'http://localhost:4200/auth/redirect',
-  },
-};

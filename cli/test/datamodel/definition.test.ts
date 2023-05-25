@@ -5,6 +5,7 @@ import * as importWrapper from '../../src/util/import-wrapper'
 import sinon from 'sinon'
 import ts from 'typescript'
 import nodePath from 'node:path'
+import temp from 'temp'
 
 describe('project definition', () => {
   describe('check definition file exists in directory', () => {
@@ -151,6 +152,8 @@ describe('project definition', () => {
       const output = '/path/to/output/directory'
 
       sandbox.stub(nodePath, 'join').returns(output)
+      sandbox.stub(temp, 'mkdirSync').returns(output)
+      sandbox.stub(fs, 'symlink').resolves()
       sandbox.stub(ts, 'createProgram').throws(new Error('Compilation failed'))
 
       try {
@@ -168,6 +171,8 @@ describe('project definition', () => {
       const compiled = '/path/to/output/directory/sc3000.definition.js'
 
       sandbox.stub(nodePath, 'join').returns(output)
+      sandbox.stub(temp, 'mkdirSync').returns(output)
+      sandbox.stub(fs, 'symlink').resolves()
       sandbox.stub(ts, 'createProgram').returns({emit: () => ({emitSkipped: false})} as any)
 
       const result = await definition.compileDefinitionFileFromTypeScript(path)
