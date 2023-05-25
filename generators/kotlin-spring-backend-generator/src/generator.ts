@@ -11,9 +11,8 @@ import {ProjectCodeProvider} from './providers/project-code-provider';
 export class KotlinSpringBackendGenerator implements Generator {
     get metaData() {
         return {
-            name: "Kotlin Spring Backend",
+            name: "@recognizegroup/sc3000-kotlin-spring-backend-generator",
             description: "A generator for Kotlin Spring Backends",
-            version: "0.0.1-alpha",
             authors: ["Recognize", "Bart Wesselink"],
             templateRoot: __dirname + "/../templates/",
         }

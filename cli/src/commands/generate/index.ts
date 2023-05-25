@@ -21,9 +21,9 @@ export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
 
   static examples = [
-    `$ oex generate
+    `$ sc3000 generate
 
-$ oex generate --force
+$ sc3000 generate --force
 `,
   ]
 

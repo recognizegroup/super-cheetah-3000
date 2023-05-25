@@ -6,13 +6,24 @@ import {mkdir} from 'node:fs/promises'
 import {exec} from '../util/command-wrapper'
 import {rm} from 'node:fs/promises'
 import {TokenResponse} from '../auth/token-response'
+import * as temp from 'temp'
+import {symlink} from 'node:fs/promises'
 
 export class GeneratorLoader {
   constructor(private environment: Environment) {}
 
   public async loadProjectGenerators(definition: ProjectDefinition, token: TokenResponse): Promise<Generator[]> {
     const generators = definition.generators
-    const generatorDirectory = join(__dirname, '../../tmp/generators')
+    const generatorDirectory = temp.mkdirSync('sc3000-generator')
+
+    // Create a symlink between the node_modules folder of the CLI and the node_modules folder of the project
+    // This is needed because the CLI uses the TypeScript compiler from its own node_modules folder, but the
+    // definition file might import from the project's node_modules folder
+    const cliNodeModules = join(__dirname, '..', '..', 'node_modules')
+    const outputNodeModules = join(generatorDirectory, 'node_modules')
+
+    // Create a symlink between cliNodeModules and outputNodeModules
+    await symlink(cliNodeModules, outputNodeModules, 'dir')
 
     // If the generator directory does exists, remove it
     if (existsSync(generatorDirectory)) {

@@ -1,0 +1,69 @@
+name: Publish generator
+on:
+  workflow_call:
+    inputs:
+      directory:
+        description: 'Directory where the generator is located'
+        type: string
+        required: false
+        default: ''
+      registry_azure_client_id:
+        description: 'Azure client ID for the registry'
+        type: string
+        required: true
+      registry_azure_tenant_id:
+        description: 'Azure tenant ID for the registry'
+        type: string
+        required: true
+      registry_location:
+        description: 'Location of the registry'
+        type: string
+        default: 'sc3000.recognize.nl'
+      version:
+        description: 'Version to publish'
+        type: string
+        required: true
+    secrets:
+      registry_azure_client_secret:
+        description: 'Azure client secret for the registry'
+        required: true
+
+jobs:
+  publish-generator:
+    runs-on: ubuntu-latest
+    name: Publish generator
+    defaults:
+        run:
+          working-directory: ${{ inputs.directory }}
+    env:
+      TAG: ${{ inputs.version }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Request access token for Azure AD
+        id: azure_login
+        run: |-
+          export TOKEN=$(curl --location 'https://login.microsoftonline.com/${{ inputs.registry_azure_tenant_id }}/oauth2/v2.0/token' \
+              --header 'Content-Type: application/x-www-form-urlencoded' \
+              --data-urlencode 'client_secret=${{ secrets.registry_azure_client_secret }}' \
+              --data-urlencode 'client_id=${{ inputs.registry_azure_client_id }}' \
+              --data-urlencode 'scope=${{ inputs.registry_azure_client_id }}/.default' \
+              --data-urlencode 'grant_type=client_credentials' | jq -r '.access_token')
+          
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+      - name: Login to registry
+        run: echo "//${{ inputs.registry_location }}/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ steps.azure_login.outputs.token }}
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${TAG#v} --no-git-tag-version
+      - name: Publish
+        run: yarn publish --access public --registry https://${{ inputs.registry_location }}

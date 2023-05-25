@@ -6,9 +6,9 @@ export default class Login extends BaseCommand {
   static description = 'Login to the generator registries using Azure AD authentication.'
 
   static examples = [
-    `$ oex login
+    `$ sc3000 login
 
-$ oex login
+$ sc3000 login
 `,
   ]
 
