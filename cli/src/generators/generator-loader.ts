@@ -16,15 +16,6 @@ export class GeneratorLoader {
     const generators = definition.generators
     const generatorDirectory = temp.mkdirSync('sc3000-generator')
 
-    // Create a symlink between the node_modules folder of the CLI and the node_modules folder of the project
-    // This is needed because the CLI uses the TypeScript compiler from its own node_modules folder, but the
-    // definition file might import from the project's node_modules folder
-    const cliNodeModules = join(__dirname, '..', '..', 'node_modules')
-    const outputNodeModules = join(generatorDirectory, 'node_modules')
-
-    // Create a symlink between cliNodeModules and outputNodeModules
-    await symlink(cliNodeModules, outputNodeModules, 'dir')
-
     // If the generator directory does exists, remove it
     if (existsSync(generatorDirectory)) {
       await rm(generatorDirectory, {recursive: true})
@@ -42,6 +33,10 @@ export class GeneratorLoader {
     })
 
     const result = [] as Generator[]
+
+    await exec('npm install @recognizebv/sc3000-generator', {
+      cwd: generatorDirectory,
+    })
 
     // For every generator, install it by running `npm install <generator>`
     // Then, load the generator by importing it

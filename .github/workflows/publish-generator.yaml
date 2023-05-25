@@ -46,8 +46,6 @@ jobs:
           node-version: 18.x
       - name: Install dependencies
         run: yarn
-      - name: Build
-        run: yarn build
       - name: Request access token for Azure AD
         id: azure_login
         run: |-
@@ -65,5 +63,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ steps.azure_login.outputs.token }}
       - name: Change version to ${{ github.ref_name }}
         run: yarn version --new-version ${TAG#v} --no-git-tag-version
+      - name: Build
+        run: yarn build
       - name: Publish
-        run: yarn publish --access public --registry https://${{ inputs.registry_location }}
+        run: npm publish --registry=https://${{ inputs.registry_location }}
