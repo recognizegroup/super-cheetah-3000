@@ -194,6 +194,8 @@ jobs:
       run:
         working-directory: cli/
     steps:
+      - run: sudo apt update
+      - run: sudo apt install nsis p7zip-full p7zip-rar -y
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Node.js
