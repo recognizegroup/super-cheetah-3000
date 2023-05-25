@@ -203,7 +203,7 @@ jobs:
       - name: Link and prepare generator
         run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Link and prepare definition
-        run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rmdir /s /q ./tmp/definition/node_modules
+        run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rmdir /s ./tmp/definition/node_modules
       - name: Install dependencies
         run: yarn
       - name: Write release version
