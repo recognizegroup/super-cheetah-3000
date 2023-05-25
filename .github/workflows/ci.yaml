@@ -172,10 +172,10 @@ jobs:
           VERSION=${GITHUB_REF_NAME#v}
           echo Version: $VERSION
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-      - name: Change version to ${{ github.ref_name }}
-        run: yarn version --new-version ${VERSION} --no-git-tag-version
       - name: Build
         run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${VERSION} --no-git-tag-version
       - name: Pack MacOS
         run: npx oclif pack macos && ls dist/
       - name: Upload
@@ -211,10 +211,10 @@ jobs:
           $VERSION = $Env:GITHUB_REF_NAME -replace 'v'
           Write-Host "Version: $VERSION"
           Write-Output "VERSION=$VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Append
-      - name: Change version to ${{ github.ref_name }}
-        run: yarn version --new-version ${VERSION} --no-git-tag-version
       - name: Build
         run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${VERSION} --no-git-tag-version
       - name: Pack Windows
         run: npx oclif pack win
       - name: Upload
@@ -250,10 +250,10 @@ jobs:
           VERSION=${GITHUB_REF_NAME#v}
           echo Version: $VERSION
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-      - name: Change version to ${{ github.ref_name }}
-        run: yarn version --new-version ${VERSION} --no-git-tag-version
       - name: Build
         run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${VERSION} --no-git-tag-version
       - name: Pack Ubuntu
         run: npx oclif pack deb && ls dist/
       - name: Upload
