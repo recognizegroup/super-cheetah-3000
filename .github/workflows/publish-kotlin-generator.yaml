@@ -2,7 +2,7 @@ name: Publish Kotlin Generator
 on:
   push:
     branches:
-      - '*'
+      - feature/RECGEN-21-install-option
 
 jobs:
   publish:
