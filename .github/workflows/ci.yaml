@@ -214,7 +214,8 @@ jobs:
       - name: Build
         run: yarn build
       - name: Change version to ${{ github.ref_name }}
-        run: yarn version --new-version ${VERSION} --no-git-tag-version
+        run: |-
+          yarn version --new-version $Env:VERSION --no-git-tag-version
       - name: Pack Windows
         run: npx oclif pack win
       - name: Upload
