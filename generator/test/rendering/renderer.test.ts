@@ -376,5 +376,56 @@ Test file`.trim()
       sinon.assert.calledWith(filesystem.write, 'sample.kt', Buffer.from('Test file one (bar)'), 0o644)
       sinon.assert.calledWith(filesystem.write, 'second.kt', Buffer.from('With a dependency (bar)'), 0o644)
     })
+
+    it('should skip writing a file when no confirmation was given', async () => {
+      const filesystem = sinon.createStubInstance(LocalFilesystem)
+
+      const context = new ProjectContext({
+        project,
+        filesystem,
+        testData,
+        incrementalDataHandler,
+        securityConfiguration,
+        inputs: {
+          directory: '/tmp',
+        },
+      })
+
+      renderer.reset()
+      renderer.setContext(context)
+      renderer.setFileExistsConfirmation(async () => false)
+
+      filesystem.exists.resolves(true)
+
+      const processMetadataStub = sandbox.stub(renderer, 'processMetadata').resolves({
+        id: 'sample',
+        path: 'sample.kt.njk',
+        permissions: 0o644,
+        outputPath: 'sample.kt',
+        content: Buffer.from('Test file one ({{ constants.foo }})'),
+        constants: {
+          foo: 'bar',
+        },
+        dependencies: [],
+      })
+
+      await renderer.addFile('sample.kt.njk', 'sample.kt')
+
+      processMetadataStub.restore()
+      sandbox.stub(renderer, 'processMetadata').resolves({
+        id: 'second',
+        path: 'second.kt.njk',
+        permissions: 0o644,
+        outputPath: 'second.kt',
+        content: Buffer.from('With a dependency ({{ dependencies.sample.foo }})'),
+        constants: {},
+        dependencies: ['sample'],
+      })
+      await renderer.addFile('second.kt.njk', 'second.kt')
+
+      await renderer.render()
+
+      sinon.assert.notCalled(filesystem.write)
+    })
   })
 })

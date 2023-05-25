@@ -1,6 +1,0 @@
-package {{ variables.packageName }}.util
-
-import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.Expression
-
-fun CriteriaBuilder.ilike(path: Expression<String>, pattern: String) = like(lower(path), pattern.lowercase())
