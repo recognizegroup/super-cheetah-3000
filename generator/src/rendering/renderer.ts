@@ -24,6 +24,7 @@ export class Renderer {
     private context: Context | null = null;
     private files: TemplateMetadata[] = [];
     private hooks: Partial<Record<RenderHookType, ((context: Context) => Promise<void>)[]>> = {};
+    private fileExistsConfirmation: (path: string) => Promise<boolean> = async () => true;
 
     constructor(private readonly generator: Generator) {}
 
@@ -36,6 +37,10 @@ export class Renderer {
           child.replace(new RegExp(`^${directory}`), ''),
         ))
       }
+    }
+
+    setFileExistsConfirmation(fileExistsConfirmation: (path: string) => Promise<boolean>): void {
+      this.fileExistsConfirmation = fileExistsConfirmation
     }
 
     async addFile(file: string, output: string): Promise<void> {
@@ -86,11 +91,15 @@ export class Renderer {
           const output = engine.transformFilename(file.outputPath)
 
           const content = await engine.render(file.content.toString(), variables, output)
-          await filesystem?.write(
-            output,
-            Buffer.from(content),
-            file.permissions,
-          )
+          const fileExists = await filesystem?.exists(output)
+
+          if (!fileExists || await this.fileExistsConfirmation(output)) {
+            await filesystem?.write(
+              output,
+              Buffer.from(content),
+              file.permissions,
+            )
+          }
 
           if (file.id) outputs[file.id] = constants
         }

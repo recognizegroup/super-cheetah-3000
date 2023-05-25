@@ -1,4 +1,4 @@
-import {Flags} from '@oclif/core'
+import {Flags, ux} from '@oclif/core'
 import {BaseCommand} from '../base'
 import {
   EntityContext,
@@ -16,6 +16,7 @@ import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock
 import {IncrementalDataHandler} from '@recognizebv/sc3000-generator/dist/templating/incremental-data-handler'
 import {CheetahLoader} from '../../loader/cheetah-loader'
 import {DefaultLoader} from '../../loader/default-loader'
+import chalk from 'chalk'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -28,7 +29,7 @@ $ sc3000 generate --force
   ]
 
   static flags = {
-    force: Flags.string({char: 'f', description: 'Overwrite any existing files during the generation process.', required: false}),
+    force: Flags.boolean({char: 'f', description: 'Overwrite any existing files during the generation process.', required: false}),
     'super-secret-loader': Flags.boolean({description: 'Use the super secret loader.', required: false}),
   }
 
@@ -70,6 +71,9 @@ $ sc3000 generate --force
 
       const index = generators.indexOf(generator)
       const inputs = parseInputs(generator, definition.generators[index].inputs)
+
+      projectCodeProvider?.renderer?.setFileExistsConfirmation(this.fileExistsConfirmation.bind(this))
+      entityCodeProvider?.renderer?.setFileExistsConfirmation(this.fileExistsConfirmation.bind(this))
 
       try {
         const context = new ProjectContext({
@@ -128,5 +132,19 @@ $ sc3000 generate --force
     }
 
     this.log(`✅  Generated ${projectCodeProviderInvocations} projects and ${entityCodeProviderInvocations} entities.`)
+  }
+
+  public async fileExistsConfirmation(path: string): Promise<boolean> {
+    const {flags} = await this.parse(Generate)
+
+    if (flags.force) {
+      return true
+    }
+
+    return ux.confirm(
+      chalk.bgBlue(
+        chalk.white(`File ${path} already exists. Overwrite? [Y/n]`),
+      ),
+    )
   }
 }
