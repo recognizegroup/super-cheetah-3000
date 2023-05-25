@@ -203,9 +203,9 @@ jobs:
         run: yarn
       - name: Write release version
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          echo Version: $VERSION
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          $VERSION = $Env:GITHUB_REF_NAME -replace 'v'
+          Write-Host "Version: $VERSION"
+          Write-Output "VERSION=$VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Append
       - name: Change version
         uses: reedyuk/npm-version@1.1.1
         with:
@@ -241,9 +241,9 @@ jobs:
         run: yarn
       - name: Write release version
         run: |
-          $VERSION = $Env:GITHUB_REF_NAME -replace 'v'
-          Write-Host "Version: $VERSION"
-          Write-Output "VERSION=$VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Append
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Change version
         uses: reedyuk/npm-version@1.1.1
         with:
