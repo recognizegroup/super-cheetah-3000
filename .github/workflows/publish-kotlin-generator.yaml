@@ -10,6 +10,7 @@ jobs:
     with:
       directory: generators/kotlin-spring-backend-generator/
       registry_azure_client_id: ${{ vars.SC3000_REGISTRY_AZURE_CLIENT_ID }}
-      registry_azure_client_secret: ${{ secrets.SC3000_REGISTRY_AZURE_CLIENT_SECRET }}
       registry_azure_tenant_id: ${{ vars.SC3000_REGISTRY_AZURE_TENANT_ID }}
       version: 0.0.20
+    secrets:
+      registry_azure_client_secret: ${{ secrets.SC3000_REGISTRY_AZURE_CLIENT_SECRET }}
