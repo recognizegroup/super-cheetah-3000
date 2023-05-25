@@ -213,12 +213,12 @@ jobs:
       - name: Build
         run: yarn build
       - name: Pack Windows
-        run: npx oclif pack win && ls dist/
+        run: npx oclif pack win
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: windows
-          path: cli/dist/win
+          path: cli/dist/win32
 
   create-release-ubuntu:
     runs-on: ubuntu-latest
@@ -258,3 +258,30 @@ jobs:
           name: ubuntu
           path: cli/dist/deb
 
+  create-release:
+    needs: [create-release-macos, create-release-windows, create-release-ubuntu]
+    runs-on: ubuntu-latest
+    name: Create release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download MacOS artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: macos
+          path: dist
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: windows
+          path: dist
+      - name: Download Ubuntu artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ubuntu
+          path: dist
+      - uses: softprops/action-gh-release@v1
+        with:
+          prerelease: ${{ contains(github.ref, '-beta') }}
+          generate_release_notes: true
+          files: |
+            dist/*
