@@ -160,7 +160,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && cd ../cli && cp -r ../generator/ ./tmp/generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Install dependencies
         run: yarn
       - name: Write release version
@@ -198,7 +198,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && cd ../cli && cp -r ../generator/ ./tmp/generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Install dependencies
         run: yarn
       - name: Write release version
@@ -236,7 +236,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && cd ../cli && cp -r ../generator/ ./tmp/generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Install dependencies
         run: yarn
       - name: Write release version
