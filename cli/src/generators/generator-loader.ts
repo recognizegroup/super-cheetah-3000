@@ -7,7 +7,6 @@ import {exec} from '../util/command-wrapper'
 import {rm} from 'node:fs/promises'
 import {TokenResponse} from '../auth/token-response'
 import * as temp from 'temp'
-import {symlink} from 'node:fs/promises'
 
 export class GeneratorLoader {
   constructor(private environment: Environment) {}
