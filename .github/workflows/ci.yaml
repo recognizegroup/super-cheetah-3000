@@ -14,181 +14,181 @@ permissions:
   pull-requests: read
 
 jobs:
-#  test-cli:
-#    runs-on: ubuntu-latest
-#    name: Test CLI
-#    defaults:
-#      run:
-#        working-directory: cli/
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Prepare generator
-#        run: cd ../generator && yarn && yarn build && cd ../cli
-#      - name: Prepare definition
-#        run: cd ../definition && yarn && yarn build && cd ../cli
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Build
-#        run: yarn lint
-#      - name: Build
-#        run: yarn build
-#      - name: Test
-#        run: yarn test
-#
-#  test-definition:
-#    runs-on: ubuntu-latest
-#    name: Test Definition
-#    defaults:
-#      run:
-#        working-directory: definition/
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Prepare generator
-#        run: cd ../generator && yarn && yarn build && cd ../definition
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Build
-#        run: yarn lint
-#      - name: Build
-#        run: yarn build
-#      - name: Test
-#        run: yarn test
-#
-#  test-generator:
-#    runs-on: ubuntu-latest
-#    name: Test Generator
-#    defaults:
-#      run:
-#        working-directory: generator/
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Build
-#        run: yarn lint
-#      - name: Build
-#        run: yarn build
-#      - name: Test
-#        run: yarn test
-#
-#  publish-generator:
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    runs-on: ubuntu-latest
-#    name: Publish Generator
-#    needs: [test-generator, test-cli, test-definition]
-#    defaults:
-#      run:
-#        working-directory: generator/
-#    env:
-#      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      TAG: ${{ github.ref_name }}
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Build
-#        run: yarn build
-#      - name: Change version to ${{ github.ref_name }}
-#        run: yarn version --new-version ${TAG#v} --no-git-tag-version
-#      - name: Login to registry
-#        run: echo "//registry.yarnpkg.com/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
-#      - name: Publish
-#        run: yarn publish --access public
-#
-#  publish-definition:
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    runs-on: ubuntu-latest
-#    name: Publish Definition
-#    needs: [test-generator, test-cli, test-definition, publish-generator]
-#    defaults:
-#      run:
-#        working-directory: definition/
-#    env:
-#      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      TAG: ${{ github.ref_name }}
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Prepare generator
-#        run: cd ../generator && yarn && yarn build && cd ../definition
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Build
-#        run: yarn build
-#      - name: Change version to ${{ github.ref_name }}
-#        run: yarn version --new-version ${TAG#v} --no-git-tag-version
-#      - name: Login to registry
-#        run: echo "//registry.yarnpkg.com/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
-#      - name: Publish
-#        run: yarn publish --access public
-#
-#  create-release-macos:
-#    runs-on: macos-latest
-#    name: Create release (macOS)
-#    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    defaults:
-#      run:
-#        working-directory: cli/
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Link and prepare generator
-#        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
-#      - name: Link and prepare definition
-#        run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Write release version
-#        run: |
-#          VERSION=${GITHUB_REF_NAME#v}
-#          echo Version: $VERSION
-#          echo "VERSION=$VERSION" >> $GITHUB_ENV
-#      - name: Build
-#        run: yarn build
-#      - name: Change version to ${{ github.ref_name }}
-#        run: yarn version --new-version ${VERSION} --no-git-tag-version
-#      - name: Pack MacOS
-#        run: npx oclif pack macos && ls dist/
-#      - name: Upload
-#        uses: actions/upload-artifact@v3
-#        with:
-#          retention-days: 1
-#          name: macos
-#          path: cli/dist/macos/
+  test-cli:
+    runs-on: ubuntu-latest
+    name: Test CLI
+    defaults:
+      run:
+        working-directory: cli/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../cli
+      - name: Prepare definition
+        run: cd ../definition && yarn && yarn build && cd ../cli
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn lint
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn test
+
+  test-definition:
+    runs-on: ubuntu-latest
+    name: Test Definition
+    defaults:
+      run:
+        working-directory: definition/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../definition
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn lint
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn test
+
+  test-generator:
+    runs-on: ubuntu-latest
+    name: Test Generator
+    defaults:
+      run:
+        working-directory: generator/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn lint
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn test
+
+  publish-generator:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    name: Publish Generator
+    needs: [test-generator, test-cli, test-definition]
+    defaults:
+      run:
+        working-directory: generator/
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${TAG#v} --no-git-tag-version
+      - name: Login to registry
+        run: echo "//registry.yarnpkg.com/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
+      - name: Publish
+        run: yarn publish --access public
+
+  publish-definition:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    name: Publish Definition
+    needs: [test-generator, test-cli, test-definition, publish-generator]
+    defaults:
+      run:
+        working-directory: definition/
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../definition
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${TAG#v} --no-git-tag-version
+      - name: Login to registry
+        run: echo "//registry.yarnpkg.com/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
+      - name: Publish
+        run: yarn publish --access public
+
+  create-release-macos:
+    runs-on: macos-latest
+    name: Create release (macOS)
+    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    defaults:
+      run:
+        working-directory: cli/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Link and prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
+      - name: Link and prepare definition
+        run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
+      - name: Install dependencies
+        run: yarn
+      - name: Write release version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Build
+        run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${VERSION} --no-git-tag-version
+      - name: Pack MacOS
+        run: npx oclif pack macos && ls dist/
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: macos
+          path: cli/dist/macos/
 
   create-release-windows:
     runs-on: ubuntu-latest
     name: Create release (Windows)
-#    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
+    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     defaults:
       run:
@@ -228,72 +228,72 @@ jobs:
           name: windows
           path: cli/dist/win32
 
-#  create-release-ubuntu:
-#    runs-on: ubuntu-latest
-#    name: Create release (Ubuntu)
-#    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    defaults:
-#      run:
-#        working-directory: cli/
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#      - name: Link and prepare generator
-#        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
-#      - name: Link and prepare definition
-#        run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
-#      - name: Install dependencies
-#        run: yarn
-#      - name: Write release version
-#        run: |
-#          VERSION=${GITHUB_REF_NAME#v}
-#          echo Version: $VERSION
-#          echo "VERSION=$VERSION" >> $GITHUB_ENV
-#      - name: Build
-#        run: yarn build
-#      - name: Change version to ${{ github.ref_name }}
-#        run: yarn version --new-version ${VERSION} --no-git-tag-version
-#      - name: Pack Ubuntu
-#        run: npx oclif pack deb && ls dist/
-#      - name: Upload
-#        uses: actions/upload-artifact@v3
-#        with:
-#          retention-days: 1
-#          name: ubuntu
-#          path: cli/dist/deb
-#
-#  create-release:
-#    needs: [create-release-macos, create-release-windows, create-release-ubuntu]
-#    runs-on: ubuntu-latest
-#    name: Create release
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    steps:
-#      - name: Download MacOS artifacts
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: macos
-#          path: dist
-#      - name: Download Windows artifacts
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: windows
-#          path: dist
-#      - name: Download Ubuntu artifacts
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: ubuntu
-#          path: dist
-#      - uses: softprops/action-gh-release@v1
-#        with:
-#          prerelease: ${{ contains(github.ref, '-beta') }}
-#          generate_release_notes: true
-#          files: |
-#            dist/*.deb
-#            dist/*.dmg
-#            dist/*.exe
-#            dist/*.pkg
+  create-release-ubuntu:
+    runs-on: ubuntu-latest
+    name: Create release (Ubuntu)
+    needs: [test-generator, test-cli, test-definition, publish-generator, publish-definition]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    defaults:
+      run:
+        working-directory: cli/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Link and prepare generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
+      - name: Link and prepare definition
+        run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
+      - name: Install dependencies
+        run: yarn
+      - name: Write release version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Build
+        run: yarn build
+      - name: Change version to ${{ github.ref_name }}
+        run: yarn version --new-version ${VERSION} --no-git-tag-version
+      - name: Pack Ubuntu
+        run: npx oclif pack deb && ls dist/
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: ubuntu
+          path: cli/dist/deb
+
+  create-release:
+    needs: [create-release-macos, create-release-windows, create-release-ubuntu]
+    runs-on: ubuntu-latest
+    name: Create release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download MacOS artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: macos
+          path: dist
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: windows
+          path: dist
+      - name: Download Ubuntu artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ubuntu
+          path: dist
+      - uses: softprops/action-gh-release@v1
+        with:
+          prerelease: ${{ contains(github.ref, '-beta') }}
+          generate_release_notes: true
+          files: |
+            dist/*.deb
+            dist/*.dmg
+            dist/*.exe
+            dist/*.pkg
