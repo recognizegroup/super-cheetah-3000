@@ -162,7 +162,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && yarn --production=true && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Link and prepare definition
         run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
       - name: Install dependencies
@@ -201,7 +201,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && yarn --production=true && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Link and prepare definition
         run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
       - name: Install dependencies
@@ -241,7 +241,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Link and prepare generator
-        run: cd ../generator && yarn && yarn build && yarn --production=true && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
+        run: cd ../generator && yarn && yarn build && cd ../cli && mkdir -p ./tmp && cp -r ../generator/ ./tmp/generator
       - name: Link and prepare definition
         run: cd ../definition && yarn && yarn build && cd ../cli && cp -r ../definition/ ./tmp/definition && rm -rf ./tmp/definition/node_modules
       - name: Install dependencies
