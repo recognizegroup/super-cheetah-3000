@@ -175,12 +175,12 @@ jobs:
       - name: Build
         run: yarn build
       - name: Pack MacOS
-        run: npx oclif pack macos
+        run: npx oclif pack macos && ls dist/
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: macos
-          path: cli/dist/*.tar.gz
+          path: cli/dist/macos/
 
   create-release-windows:
     runs-on: windows-latest
@@ -213,12 +213,12 @@ jobs:
       - name: Build
         run: yarn build
       - name: Pack Windows
-        run: npx oclif pack win
+        run: npx oclif pack win && ls dist/
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: windows
-          path: cli/dist/*.tar.gz
+          path: cli/dist/win
 
   create-release-ubuntu:
     runs-on: ubuntu-latest
@@ -241,9 +241,9 @@ jobs:
         run: yarn
       - name: Write release version
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          echo Version: $VERSION
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          $VERSION = $Env:GITHUB_REF_NAME -replace 'v'
+          Write-Host "Version: $VERSION"
+          Write-Output "VERSION=$VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Append
       - name: Change version
         uses: reedyuk/npm-version@1.1.1
         with:
@@ -251,10 +251,10 @@ jobs:
       - name: Build
         run: yarn build
       - name: Pack Ubuntu
-        run: npx oclif pack deb
+        run: npx oclif pack deb && ls dist/
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu
-          path: cli/dist/*.tar.gz
+          path: cli/dist/deb
 
