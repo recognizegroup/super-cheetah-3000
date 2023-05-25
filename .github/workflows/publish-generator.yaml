@@ -55,10 +55,10 @@ jobs:
           resource-url: ${{ inputs.registry_azure_client_id }}/.default
           creds: |-
             {
-                "clientId": "${{ github.event.inputs.registry_azure_client_id }}",
+                "clientId": "${{ inputs.registry_azure_client_id }}",
                 "clientSecret": "${{ secrets.registry_azure_client_secret }}",
                 "subscriptionId": "00000000-0000-0000-0000-000000000000",
-                "tenantId": "${{ github.event.inputs.registry_azure_tenant_id }}"
+                "tenantId": "${{ inputs.registry_azure_tenant_id }}"
             }
       - name: Login to registry
         run: echo "//${{ inputs.registry_locaiton }}/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
