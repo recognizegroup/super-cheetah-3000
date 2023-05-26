@@ -65,11 +65,15 @@ export class Renderer {
           }
 
           if (!engine) {
-            await filesystem?.write(
-              file.outputPath,
-              file.content,
-              file.permissions,
-            )
+            const fileExists = await filesystem?.exists(file.outputPath)
+
+            if (!fileExists || await this.fileExistsConfirmation(file.outputPath)) {
+              await filesystem?.write(
+                file.outputPath,
+                file.content,
+                file.permissions,
+              )
+            }
 
             continue
           }
