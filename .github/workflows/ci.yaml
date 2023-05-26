@@ -133,10 +133,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - name: Upgrade generator
-        run: yarn upgrade @recognizebv/sc3000-generator
       - name: Install dependencies
         run: yarn
+      - name: Upgrade generator
+        run: yarn upgrade @recognizebv/sc3000-generator
       - name: Build
         run: yarn build
       - name: Change version to ${{ github.ref_name }}
@@ -161,12 +161,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - name: Install dependencies
+        run: yarn
       - name: Upgrade generator
         run: yarn upgrade @recognizebv/sc3000-generator
       - name: Link and prepare definition
         run: yarn upgrade @recognizebv/sc3000-definition
-      - name: Install dependencies
-        run: yarn
       - name: Write release version
         run: |
           VERSION=${GITHUB_REF_NAME#v}
@@ -204,12 +204,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - name: Install dependencies
+        run: yarn
       - name: Upgrade generator
         run: yarn upgrade @recognizebv/sc3000-generator
       - name: Link and prepare definition
         run: yarn upgrade @recognizebv/sc3000-definition
-      - name: Install dependencies
-        run: yarn
       - name: Write release version
         run: |
           VERSION=${GITHUB_REF_NAME#v}
@@ -243,12 +243,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - name: Install dependencies
+        run: yarn
       - name: Upgrade generator
         run: yarn upgrade @recognizebv/sc3000-generator
       - name: Link and prepare definition
         run: yarn upgrade @recognizebv/sc3000-definition
-      - name: Install dependencies
-        run: yarn
       - name: Write release version
         run: |
           VERSION=${GITHUB_REF_NAME#v}
