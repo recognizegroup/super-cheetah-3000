@@ -25,7 +25,7 @@
     "eslint": "^7.32.0"
   },
   "dependencies": {
-    "@recognizebv/sc3000-generator": "../generator"
+    "@recognizebv/sc3000-generator": "*"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json --outDir dist",
