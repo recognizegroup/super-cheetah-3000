@@ -28,14 +28,18 @@ export class Renderer {
 
     constructor(private readonly generator: Generator) {}
 
-    async addDirectory(directory: string, transformFileName: (fileName: string) => string = fileName => fileName): Promise<void> {
+    async addDirectory(directory: string, transformFileName: (fileName: string) => string = fileName => fileName, filter: (sourceFile: string) => boolean = (_: string) => true): Promise<void> {
       const filesystem = this.getGeneratorTemplateFilesystem()
       const children = await filesystem.list(directory)
 
       for (const child of children) {
-        await this.addFile(`${directory}/${child}`, transformFileName(
-          child.replace(new RegExp(`^${directory}`), ''),
-        ))
+        const shouldAdd = filter(`${directory}/${child}`);
+
+        if (shouldAdd) {
+          await this.addFile(`${directory}/${child}`, transformFileName(
+            child.replace(new RegExp(`^${directory}`), ''),
+          ))
+        }
       }
     }
 
