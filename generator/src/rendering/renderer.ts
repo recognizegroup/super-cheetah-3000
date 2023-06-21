@@ -33,7 +33,7 @@ export class Renderer {
       const children = await filesystem.list(directory)
 
       for (const child of children) {
-        const shouldAdd = filter(`${directory}/${child}`);
+        const shouldAdd = filter(`${directory}/${child}`)
 
         if (shouldAdd) {
           await this.addFile(`${directory}/${child}`, transformFileName(
