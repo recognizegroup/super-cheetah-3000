@@ -2,7 +2,7 @@ import {Generator, ProjectDefinition} from '@recognizebv/sc3000-generator'
 import {Environment} from '../environments/environment'
 import {join} from 'node:path'
 import {existsSync} from 'node:fs'
-import {mkdir} from 'node:fs/promises'
+import {mkdir, writeFile} from 'node:fs/promises'
 import {exec} from '../util/command-wrapper'
 import {rm} from 'node:fs/promises'
 import {TokenResponse} from '../auth/token-response'
@@ -27,9 +27,8 @@ export class GeneratorLoader {
     })
 
     const npmRcContent = `//${this.environment.registryUrl}/:_authToken=${token.accessToken}`
-    await exec(`echo '${npmRcContent}' > .npmrc`, {
-      cwd: generatorDirectory,
-    })
+
+    await writeFile(join(generatorDirectory, '.npmrc'), npmRcContent)
 
     const result = [] as Generator[]
 
