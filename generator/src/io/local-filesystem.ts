@@ -84,12 +84,16 @@ export class LocalFilesystem implements Filesystem {
   public ensureDirectoryExistsForFile(full: string): Promise<string|undefined> {
     const pathWithoutFile = dirname(full)
 
+    console.error('ensureDirectoryExistsForFile', pathWithoutFile)
+
     return this.ensureDirectoryExists(pathWithoutFile)
   }
 
   private ensureDirectoryExists(path: string): Promise<string|undefined> {
     return this.exists(path)
     .then(exists => {
+      console.error('File exists?', exists, path)
+
       if (!exists) {
         return fs.mkdir(path, {recursive: true})
       }
