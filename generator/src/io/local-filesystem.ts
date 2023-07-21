@@ -28,9 +28,7 @@ export class LocalFilesystem implements Filesystem {
     }
   }
 
-  async exists(path: string): Promise<boolean> {
-    await this.ensureDirectoryExistsForFile(path)
-
+  exists(path: string): Promise<boolean> {
     return fs.access(this.resolve(path))
     .then(() => true)
     .catch(() => false)

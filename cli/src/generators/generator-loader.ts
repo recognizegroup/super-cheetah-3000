@@ -42,8 +42,8 @@ export class GeneratorLoader {
       const packageLocation = generator.packageLocation
 
       // Check if the packageLocation seems to be a valid npm package name, both scoped and unscoped
-      const scopedMatch = packageLocation.match(/^@[^/]+\/[^/]+$/)
-      const unscopedMatch = packageLocation.match(/^[^/]+$/)
+      const scopedMatch = packageLocation.match(/^@[^/\\]+\/[^/\\]+$/)
+      const unscopedMatch = packageLocation.match(/^[^/\\]+$/)
 
       let GeneratorClass: any
 
