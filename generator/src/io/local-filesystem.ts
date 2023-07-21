@@ -1,6 +1,6 @@
 import {Filesystem} from './filesystem'
 import {promises as fs} from 'node:fs'
-import {join} from 'node:path'
+import {join, dirname} from 'node:path'
 
 /**
  * Local filesystem implementation of the Filesystem interface, using nodejs fs/promises.
@@ -82,7 +82,7 @@ export class LocalFilesystem implements Filesystem {
   }
 
   public ensureDirectoryExistsForFile(full: string): Promise<string|undefined> {
-    const pathWithoutFile = full.slice(0, Math.max(0, full.lastIndexOf('/')))
+    const pathWithoutFile = dirname(full)
 
     return this.ensureDirectoryExists(pathWithoutFile)
   }
