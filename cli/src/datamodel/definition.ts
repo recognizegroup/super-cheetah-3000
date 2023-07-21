@@ -5,7 +5,7 @@ import ts from 'typescript'
 import {ProjectDefinition} from '@recognizebv/sc3000-generator'
 import {importScript} from '../util/import-wrapper'
 import * as temp from 'temp'
-import {symlink} from 'node:fs/promises'
+import {exec} from '../util/command-wrapper'
 
 export const checkDefinitionFileExistsInDirectory = async (directory: string): Promise<void> => {
   const path = getDefinitionFilePath(directory)
@@ -43,14 +43,8 @@ export const parseDefinitionFile = async (path: string): Promise<ProjectDefiniti
 export const compileDefinitionFileFromTypeScript = async (path: string): Promise<string> => {
   const output = temp.mkdirSync('sc3000-definition')
 
-  // Create a symlink between the node_modules folder of the CLI and the node_modules folder of the project
-  // This is needed because the CLI uses the TypeScript compiler from its own node_modules folder, but the
-  // definition file might import from the project's node_modules folder
-  const cliNodeModules = join(__dirname, '..', '..', 'node_modules')
-  const outputNodeModules = join(output, 'node_modules')
-
-  // Create a symlink between cliNodeModules and outputNodeModules
-  await symlink(cliNodeModules, outputNodeModules, 'dir')
+  // First, install the definition package
+  await exec('npm install @recognizebv/sc3000-definition', {cwd: output})
 
   const options: ts.CompilerOptions = {
     target: ts.ScriptTarget.ESNext,

@@ -8,7 +8,7 @@ export class CheetahLoader implements Loader {
   interval: any;
 
   async start(): Promise<void> {
-    this.loaderContent = await readFile(`${__dirname}/cheetah.txt`, 'utf-8')
+    this.loaderContent = await readFile(`${__dirname}/../../src/loader/cheetah.txt`, 'utf-8')
 
     this.moveText(this.loaderContent)
   }
