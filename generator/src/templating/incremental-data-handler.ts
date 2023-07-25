@@ -5,6 +5,7 @@ import {Filesystem} from '../io/filesystem'
 import {NunjucksTemplateEngine} from './nunjucks-template-engine'
 import {EntityContext} from '../context/entity-context'
 import {Generator} from '../models/generator'
+import {EOL} from 'node:os'
 
 export class IncrementalDataHandler {
   private dataPieces: IncrementalDataTemplatePiece[] = []
@@ -28,7 +29,7 @@ export class IncrementalDataHandler {
       const text = file.toString()
 
       const body = await engine.render(piece.body, context.buildVariables())
-      const newText = text.replace(new RegExp(piece.marker, 'g'), body + `\n${piece.marker}`)
+      const newText = text.replace(new RegExp(piece.marker, 'g'), body + `${EOL}${piece.marker}`)
 
       await this.filesystem.write(piece.outputFile, Buffer.from(newText))
     }
@@ -57,6 +58,11 @@ export class IncrementalDataHandler {
     case 'html':
       return `<!-- SC3000: ${id}-${random} do not remove this line -->`
     case 'ts':
+    case 'cs':
+    case 'kt':
+    case 'java':
+    case 'tf':
+    case 'hcl':
       return `// SC3000: ${id}-${random} do not remove this line`
     default:
       throw new Error(`Unknown marker language: ${markerLanguage}`)
