@@ -38,7 +38,7 @@ export class FakerTestDataManager implements TestDataManager {
     case DataType.text:
       return faker.lorem.paragraph(1)
     case DataType.integer:
-      return faker.datatype.number()
+      return faker.number.int()
     case DataType.boolean:
       return faker.datatype.boolean()
     default:
