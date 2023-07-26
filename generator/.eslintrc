@@ -11,6 +11,8 @@
     "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "max-depth": ["error", 5],
-    "unicorn/no-array-reduce": 0
+    "unicorn/no-array-reduce": 0,
+    "unicorn/no-await-expression-member": 0,
+    "unicorn/switch-case-braces": 0
   }
 }

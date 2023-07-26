@@ -23,7 +23,7 @@ export class Renderer {
     private variables: { [key: string]: any } = {};
     private context: Context | null = null;
     private files: TemplateMetadata[] = [];
-    private hooks: Partial<Record<RenderHookType, ((context: Context) => Promise<void>)[]>> = {};
+    private hooks: Partial<Record<RenderHookType, ((_: Context) => Promise<void>)[]>> = {};
     private fileExistsConfirmation: (path: string) => Promise<boolean> = async () => true;
 
     constructor(private readonly generator: Generator) {}
@@ -207,7 +207,7 @@ export class Renderer {
       return this.files
     }
 
-    getHooks(): Partial<Record<RenderHookType, ((context: Context) => Promise<void>)[]>> {
+    getHooks(): Partial<Record<RenderHookType, ((_: Context) => Promise<void>)[]>> {
       return this.hooks
     }
 

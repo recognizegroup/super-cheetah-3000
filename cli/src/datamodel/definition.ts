@@ -1,11 +1,12 @@
 import {access} from 'node:fs/promises'
 import {constants} from 'node:fs'
 import {join} from 'node:path'
-import ts from 'typescript'
 import {ProjectDefinition} from '@recognizebv/sc3000-generator'
 import {importScript} from '../util/import-wrapper'
 import * as temp from 'temp'
+import ts from 'typescript'
 import {exec} from '../util/command-wrapper'
+import {createProgram} from '../util/typescript-wrapper'
 
 export const checkDefinitionFileExistsInDirectory = async (directory: string): Promise<void> => {
   const path = getDefinitionFilePath(directory)
@@ -60,7 +61,7 @@ export const compileDefinitionFileFromTypeScript = async (path: string): Promise
   }
 
   try {
-    const result = ts.createProgram([path], options)
+    const result = createProgram([path], options)
     result.emit()
 
     return `${output}/sc3000.definition.js`

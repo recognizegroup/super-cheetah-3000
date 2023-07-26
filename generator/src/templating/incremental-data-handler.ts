@@ -29,7 +29,7 @@ export class IncrementalDataHandler {
       const text = file.toString()
 
       const body = await engine.render(piece.body, context.buildVariables())
-      const newText = text.replace(new RegExp(piece.marker, 'g'), body + `${EOL}${piece.marker}`)
+      const newText = text.replaceAll(piece.marker, body + `${EOL}${piece.marker}`)
 
       await this.filesystem.write(piece.outputFile, Buffer.from(newText))
     }

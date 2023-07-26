@@ -6,7 +6,6 @@ export const determineEnvironmentFromChannel = (channel: string): Environment =>
   switch (channel) {
   case 'beta':
     return tst
-  case 'stable':
   default:
     return prd
   }

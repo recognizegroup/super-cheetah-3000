@@ -10,6 +10,8 @@
     "node/no-extraneous-import": 0,
     "node/no-missing-import": 0,
     "no-await-in-loop": 0,
-    "unicorn/prefer-module": 0
+    "unicorn/prefer-module": 0,
+    "unicorn/switch-case-braces": 0,
+    "unicorn/no-await-expression-member": 0
   }
 }

@@ -3,7 +3,7 @@ import {expect} from 'chai'
 import * as definition from '../../src/datamodel/definition'
 import * as importWrapper from '../../src/util/import-wrapper'
 import sinon from 'sinon'
-import ts from 'typescript'
+import * as tsWrapper from '../../src/util/typescript-wrapper'
 import nodePath from 'node:path'
 import temp from 'temp'
 import * as execWrapper from '../../src/util/command-wrapper'
@@ -155,7 +155,7 @@ describe('project definition', () => {
       sandbox.stub(nodePath, 'join').returns(output)
       sandbox.stub(temp, 'mkdirSync').returns(output)
       sandbox.stub(execWrapper, 'exec').resolves()
-      sandbox.stub(ts, 'createProgram').throws(new Error('Compilation failed'))
+      sandbox.stub(tsWrapper, 'createProgram').throws(new Error('Compilation failed'))
 
       try {
         await definition.compileDefinitionFileFromTypeScript(path)
@@ -174,7 +174,7 @@ describe('project definition', () => {
       sandbox.stub(nodePath, 'join').returns(output)
       sandbox.stub(temp, 'mkdirSync').returns(output)
       sandbox.stub(execWrapper, 'exec').resolves()
-      sandbox.stub(ts, 'createProgram').returns({emit: () => ({emitSkipped: false})} as any)
+      sandbox.stub(tsWrapper, 'createProgram').returns({emit: () => ({emitSkipped: false})} as any)
 
       const result = await definition.compileDefinitionFileFromTypeScript(path)
       expect(result).to.equal(compiled)
