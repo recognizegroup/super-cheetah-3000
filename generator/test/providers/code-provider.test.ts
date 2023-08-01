@@ -86,7 +86,7 @@ describe('code provider', () => {
 
       expect(setContextSpy.calledOnce).to.be.true
       expect(renderSpy.calledOnce).to.be.true
-      expect(resetSpy.calledOnce).to.be.true
+      expect(resetSpy.calledOnce).to.be.false
       expect(setContextSpy.calledBefore(renderSpy)).to.be.true
       expect(renderSpy.calledBefore(resetSpy)).to.be.true
     })

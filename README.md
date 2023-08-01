@@ -78,6 +78,17 @@ export default createDefinition()
 
 ```
 
+## Development
+In order to develop the tool, you will need to have Node.js and Yarn installed. After cloning the repository, you can build generator project by running the following command:
+```yarn build ``` in the generator project directory.
+
+In case you make changes to the generator project, you need to link the generator project to the cli project. You can do this by running the following command in the generator project directory:
+```yarn link ``` in the generator project directory and ```yarn link @recognizegroup/sc3000-generator``` in the cli project directory.
+
+To run or debug the cli project create a nodeJS configuration and select the cli/bin/dev file and add generate as parameter. You should have a `sc3000.definition.ts` file in the root of the cli project. 
+
+![img.png](img.png)
+
 
 ## 👋 About The Project
 
