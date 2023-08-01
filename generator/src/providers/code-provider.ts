@@ -1,7 +1,7 @@
-import { Context } from '../context/context'
-import { Generator } from '../models/generator'
-import { Renderer } from '../rendering/renderer'
-import { RenderHookType } from "../enums/render-hook-type";
+import {Context} from '../context/context'
+import {Generator} from '../models/generator'
+import {Renderer} from '../rendering/renderer'
+import {RenderHookType} from '../enums/render-hook-type'
 
 export abstract class CodeProvider<C extends Context> {
     public renderer: Renderer;
