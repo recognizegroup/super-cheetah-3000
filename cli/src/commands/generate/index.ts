@@ -108,10 +108,14 @@ $ sc3000 generate --force
             await loader.update(`Generating entity ${entity.name} with ${metaData.name}`)
 
             await entityCodeProvider?.render(entityContext)
+            entityCodeProvider?.reset()
             lockFile = await lockFileManager.addGeneratedEntity(generator, entity)
             entityCodeProviderInvocations++
           }
         }
+
+        await projectCodeProvider?.postProcessing()
+        projectCodeProvider?.reset()
       } catch (error) {
         await loader.stop()
 
