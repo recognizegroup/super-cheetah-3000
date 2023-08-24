@@ -4,17 +4,19 @@ import {StringModificationHelper} from '../helpers/string-modification-helper'
 import {EntityFieldHelper} from '../helpers/entity-field-helper'
 import {IncrementalDataHandler} from './incremental-data-handler'
 import {Entity} from '../models/entity'
+import {ParseError} from '../error/parse-error'
+import {TemplateInfo} from '../models/template-info'
 
 export class NunjucksTemplateEngine implements TemplateEngine {
   private environment: nunjucks.Environment = this.buildEnvironment()
 
   constructor(private root: string = '') {}
 
-  async setup(incrementalDataHandler: IncrementalDataHandler) {
-    this.environment = this.buildEnvironment(incrementalDataHandler)
+  async setup(generatorName: string, incrementalDataHandler: IncrementalDataHandler) {
+    this.environment = this.buildEnvironment(generatorName, incrementalDataHandler)
   }
 
-  render(template: string, context: { [p: string]: any }, outputFile?: string): Promise<string> {
+  render(template: string, context: { [p: string]: any }, outputFile?: string, info?: TemplateInfo): Promise<string> {
     return new Promise((resolve, reject) => {
       this.environment.renderString(
         template,
@@ -24,7 +26,7 @@ export class NunjucksTemplateEngine implements TemplateEngine {
         },
         (error, result) => {
           if (error) {
-            reject(error)
+            reject(this.transformError(error, info, outputFile ? undefined : template))
           } else {
             resolve(result ?? '')
           }
@@ -41,7 +43,7 @@ export class NunjucksTemplateEngine implements TemplateEngine {
     return path.replace(/\.njk$/, '')
   }
 
-  buildEnvironment(incrementalDataHandler?: IncrementalDataHandler): nunjucks.Environment {
+  buildEnvironment(generatorName?: string, incrementalDataHandler?: IncrementalDataHandler): nunjucks.Environment {
     const loader = new nunjucks.FileSystemLoader(this.root)
     const environment = new nunjucks.Environment(loader)
 
@@ -103,12 +105,30 @@ export class NunjucksTemplateEngine implements TemplateEngine {
         return new nodes.CallExtensionAsync(this, 'run', args, [])
       },
       async run({ctx}: any, {id, lang: markerLanguage}, callback) {
-        const marker = await incrementalDataHandler?.registerDataPiece(id, this.body[id], ctx.outputFile, markerLanguage ?? 'html')
+        const marker = await incrementalDataHandler?.registerDataPiece(id, this.body[id], ctx.outputFile, markerLanguage ?? 'html', generatorName)
 
         callback(null, new nunjucks.runtime.SafeString(marker ?? ''))
       },
     } as any)
 
     return environment
+  }
+
+  transformError(error: Error, info?: TemplateInfo, template?: string): Error {
+    // This function attempts to transform the error into a more readable error, with correct line numbers.
+    // Although it is possible that the message changes in the future, it is still better than the default error message.
+    const asString = error.toString()
+    const path = info?.path
+
+    if (asString.includes('Template render error')) {
+      const matches = asString.match(/Template render error: \(unknown path\) \[Line (\d+), Column (\d+)]/)
+      const line = Number(matches?.[1] ?? 0) + (info?.lineOffset ?? 0)
+      const column = Number(matches?.[2] ?? 0)
+      const message = asString.split('\n')[1].trim()
+
+      return new ParseError(path ?? 'unknown', line, column, message, template)
+    }
+
+    return error
   }
 }
