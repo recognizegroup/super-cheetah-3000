@@ -37,7 +37,7 @@ export class Renderer {
 
         if (shouldAdd) {
           await this.addFile(`${directory}/${child}`, transformFileName(
-            child.replace(new RegExp(`^${directory}`), ''),
+            child.replace(new RegExp(`^${directory}$`), ''),
           ))
         }
       }
