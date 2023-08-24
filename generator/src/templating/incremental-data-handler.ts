@@ -22,9 +22,9 @@ export class IncrementalDataHandler {
 
   async renderIncrementalData(context: EntityContext, generator: Generator) {
     const engine = new NunjucksTemplateEngine(generator.metaData.templateRoot)
-    await engine.setup(this)
+    await engine.setup(generator.metaData.name, this)
 
-    for (const piece of this.dataPieces) {
+    for (const piece of this.dataPieces.filter(d => d.generatorName === undefined || d.generatorName === generator.metaData.name)) {
       const file = await this.filesystem.read(piece.outputFile)
       const text = file.toString()
 
@@ -35,14 +35,16 @@ export class IncrementalDataHandler {
     }
   }
 
-  async registerDataPiece(id: string, body: string, path: string, markerLanguage: string): Promise<string> {
+  // eslint-disable-next-line max-params
+  async registerDataPiece(id: string, body: string, path: string, markerLanguage: string, generatorName?: string): Promise<string> {
     const marker = this.createMarker(id, markerLanguage)
     const piece = {
       id,
       marker,
       body,
       outputFile: path,
-    }
+      generatorName: generatorName,
+    } as IncrementalDataTemplatePiece
 
     this.dataPieces.push(piece)
 

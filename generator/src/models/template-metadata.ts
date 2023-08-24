@@ -7,4 +7,5 @@ export interface TemplateMetadata {
     constants: { [key: string]: any };
     dependencies: string[];
     frontMatterLength?: number;
+    variables: Record<string, unknown>;
 }

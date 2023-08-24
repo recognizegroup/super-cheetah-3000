@@ -12,8 +12,8 @@ export class NunjucksTemplateEngine implements TemplateEngine {
 
   constructor(private root: string = '') {}
 
-  async setup(incrementalDataHandler: IncrementalDataHandler) {
-    this.environment = this.buildEnvironment(incrementalDataHandler)
+  async setup(generatorName: string, incrementalDataHandler: IncrementalDataHandler) {
+    this.environment = this.buildEnvironment(generatorName, incrementalDataHandler)
   }
 
   render(template: string, context: { [p: string]: any }, outputFile?: string, info?: TemplateInfo): Promise<string> {
@@ -43,7 +43,7 @@ export class NunjucksTemplateEngine implements TemplateEngine {
     return path.replace(/\.njk$/, '')
   }
 
-  buildEnvironment(incrementalDataHandler?: IncrementalDataHandler): nunjucks.Environment {
+  buildEnvironment(generatorName?: string, incrementalDataHandler?: IncrementalDataHandler): nunjucks.Environment {
     const loader = new nunjucks.FileSystemLoader(this.root)
     const environment = new nunjucks.Environment(loader)
 
@@ -105,7 +105,7 @@ export class NunjucksTemplateEngine implements TemplateEngine {
         return new nodes.CallExtensionAsync(this, 'run', args, [])
       },
       async run({ctx}: any, {id, lang: markerLanguage}, callback) {
-        const marker = await incrementalDataHandler?.registerDataPiece(id, this.body[id], ctx.outputFile, markerLanguage ?? 'html')
+        const marker = await incrementalDataHandler?.registerDataPiece(id, this.body[id], ctx.outputFile, markerLanguage ?? 'html', generatorName)
 
         callback(null, new nunjucks.runtime.SafeString(marker ?? ''))
       },

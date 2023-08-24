@@ -4,6 +4,7 @@ import sinon from 'sinon'
 import {EntityContext, FakerTestDataManager, Generator, LocalFilesystem, Project} from '../../src'
 import {LockFileManager} from '../../src/lock-file/lock-file-manager'
 import {expect} from 'chai'
+import {EOL} from 'node:os'
 
 describe('incremental data handler', () => {
   let handler: IncrementalDataHandler
@@ -50,6 +51,7 @@ describe('incremental data handler', () => {
         marker,
         body: 'test',
         outputFile: 'test.txt',
+        generatorName: undefined,
       },
     ])
     sinon.assert.calledOnceWithExactly(lockFileManagerStub.addIncrementalData, {
@@ -57,6 +59,30 @@ describe('incremental data handler', () => {
       marker,
       body: 'test',
       outputFile: 'test.txt',
+      generatorName: undefined,
+    })
+  })
+
+  it('should register a generator name in data piece when available', async () => {
+    const marker = await handler.registerDataPiece('1234567890', 'test', 'test.txt', 'html', 'generator1')
+    const validateMarkerRegex = /<!-- sc3000: 1234567890-[\da-z]+ do not remove this line -->/gi
+
+    expect(marker).to.match(validateMarkerRegex)
+    expect(handler.getDataPieces()).to.deep.equal([
+      {
+        id: '1234567890',
+        marker,
+        body: 'test',
+        outputFile: 'test.txt',
+        generatorName: 'generator1',
+      },
+    ])
+    sinon.assert.calledOnceWithExactly(lockFileManagerStub.addIncrementalData, {
+      id: '1234567890',
+      marker,
+      body: 'test',
+      outputFile: 'test.txt',
+      generatorName: 'generator1',
     })
   })
 
@@ -71,6 +97,7 @@ describe('incremental data handler', () => {
         marker,
         body: 'test',
         outputFile: 'test.txt',
+        generatorName: undefined,
       },
     ])
     sinon.assert.calledOnceWithExactly(lockFileManagerStub.addIncrementalData, {
@@ -78,6 +105,7 @@ describe('incremental data handler', () => {
       marker,
       body: 'test',
       outputFile: 'test.txt',
+      generatorName: undefined,
     })
   })
 
@@ -90,6 +118,7 @@ describe('incremental data handler', () => {
           marker: '<!-- SC3000: 1234567890 do not remove this line -->',
           body: 'body {{ entity.name }}',
           id: '1234567890',
+          generatorName: 'generator1',
         },
       ],
     }
@@ -126,8 +155,7 @@ describe('incremental data handler', () => {
 
     await handler.renderIncrementalData(context, generator)
 
-    const result = `body Project
-<!-- SC3000: 1234567890 do not remove this line -->`
+    const result = 'body Project' + EOL + '<!-- SC3000: 1234567890 do not remove this line -->'
 
     sinon.assert.calledOnceWithExactly(filesystemStub.write, 'test.txt', Buffer.from(result))
   })
