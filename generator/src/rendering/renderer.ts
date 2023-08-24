@@ -28,7 +28,11 @@ export class Renderer {
 
     constructor(private readonly generator: Generator) {}
 
-    async addDirectory(directory: string, transformFileName: (fileName: string) => string = fileName => fileName, filter: (sourceFile: string) => boolean = (_: string) => true): Promise<void> {
+    async addDirectory(directory: string,
+      transformFileName: (fileName: string) => string = fileName => fileName,
+      filter: (sourceFile: string) => boolean = (_: string) => true,
+      variables: Record<string, unknown> = {},
+    ): Promise<void> {
       const filesystem = this.getGeneratorTemplateFilesystem()
       const children = await filesystem.list(directory)
 
@@ -38,7 +42,7 @@ export class Renderer {
         if (shouldAdd) {
           await this.addFile(`${directory}/${child}`, transformFileName(
             child.replace(new RegExp(`^${directory}`), ''),
-          ))
+          ), variables)
         }
       }
     }
@@ -47,8 +51,8 @@ export class Renderer {
       this.fileExistsConfirmation = fileExistsConfirmation
     }
 
-    async addFile(file: string, output: string): Promise<void> {
-      const metadata = await this.processMetadata(file, output)
+    async addFile(file: string, output: string, variables: Record<string, unknown> = {}): Promise<void> {
+      const metadata = await this.processMetadata(file, output, variables)
       this.files.push(metadata)
     }
 
@@ -95,7 +99,7 @@ export class Renderer {
             }),
           )
 
-          const variables = this.buildVariables({constants, dependencies})
+          const variables = this.buildVariables({constants, dependencies}, file.variables)
           const output = engine.transformFilename(file.outputPath)
 
           const content = await engine.render(file.content.toString(), variables, output)
@@ -116,7 +120,7 @@ export class Renderer {
       await this.executeHook(RenderHookType.afterRender)
     }
 
-    async processMetadata(file: string, output: string): Promise<TemplateMetadata> {
+    async processMetadata(file: string, output: string, variables: Record<string, unknown>): Promise<TemplateMetadata> {
       // If the file is not a template, just return an empty metadata object
       const engine = this.getTemplateEngine(file)
       const filesystem = this.getGeneratorTemplateFilesystem()
@@ -133,6 +137,7 @@ export class Renderer {
           content,
           constants: {},
           dependencies: [],
+          variables,
         }
       }
 
@@ -151,6 +156,7 @@ export class Renderer {
         content: Buffer.from(body),
         constants,
         dependencies,
+        variables,
       }
     }
 
@@ -234,9 +240,9 @@ export class Renderer {
       this.hooks = {}
     }
 
-    buildVariables(additional: { [key: string]: any } = {}): Record<string, any> {
+    buildVariables(additional: Record<string, unknown> = {}, fileSpecificVariables: Record<string, unknown> = {}): Record<string, any> {
       return {
-        variables: {...this.variables},
+        variables: {...this.variables, ...fileSpecificVariables},
         ...this.context?.buildVariables(),
         ...additional,
       }
