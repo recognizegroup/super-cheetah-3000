@@ -271,6 +271,7 @@ Test file`.trim()
           foo: 'bar',
         },
         dependencies: ['foo'],
+        frontMatterLength: 6,
       }
 
       expect(file).to.deep.equal(expectedFile)
@@ -294,6 +295,7 @@ Test file`.trim()
         content: Buffer.from(fileContent),
         constants: {},
         dependencies: [],
+        frontMatterLength: 0,
       }
 
       expect(file).to.deep.equal(expected)
