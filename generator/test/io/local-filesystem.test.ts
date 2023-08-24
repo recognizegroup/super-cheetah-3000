@@ -2,14 +2,18 @@ import {expect} from 'chai'
 import sinon from 'sinon'
 import {promises as fs} from 'node:fs'
 import {LocalFilesystem} from '../../src'
+import * as os from 'os';
 
 describe('local file system', () => {
   let localFs: LocalFilesystem
   let root: string
   let sandbox: sinon.SinonSandbox
+  let directorySeparator: string = '/'
 
   beforeEach(() => {
-    root = '/tmp/test'
+    const tempDir = os.tmpdir() // /tmp
+    directorySeparator = tempDir.includes('\\') ? '\\' : '/'
+    root = tempDir + directorySeparator + 'test' + directorySeparator
     localFs = new LocalFilesystem(root)
     sandbox = sinon.createSandbox()
   })
@@ -29,7 +33,7 @@ describe('local file system', () => {
       const result = await localFs.read(path)
 
       sinon.assert.calledOnce(readFileStub)
-      sinon.assert.calledWithExactly(readFileStub, `${root}/${path}`)
+      sinon.assert.calledWithExactly(readFileStub, `${root}${path}`)
 
       expect(result.toString()).to.equal(content)
     })
@@ -48,7 +52,7 @@ describe('local file system', () => {
       }
 
       sinon.assert.calledOnce(readFileStub)
-      sinon.assert.calledWithExactly(readFileStub, `${root}/${path}`)
+      sinon.assert.calledWithExactly(readFileStub, `${root}${path}`)
     })
   })
 
@@ -61,14 +65,14 @@ describe('local file system', () => {
       const writeFileStub = sandbox.stub(fs, 'writeFile')
       await localFs.write(path, content)
 
-      sinon.assert.calledOnceWithExactly(writeFileStub, '/tmp/test/path/to/file.txt', content)
+      sinon.assert.calledOnceWithExactly(writeFileStub, root + 'path' + directorySeparator + 'to' + directorySeparator + 'file.txt', content)
     })
 
     it('should set the permissions if provided', async () => {
       const chmodStub = sandbox.stub(fs, 'chmod')
       await localFs.write(path, content, permissions)
 
-      sinon.assert.calledOnceWithExactly(chmodStub, '/tmp/test/path/to/file.txt', permissions)
+      sinon.assert.calledOnceWithExactly(chmodStub, root + 'path' + directorySeparator + 'to' + directorySeparator + 'file.txt', permissions)
     })
 
     it('should not set the permissions if not provided', async () => {
@@ -130,7 +134,7 @@ describe('local file system', () => {
 
       await localFs.delete('/path/to/file.txt')
 
-      expect(unlinkStub.calledOnceWith('/tmp/test/path/to/file.txt')).to.be.true
+      expect(unlinkStub.calledOnceWith(root + 'path' + directorySeparator + 'to' + directorySeparator + 'file.txt')).to.be.true
 
       unlinkStub.restore()
     })
@@ -145,7 +149,8 @@ describe('local file system', () => {
 
       await localFs.copy('/path/to/file.txt', '/path/to/other/file.txt')
 
-      expect(copyFileStub.calledOnceWith('/tmp/test/path/to/file.txt', '/tmp/test/path/to/other/file.txt')).to.be.true
+      expect(copyFileStub.calledOnceWith(root + 'path' + directorySeparator + 'to' + directorySeparator + 'file.txt',
+        root + 'path' + directorySeparator + 'to' + directorySeparator + 'other' + directorySeparator + 'file.txt')).to.be.true
     })
   })
 
@@ -177,7 +182,7 @@ describe('local file system', () => {
 
       await localFs.createDirectory('/path/to/dir')
 
-      expect(mkdirStub.calledOnceWith('/tmp/test/path/to/dir')).to.be.true
+      expect(mkdirStub.calledOnceWith(root + 'path' + directorySeparator + 'to' + directorySeparator + 'dir')).to.be.true
     })
   })
 
@@ -188,7 +193,7 @@ describe('local file system', () => {
 
       await localFs.deleteDirectory('/path/to/dir')
 
-      expect(rmdirStub.calledOnceWith('/tmp/test/path/to/dir')).to.be.true
+      expect(rmdirStub.calledOnceWith(root + 'path' + directorySeparator + 'to' + directorySeparator + 'dir')).to.be.true
     })
   })
 
@@ -199,7 +204,7 @@ describe('local file system', () => {
 
       await localFs.updatePermissions('/path/to/file.txt', 0o644)
 
-      expect(chmodStub.calledOnceWith('/tmp/test/path/to/file.txt', 0o644)).to.be.true
+      expect(chmodStub.calledOnceWith(root + 'path' + directorySeparator + 'to' + directorySeparator + 'file.txt', 0o644)).to.be.true
     })
   })
 
