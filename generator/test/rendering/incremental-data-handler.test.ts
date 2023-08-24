@@ -4,7 +4,7 @@ import sinon from 'sinon'
 import {EntityContext, FakerTestDataManager, Generator, LocalFilesystem, Project} from '../../src'
 import {LockFileManager} from '../../src/lock-file/lock-file-manager'
 import {expect} from 'chai'
-import { EOL } from "node:os";
+import {EOL} from 'node:os'
 
 describe('incremental data handler', () => {
   let handler: IncrementalDataHandler

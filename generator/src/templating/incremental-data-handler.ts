@@ -35,6 +35,7 @@ export class IncrementalDataHandler {
     }
   }
 
+  // eslint-disable-next-line max-params
   async registerDataPiece(id: string, body: string, path: string, markerLanguage: string, generatorName?: string): Promise<string> {
     const marker = this.createMarker(id, markerLanguage)
     const piece = {

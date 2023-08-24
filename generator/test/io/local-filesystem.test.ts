@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import sinon from 'sinon'
 import {promises as fs} from 'node:fs'
 import {LocalFilesystem} from '../../src'
-import * as os from 'os';
+import * as os from 'node:os'
 
 describe('local file system', () => {
   let localFs: LocalFilesystem
