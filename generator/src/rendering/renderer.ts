@@ -90,7 +90,9 @@ export class Renderer {
 
           // First, render all constants
           for (const [key, value] of Object.entries(constants)) {
-            constants[key] = await engine.render(value, this.buildVariables())
+            constants[key] = await engine.render(value, this.buildVariables(), undefined, {
+              path: file.path,
+            })
           }
 
           const dependencies = Object.fromEntries(
@@ -102,7 +104,10 @@ export class Renderer {
           const variables = this.buildVariables({constants, dependencies}, file.variables)
           const output = engine.transformFilename(file.outputPath)
 
-          const content = await engine.render(file.content.toString(), variables, output)
+          const content = await engine.render(file.content.toString(), variables, output, {
+            path: file.path,
+            lineOffset: file.frontMatterLength ?? 0,
+          })
           const fileExists = await filesystem?.exists(output)
 
           if (!fileExists || await this.fileExistsConfirmation(output)) {
@@ -137,12 +142,17 @@ export class Renderer {
           content,
           constants: {},
           dependencies: [],
+          frontMatterLength: 0,
           variables,
         }
       }
 
       const asString = content.toString()
       const {data, content: body} = matter(asString)
+
+      const totalLines = asString.split('\n').length
+      const bodyLines = body.split('\n').length
+      const frontMatterLength = totalLines - bodyLines
 
       const constants = data.constants ?? {}
       const dependencies = data.dependencies ?? []
@@ -156,6 +166,7 @@ export class Renderer {
         content: Buffer.from(body),
         constants,
         dependencies,
+        frontMatterLength,
         variables,
       }
     }

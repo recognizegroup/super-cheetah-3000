@@ -275,6 +275,7 @@ Test file`.trim()
           foo: 'bar',
         },
         dependencies: ['foo'],
+        frontMatterLength: 6,
         variables: {},
       }
 
@@ -301,6 +302,7 @@ Test file`.trim()
         content: Buffer.from(fileContent),
         constants: {},
         dependencies: [],
+        frontMatterLength: 0,
         variables: {
           foo: 'bar',
         },
