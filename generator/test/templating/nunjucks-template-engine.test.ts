@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {NunjucksTemplateEngine} from '../../src'
-import {TemplateInfo} from "../../src/models/template-info";
-import {ParseError} from "../../src/error/parse-error";
+import {TemplateInfo} from '../../src/models/template-info'
+import {ParseError} from '../../src/error/parse-error'
 
 describe('nunjucks template engine', () => {
   describe('render', () => {
@@ -94,7 +94,7 @@ describe('nunjucks template engine', () => {
         lineOffset: 5,
       }
 
-      const error = new Error(`Something else went wrong`)
+      const error = new Error('Something else went wrong')
 
       const result = engine.transformError(error, info)
 
