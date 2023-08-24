@@ -121,7 +121,7 @@ export class NunjucksTemplateEngine implements TemplateEngine {
     const path = info?.path
 
     if (asString.includes('Template render error')) {
-      const matches = asString.match(/Template render error: \((.*)\) \[Line (\d+), Column (\d+)]/)
+      const matches = asString.match(/Template render error: \(unknown path\) \[Line (\d+), Column (\d+)]/)
       const line = Number(matches?.[2] ?? 0) + (info?.lineOffset ?? 0)
       const column = Number(matches?.[3] ?? 0)
       const message = asString.split('\n')[1].trim()
