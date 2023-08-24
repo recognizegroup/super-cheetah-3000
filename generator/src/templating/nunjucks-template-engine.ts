@@ -122,8 +122,8 @@ export class NunjucksTemplateEngine implements TemplateEngine {
 
     if (asString.includes('Template render error')) {
       const matches = asString.match(/Template render error: \(unknown path\) \[Line (\d+), Column (\d+)]/)
-      const line = Number(matches?.[2] ?? 0) + (info?.lineOffset ?? 0)
-      const column = Number(matches?.[3] ?? 0)
+      const line = Number(matches?.[1] ?? 0) + (info?.lineOffset ?? 0)
+      const column = Number(matches?.[2] ?? 0)
       const message = asString.split('\n')[1].trim()
 
       return new ParseError(path ?? 'unknown', line, column, message, template)
