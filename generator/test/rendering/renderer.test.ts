@@ -87,6 +87,7 @@ describe('renderer', () => {
           content: Buffer.from(''),
           constants: {},
           dependencies: [],
+          variables: {},
         },
         {
           id: 'file2',
@@ -96,6 +97,7 @@ describe('renderer', () => {
           content: Buffer.from(''),
           constants: {},
           dependencies: ['file1'],
+          variables: {},
         },
         {
           id: 'file3',
@@ -105,6 +107,7 @@ describe('renderer', () => {
           content: Buffer.from(''),
           constants: {},
           dependencies: ['file1', 'file2'],
+          variables: {},
         },
         {
           id: 'file4',
@@ -114,6 +117,7 @@ describe('renderer', () => {
           content: Buffer.from(''),
           constants: {},
           dependencies: [],
+          variables: {},
         },
       ]
     })
@@ -259,7 +263,7 @@ Test file`.trim()
       sandbox.stub(renderer, 'getGeneratorTemplateFilesystem').returns(filesystem)
 
       renderer.setContext(context)
-      const file = await renderer.processMetadata('foo/bar.njk', 'output/foo/bar.njk')
+      const file = await renderer.processMetadata('foo/bar.njk', 'output/foo/bar.njk', {})
 
       const expectedFile: TemplateMetadata = {
         id: 'sample',
@@ -271,6 +275,7 @@ Test file`.trim()
           foo: 'bar',
         },
         dependencies: ['foo'],
+        variables: {},
       }
 
       expect(file).to.deep.equal(expectedFile)
@@ -284,7 +289,9 @@ Test file`.trim()
       sandbox.stub(renderer, 'getGeneratorTemplateFilesystem').returns(filesystem)
 
       renderer.setContext(context)
-      const file = await renderer.processMetadata('foo/bar.yml', 'output/foo/bar.yml')
+      const file = await renderer.processMetadata('foo/bar.yml', 'output/foo/bar.yml', {
+        foo: 'bar',
+      })
 
       const expected = {
         id: null,
@@ -294,6 +301,9 @@ Test file`.trim()
         content: Buffer.from(fileContent),
         constants: {},
         dependencies: [],
+        variables: {
+          foo: 'bar',
+        },
       }
 
       expect(file).to.deep.equal(expected)
@@ -317,6 +327,7 @@ Test file`.trim()
           foo: 'bar',
         },
         dependencies: [],
+        variables: {},
       })
 
       await renderer.addFile('sample.kt.njk', 'sample.kt')
@@ -330,6 +341,7 @@ Test file`.trim()
         content: Buffer.from('Test file two'),
         constants: {},
         dependencies: [],
+        variables: {},
       })
       await renderer.addFile('two.yml', 'two.yml')
 
@@ -339,6 +351,33 @@ Test file`.trim()
       sinon.assert.calledWith(executeRenderHook, RenderHookType.afterRender)
       sinon.assert.calledWith(filesystem.write, 'sample.kt', Buffer.from('Test file one (bar)'), 0o644)
       sinon.assert.calledWith(filesystem.write, 'two.yml', Buffer.from('Test file two'), 0o644)
+    })
+
+    it('should render files with file-specific variables', async () => {
+      const executeRenderHook = sandbox.stub(renderer, 'executeHook')
+
+      renderer.reset()
+      renderer.setContext(context)
+
+      sandbox.stub(renderer, 'processMetadata').resolves({
+        id: 'sample',
+        path: 'sample.kt.njk',
+        permissions: 0o644,
+        outputPath: 'sample.kt',
+        content: Buffer.from('Test file one ({{ variables.foo }})'),
+        constants: {},
+        dependencies: [],
+        variables: {
+          foo: 'baz',
+        },
+      })
+
+      await renderer.addFile('sample.kt.njk', 'sample.kt')
+      await renderer.render()
+
+      sinon.assert.calledWith(executeRenderHook, RenderHookType.beforeRender)
+      sinon.assert.calledWith(executeRenderHook, RenderHookType.afterRender)
+      sinon.assert.calledWith(filesystem.write, 'sample.kt', Buffer.from('Test file one (baz)'), 0o644)
     })
 
     it('should render all files that have outputs and dependencies on other files', async () => {
@@ -355,6 +394,7 @@ Test file`.trim()
           foo: 'bar',
         },
         dependencies: [],
+        variables: {},
       })
 
       await renderer.addFile('sample.kt.njk', 'sample.kt')
@@ -368,6 +408,7 @@ Test file`.trim()
         content: Buffer.from('With a dependency ({{ dependencies.sample.foo }})'),
         constants: {},
         dependencies: ['sample'],
+        variables: {},
       })
       await renderer.addFile('second.kt.njk', 'second.kt')
 
@@ -407,6 +448,7 @@ Test file`.trim()
           foo: 'bar',
         },
         dependencies: [],
+        variables: {},
       })
 
       await renderer.addFile('sample.kt.njk', 'sample.kt')
@@ -420,6 +462,7 @@ Test file`.trim()
         content: Buffer.from('With a dependency ({{ dependencies.sample.foo }})'),
         constants: {},
         dependencies: ['sample'],
+        variables: {},
       })
       await renderer.addFile('second.kt.njk', 'second.kt')
 
