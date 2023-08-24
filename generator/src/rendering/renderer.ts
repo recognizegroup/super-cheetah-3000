@@ -69,7 +69,7 @@ export class Renderer {
           const engine = this.getTemplateEngine(file.path)
 
           if (this.context) {
-            await engine?.setup(this.context!.incrementalDataHandler)
+            await engine?.setup(this.generator.metaData.name, this.context!.incrementalDataHandler)
           }
 
           if (!engine) {
