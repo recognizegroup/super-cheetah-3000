@@ -30,7 +30,7 @@ jobs:
       - name: Prepare generator
         run: cd ../generator && yarn && yarn build && yarn link && cd ../cli
       - name: Prepare definition
-        run: cd ../definition && yarn && yarn build && cd ../cli
+        run: cd ../definition && yarn && yarn build && yarn link && cd ../cli
       - name: Install dependencies
         run: yarn
       - name: Build
@@ -58,7 +58,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Prepare generator
-        run: cd ../generator && yarn && yarn build && cd ../definition
+        run: cd ../generator && yarn && yarn build && yarn link && cd ../definition
       - name: Install dependencies
         run: yarn
       - name: Link generator
