@@ -29,3 +29,4 @@ export {IdentityProviderConfiguration} from './models/identity-provider-configur
 export {IdentityProviderType} from './models/identity-provider-type'
 export {Role} from './models/role'
 export {SecurityConfiguration} from './models/security-configuration'
+export {PreFlightViolation} from './models/pre-flight-violation'

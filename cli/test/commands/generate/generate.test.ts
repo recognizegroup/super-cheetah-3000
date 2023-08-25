@@ -21,11 +21,11 @@ describe('generate', () => {
 
   let sandbox: sinon.SinonSandbox
 
+  const projectCodeProvider = sinon.createStubInstance(ProjectCodeProvider)
+  const entityCodeProvider = sinon.createStubInstance(EntityCodeProvider)
+
   beforeEach(() => {
     sandbox = sinon.createSandbox()
-
-    const projectCodeProvider = sinon.createStubInstance(ProjectCodeProvider)
-    const entityCodeProvider = sinon.createStubInstance(EntityCodeProvider)
 
     sandbox.stub(AzureAdAuthenticationProvider.prototype, 'fetchTokenOrRefresh').callsFake(async () => stubTokenResponse)
     sandbox.stub(LocalConfigProvider.prototype, 'retrieveConfig').callsFake(async () => ({authentication: stubTokenResponse}))
@@ -99,5 +99,30 @@ describe('generate', () => {
   .command(['generate'])
   .it('runs generate command', ctx => {
     expect(ctx.stdout).to.contain('✅  Generated 1 projects and 2 entities')
+  })
+
+  test
+  .stdout()
+  .stub(GeneratorLoader.prototype, 'loadProjectGenerators', async () => [
+    {
+      entityCodeProvider,
+      projectCodeProvider,
+      metaData: {
+        name: 'kotlin',
+        description: 'Kotlin generator',
+        version: '1.0.0',
+        templateRoot: '/tmp',
+        authors: [],
+      },
+      inputs: [],
+      performPreFlightChecks: async () => [
+        {message: 'Something went wrong', solution: 'Do something'},
+      ],
+    },
+  ])
+  .command(['generate'])
+  .it('runs pre-flight checks', ctx => {
+    expect(ctx.stdout).to.contain('⚠️  Pre-flight checks failed. Please fix the following issues before continuing:')
+    expect(ctx.stdout).to.contain('- Something went wrong. Solution: Do something')
   })
 })
