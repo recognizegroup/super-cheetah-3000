@@ -52,6 +52,18 @@ $ sc3000 generate --force
     const path = definition.workingDirectory
     const securityConfiguration = definition.securityConfiguration
 
+    await loader.update('Performing pre-flight checks')
+    const violations = (await Promise.all(
+      generators.filter(it => it.performPreFlightChecks).flatMap(generator => generator.performPreFlightChecks!()),
+    )).flat(1)
+
+    if (violations.length > 0) {
+      await loader.stop()
+      this.log('⚠️  Pre-flight checks failed. Please fix the following issues before continuing:')
+      this.log(violations.map(it => `- ${it.message}. Solution: ${it.solution}`).join('\n'))
+      return
+    }
+
     const testData = new FakerTestDataManager()
     const filesystem = new LocalFilesystem(path)
     const lockFileManager = new LockFileManager(path)
