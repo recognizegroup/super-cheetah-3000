@@ -8,4 +8,5 @@ export interface Field {
     searchable?: boolean;
     mainProperty?: boolean;
     visibleInList?: boolean;
+    editable?: boolean;
 }
