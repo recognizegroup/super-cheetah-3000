@@ -1,30 +1,23 @@
 import {Loader} from './loader'
-import {ux} from '@oclif/core'
+import ora, {Ora} from 'ora'
 
 export class DefaultLoader implements Loader {
-  hasCurrentSpinner = false
+  spinner?: Ora
 
   async start(): Promise<void> {
-    ux.action.start('Starting generation...')
-
-    this.hasCurrentSpinner = true
+    this.spinner = ora('Starting generation...').start()
   }
 
   async update(status: string): Promise<void> {
     this.checkStop()
-
-    ux.action.start(status)
+    this.spinner = ora(status).start()
   }
 
   async stop(): Promise<void> {
     this.checkStop()
-
-    this.hasCurrentSpinner = true
   }
 
   private checkStop(): void {
-    if (this.hasCurrentSpinner) {
-      ux.action.stop('done')
-    }
+    this.spinner?.stop()
   }
 }

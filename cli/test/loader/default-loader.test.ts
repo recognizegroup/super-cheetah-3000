@@ -1,5 +1,4 @@
 import {expect} from 'chai'
-import {ux} from '@oclif/core'
 import {DefaultLoader} from '../../src/loader/default-loader'
 
 describe('default loader', () => {
@@ -10,24 +9,26 @@ describe('default loader', () => {
   })
 
   afterEach(() => {
-    // Reset the action status after each test
-    ux.action.stop()
+    loader.spinner?.stop()
   })
 
   it('should start the generation', async () => {
     await loader.start()
-    expect(ux.action.running).to.be.true
+    expect(loader.spinner?.isSpinning).to.be.true
   })
 
   it('should update the status', async () => {
     const status = 'Updating status'
     await loader.update(status)
-    expect(ux.action.running).to.be.true
+    expect(loader.spinner?.isSpinning).to.be.true
+    expect(loader.spinner?.text).to.equal(status)
   })
 
   it('should stop the loader', async () => {
-    loader.hasCurrentSpinner = true
+    await loader.start()
+    expect(loader.spinner?.isSpinning).to.be.true
+
     await loader.stop()
-    expect(ux.action.running).to.be.false
+    expect(loader.spinner?.isSpinning).to.be.false
   })
 })
