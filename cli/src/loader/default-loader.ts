@@ -5,12 +5,18 @@ export class DefaultLoader implements Loader {
   spinner?: Ora
 
   async start(): Promise<void> {
-    this.spinner = ora('Starting generation...').start()
+    this.spinner = ora({
+      text: 'Starting generation',
+      isEnabled: true,
+    }).start()
   }
 
   async update(status: string): Promise<void> {
     this.checkStop()
-    this.spinner = ora(status).start()
+    this.spinner = ora({
+      text: status,
+      isEnabled: true,
+    }).start()
   }
 
   async stop(): Promise<void> {
