@@ -37,6 +37,7 @@ import { DataType, configureSecurity, createDefinition, createEntity, createProj
 const project = createEntity('Project')
     .addField('name', DataType.string, { required: true, mainProperty: true })
     .addField('description', DataType.text)
+    .addField('externalSyncId', DataType.integer, { editable: false })
     .enableAllOperations()
     .requireRolesForEntity('application-admin')
     .withProperty('icon', 'grid')

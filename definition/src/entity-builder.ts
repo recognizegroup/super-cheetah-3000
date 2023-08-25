@@ -1,6 +1,6 @@
 import {DataType, Entity, Field, Operations, RelationshipParity, Role} from '@recognizebv/sc3000-generator'
 
-export type Options = { required?: boolean, sortable?: boolean, searchable?: boolean, mainProperty?: boolean, visibleInList?: boolean }
+export type Options = { required?: boolean, sortable?: boolean, searchable?: boolean, mainProperty?: boolean, visibleInList?: boolean, editable?: boolean }
 
 export class EntityBuilder implements Entity {
   public name: string
@@ -34,6 +34,7 @@ export class EntityBuilder implements Entity {
       searchable: options?.searchable ?? true,
       mainProperty: options?.mainProperty ?? false,
       visibleInList: options?.visibleInList ?? true,
+      editable: options?.editable ?? true,
     })
 
     return this
@@ -50,6 +51,7 @@ export class EntityBuilder implements Entity {
       searchable: options?.searchable ?? true,
       mainProperty: options?.mainProperty ?? false,
       visibleInList: options?.visibleInList ?? true,
+      editable: options?.editable ?? true,
     })
 
     return this
@@ -66,6 +68,7 @@ export class EntityBuilder implements Entity {
       searchable: options?.searchable ?? true,
       mainProperty: options?.mainProperty ?? false,
       visibleInList: options?.visibleInList ?? true,
+      editable: options?.editable ?? true,
     })
 
     return this
@@ -82,6 +85,7 @@ export class EntityBuilder implements Entity {
       searchable: options?.searchable ?? true,
       mainProperty: options?.mainProperty ?? false,
       visibleInList: options?.visibleInList ?? true,
+      editable: options?.editable ?? true,
     })
 
     return this
@@ -98,6 +102,7 @@ export class EntityBuilder implements Entity {
       searchable: options?.searchable ?? true,
       mainProperty: options?.mainProperty ?? false,
       visibleInList: options?.visibleInList ?? true,
+      editable: options?.editable ?? true,
     })
 
     return this

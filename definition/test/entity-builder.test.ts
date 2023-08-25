@@ -26,7 +26,7 @@ describe('entity builder', () => {
     const result = entityBuilder.addField(fieldName, fieldType)
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.fields).to.deep.equal([{name: fieldName, type: fieldType, required: false, mainProperty: false, searchable: true, visibleInList: true, sortable: true}])
+    expect(entityBuilder.fields).to.deep.equal([{name: fieldName, type: fieldType, required: false, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true}])
   })
 
   it('should add a field with custom options', () => {
@@ -38,10 +38,11 @@ describe('entity builder', () => {
       searchable: false,
       visibleInList: false,
       sortable: false,
+      editable: false,
     })
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.fields).to.deep.equal([{name: fieldName, type: fieldType, required: true, mainProperty: true, searchable: false, visibleInList: false, sortable: false}])
+    expect(entityBuilder.fields).to.deep.equal([{name: fieldName, type: fieldType, required: true, mainProperty: true, searchable: false, visibleInList: false, sortable: false, editable: false}])
   })
 
   it('should add a required field', () => {
@@ -51,7 +52,7 @@ describe('entity builder', () => {
     const result = entityBuilder.addField(fieldName, fieldType, options)
 
     expect(result).to.equal(entityBuilder)
-    expect(entityBuilder.fields).to.deep.equal([{name: fieldName, type: fieldType, required: true, mainProperty: false, searchable: true, visibleInList: true, sortable: true}])
+    expect(entityBuilder.fields).to.deep.equal([{name: fieldName, type: fieldType, required: true, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true}])
   })
 
   it('should add a one-to-many relationship', () => {
@@ -61,7 +62,7 @@ describe('entity builder', () => {
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToMany}, mainProperty: false, searchable: true, visibleInList: true, sortable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToMany}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
@@ -72,7 +73,7 @@ describe('entity builder', () => {
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToOne}, mainProperty: false, searchable: true, visibleInList: true, sortable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToOne}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
@@ -83,7 +84,7 @@ describe('entity builder', () => {
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToMany}, mainProperty: false, searchable: true, visibleInList: true, sortable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToMany}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
@@ -94,7 +95,7 @@ describe('entity builder', () => {
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToOne}, mainProperty: false, searchable: true, visibleInList: true, sortable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToOne}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 

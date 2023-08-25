@@ -126,7 +126,13 @@ export class NunjucksTemplateEngine implements TemplateEngine {
       const column = Number(matches?.[2] ?? 0)
       const message = asString.split('\n')[1].trim()
 
-      return new ParseError(path ?? 'unknown', line, column, message, template)
+      return new ParseError({
+        path: path ?? 'unknown',
+        line,
+        column,
+        cause: message,
+        template,
+      })
     }
 
     return error
