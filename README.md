@@ -79,6 +79,10 @@ export default createDefinition()
 
 ```
 
+Each generator has the option to specify additional requirements in the form of pre-flight checks. These checks will be
+executed before the generator is run. If any of the checks fail, the generator will not be run before the issue is
+resolved.
+
 ## Development
 In order to develop the tool, you will need to have Node.js and Yarn installed. After cloning the repository, you can build generator project by running the following command:
 ```yarn build ``` in the generator project directory.
