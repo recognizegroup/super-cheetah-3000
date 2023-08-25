@@ -35,7 +35,9 @@ jobs:
         run: yarn
       - name: Build
         run: yarn lint
-      - name: yarn link generator
+      - name: Link definition
+        run: yarn link "@recognizebv/sc3000-definition"
+      - name: Link generator
         run: yarn link "@recognizebv/sc3000-generator"
       - name: Build
         run: yarn build
@@ -59,6 +61,8 @@ jobs:
         run: cd ../generator && yarn && yarn build && cd ../definition
       - name: Install dependencies
         run: yarn
+      - name: Link generator
+        run: yarn link "@recognizebv/sc3000-generator"
       - name: Build
         run: yarn lint
       - name: Build
