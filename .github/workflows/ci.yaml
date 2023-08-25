@@ -58,7 +58,7 @@ jobs:
         with:
           node-version: 18.x
       - name: Prepare generator
-        run: cd ../generator && yarn && yarn build && yarn link && cd ../definition
+        run: cd ../generator && yarn && yarn link "@recognizebv/sc3000-generator" && yarn build && yarn link && cd ../definition
       - name: Install dependencies
         run: yarn
       - name: Link generator
