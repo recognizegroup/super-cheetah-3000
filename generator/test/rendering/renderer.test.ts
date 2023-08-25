@@ -119,12 +119,51 @@ describe('renderer', () => {
           dependencies: [],
           variables: {},
         },
+        {
+          id: null,
+          path: 'path/to/file4',
+          permissions: 0o644,
+          outputPath: 'output/path/to/file5',
+          content: Buffer.from(''),
+          constants: {},
+          dependencies: [],
+          variables: {},
+        },
       ]
     })
 
     it('should group files by their dependencies', () => {
+      const filesByOutputPath: TemplateMetadata[] = [{
+        id: null,
+        path: 'path/to/file4',
+        permissions: 0o644,
+        outputPath: 'output/path/to/file5',
+        content: Buffer.from(''),
+        constants: {},
+        dependencies: [],
+        variables: {},
+      }, {
+        id: null,
+        path: 'path/to/file4',
+        permissions: 0o644,
+        outputPath: 'output/path/to/file6',
+        content: Buffer.from(''),
+        constants: {},
+        dependencies: [],
+        variables: {},
+      }]
       const expectedGroups = [
-        [files[0], files[3]],
+        [filesByOutputPath[0], filesByOutputPath[1]],
+      ]
+
+      const actualGroups = renderer.createDependencyTree(filesByOutputPath)
+
+      expect(actualGroups).to.deep.equal(expectedGroups)
+    })
+
+    it('should add files by their outputPath', () => {
+      const expectedGroups = [
+        [files[0], files[3], files[4]],
         [files[1]],
         [files[2]],
       ]
@@ -142,7 +181,7 @@ describe('renderer', () => {
 
     it('should handle files without any dependencies', () => {
       const expectedGroups = [
-        [files[0], files[1], files[2], files[3]],
+        [files[0], files[1], files[2], files[3], files[4]],
       ]
 
       files[1].dependencies = []
