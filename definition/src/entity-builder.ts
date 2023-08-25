@@ -40,7 +40,7 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addOneToMany(field: string, target: Entity, options?: Options & { mappedBy?: Field }): EntityBuilder {
+  public addOneToMany(field: string, target: Entity, options?: Options & { mappedBy?: string }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
@@ -58,7 +58,7 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addManyToOne(field: string, target: Entity, options?: Options & { inverse?: Field }): EntityBuilder {
+  public addManyToOne(field: string, target: Entity, options?: Options & { inverse?: string }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
@@ -76,7 +76,7 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addManyToMany(field: string, target: Entity, options?: Options & { mappedBy?: Field, inverse?: Field }): EntityBuilder {
+  public addManyToMany(field: string, target: Entity, options?: Options & { mappedBy?: string, inverse?: string }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
@@ -95,7 +95,7 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addOneToOne(field: string, target: Entity, options?: Options & { mappedBy?: Field, inverse?: Field }): EntityBuilder {
+  public addOneToOne(field: string, target: Entity, options?: Options & { mappedBy?: string, inverse?: string }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
