@@ -182,7 +182,7 @@ export class Renderer {
         files.map(file => file.id ?? file.outputPath),
         files.flatMap(file => file.dependencies.map(dependency => [file.id ?? file.outputPath, dependency])),
       )
-      const sorted = sortedIds.map(id => files.find(file => file.id === id || file.outputPath === id ))
+      const sorted = sortedIds.map(id => files.find(file => file.id === id || file.outputPath === id))
 
       // Now, we can create the groups
       const groups: TemplateMetadata[][] = []
