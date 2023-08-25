@@ -40,12 +40,13 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addOneToMany(field: string, target: Entity, options?: Options): EntityBuilder {
+  public addOneToMany(field: string, target: Entity, options?: Options & { mappedBy?: Field }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.oneToMany,
+        mappedBy: options?.mappedBy,
       },
       sortable: options?.sortable ?? true,
       searchable: options?.searchable ?? true,
@@ -57,12 +58,13 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addManyToOne(field: string, target: Entity, options?: Options): EntityBuilder {
+  public addManyToOne(field: string, target: Entity, options?: Options & { inverse?: Field }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.manyToOne,
+        inverse: options?.inverse,
       },
       sortable: options?.sortable ?? true,
       searchable: options?.searchable ?? true,
@@ -74,12 +76,14 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addManyToMany(field: string, target: Entity, options?: Options): EntityBuilder {
+  public addManyToMany(field: string, target: Entity, options?: Options & { mappedBy?: Field, inverse?: Field }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.manyToMany,
+        mappedBy: options?.mappedBy,
+        inverse: options?.inverse,
       },
       sortable: options?.sortable ?? true,
       searchable: options?.searchable ?? true,
@@ -91,12 +95,14 @@ export class EntityBuilder implements Entity {
     return this
   }
 
-  public addOneToOne(field: string, target: Entity, options?: Options): EntityBuilder {
+  public addOneToOne(field: string, target: Entity, options?: Options & { mappedBy?: Field, inverse?: Field }): EntityBuilder {
     this.fields.push({
       name: field,
       type: {
         target: target,
         parity: RelationshipParity.oneToOne,
+        mappedBy: options?.mappedBy,
+        inverse: options?.inverse,
       },
       sortable: options?.sortable ?? true,
       searchable: options?.searchable ?? true,
@@ -232,5 +238,9 @@ export class EntityBuilder implements Entity {
     this.operations.entity.roles.push(role)
 
     return this
+  }
+
+  public field(name: string): Field | undefined {
+    return this.fields.find(field => field.name === name)
   }
 }
