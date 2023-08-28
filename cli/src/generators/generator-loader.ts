@@ -32,7 +32,7 @@ export class GeneratorLoader {
 
     const result = [] as Generator[]
 
-    await exec('npm install @recognizebv/sc3000-generator', {
+    await exec('npm install @recognizebv/sc3000-generator@latest --prefer-offline --no-audit --progress=false', {
       cwd: generatorDirectory,
     })
 
@@ -51,7 +51,7 @@ export class GeneratorLoader {
         const path = join(definition.workingDirectory, packageLocation)
         GeneratorClass = (await import(path)).default
       } else {
-        await exec(`npm install ${packageLocation}@${generator.version} --registry=https://${this.environment.registryUrl}`, {
+        await exec(`npm install ${packageLocation}@${generator.version} --registry=https://${this.environment.registryUrl} --prefer-offline --no-audit --progress=false`, {
           cwd: generatorDirectory,
         })
 

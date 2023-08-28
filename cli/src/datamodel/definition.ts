@@ -45,7 +45,7 @@ export const compileDefinitionFileFromTypeScript = async (path: string): Promise
   const output = temp.mkdirSync('sc3000-definition')
 
   // First, install the definition package
-  await exec('npm install @recognizebv/sc3000-definition', {cwd: output})
+  await exec('npm install @recognizebv/sc3000-definition@latest --prefer-offline --no-audit --progress=false', {cwd: output})
 
   const options: ts.CompilerOptions = {
     target: ts.ScriptTarget.ESNext,
