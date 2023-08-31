@@ -42,9 +42,8 @@ export class LockFileManager {
     }
 
     this.updateLockFileMetadata(base)
-    await this.writeLockFile(base)
 
-    return base
+    return this.writeLockFile(base)
   }
 
   public async addGeneratedProject(generator: Generator): Promise<LockFile> {
@@ -62,9 +61,8 @@ export class LockFileManager {
     }
 
     this.updateLockFileMetadata(base)
-    await this.writeLockFile(base)
 
-    return base
+    return this.writeLockFile(base)
   }
 
   public async addIncrementalData(piece: IncrementalDataTemplatePiece) {
@@ -80,9 +78,8 @@ export class LockFileManager {
     }
 
     this.updateLockFileMetadata(base)
-    await this.writeLockFile(base)
 
-    return base
+    return this.writeLockFile(base)
   }
 
   private updateLockFileMetadata(lockFile: LockFile): LockFile {
@@ -122,9 +119,13 @@ export class LockFileManager {
     }) ?? false
   }
 
-  public async writeLockFile(lockFile: LockFile): Promise<void> {
-    const content = JSON.stringify(lockFile, null, 2)
+  public async writeLockFile(lockFile: LockFile): Promise<LockFile> {
+    const withoutCircularReferences = this.removeCircularReferences(lockFile)
+
+    const content = JSON.stringify(withoutCircularReferences, null, 2)
     await writeFile(this.path + '/' + this.lockFileName, content)
+
+    return withoutCircularReferences
   }
 
   public validateLockFile(lockFile: any): lockFile is LockFile {
@@ -139,5 +140,27 @@ export class LockFileManager {
 
       return generatedItem.project === true || Array.isArray(generatedItem.entities)
     })
+  }
+
+  private removeCircularReferences(lockFile: LockFile): LockFile {
+    const copy = {...lockFile}
+    copy.generated = copy.generated.map(it => ({
+      ...it,
+      entities: it.entities?.map(entity => ({
+        ...entity,
+        fields: entity.fields?.map(field => ({
+          ...field,
+          type: typeof field.type === 'string' ? field.type : {
+            ...field.type,
+            target: {
+              ...field.type.target,
+              fields: [],
+            },
+          },
+        })),
+      })) ?? [],
+    }))
+
+    return copy
   }
 }

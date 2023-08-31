@@ -58,22 +58,22 @@ describe('entity builder', () => {
   it('should add a one-to-many relationship', () => {
     const fieldName = 'posts'
     const targetEntity = new EntityBuilder('Post')
-    const result = entityBuilder.addOneToMany(fieldName, targetEntity)
+    const result = entityBuilder.addOneToMany(fieldName, targetEntity, {mappedBy: 'comment'})
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToMany}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToMany, mappedBy: 'comment'}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
   it('should add a many-to-one relationship', () => {
     const fieldName = 'author'
     const targetEntity = new EntityBuilder('User')
-    const result = entityBuilder.addManyToOne(fieldName, targetEntity)
+    const result = entityBuilder.addManyToOne(fieldName, targetEntity, {inverse: 'posts'})
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToOne}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToOne, inverse: 'posts'}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
@@ -84,7 +84,7 @@ describe('entity builder', () => {
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToMany}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.manyToMany, inverse: undefined, mappedBy: undefined}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
@@ -95,7 +95,7 @@ describe('entity builder', () => {
 
     expect(result).to.equal(entityBuilder)
     expect(entityBuilder.fields).to.deep.equal([
-      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToOne}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
+      {name: fieldName, type: {target: targetEntity, parity: RelationshipParity.oneToOne, inverse: undefined, mappedBy: undefined}, mainProperty: false, searchable: true, visibleInList: true, sortable: true, editable: true},
     ])
   })
 
