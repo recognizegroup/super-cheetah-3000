@@ -48,6 +48,10 @@ const task = createEntity('Task')
     .enableAllOperations()
     .withProperty('icon', 'import')
 
+// Reference the project entity from the task entity
+project
+    .addOneToMany('tasks', task)
+
 export default createDefinition()
     .forProject(
         createProject()

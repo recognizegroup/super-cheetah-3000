@@ -4,7 +4,7 @@ import sinon from 'sinon'
 import {promises as fs} from 'node:fs'
 import {LockFileManager} from '../../src/lock-file/lock-file-manager'
 import {LockFile} from '../../src/models/lock-file'
-import {Entity, Generator} from '../../src'
+import {Entity, Generator, RelationshipParity} from '../../src'
 
 describe('lock file manager', () => {
   let lockFileManager: LockFileManager
@@ -99,6 +99,60 @@ describe('lock file manager', () => {
       sinon.assert.calledWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
     })
 
+    it('should create a new lock file if there are circular references', async () => {
+      const writeFileStub = sandbox.stub(fs, 'writeFile')
+      const readFileStub = sandbox.stub(fs, 'readFile')
+      readFileStub.rejects(new Error('File not found'))
+
+      const generator: Generator = {metaData: {name: 'generator1'}} as any
+      const entityOne: Entity = {name: 'entity1', fields: []} as any
+      const entityTwo: Entity = {name: 'entity2', fields: [
+        {
+          name: 'entityOne',
+          type: {
+            target: entityOne,
+            parity: RelationshipParity.manyToOne,
+          },
+        },
+      ]} as any
+
+      entityOne.fields.push({
+        name: 'entityTwo',
+        type: {
+          target: entityTwo,
+          parity: RelationshipParity.oneToMany,
+        },
+      })
+
+      const expectedLockFile: LockFile = {
+        generated: [
+          {
+            generator: 'generator1',
+            entities: [
+              {
+                name: 'entity1',
+                fields: [
+                  {
+                    name: 'entityTwo',
+                    type: {
+                      target: {name: 'entity2', fields: []},
+                      parity: RelationshipParity.oneToMany,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }
+      writeFileStub.resolves()
+
+      const result = await lockFileManager.addGeneratedEntity(generator, entityOne)
+
+      expect(result).to.deep.equal(expectedLockFile)
+      sinon.assert.calledWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
+    })
+
     it('should add the entity to an existing lock file', async () => {
       const writeFileStub = sandbox.stub(fs, 'writeFile')
       const readFileStub = sandbox.stub(fs, 'readFile')
@@ -160,6 +214,7 @@ describe('lock file manager', () => {
           {
             generator: 'generator1',
             project: true,
+            entities: [],
           },
         ],
       }
@@ -230,6 +285,7 @@ describe('lock file manager', () => {
           {
             generator: 'generator2',
             project: true,
+            entities: [],
           },
         ],
       }
