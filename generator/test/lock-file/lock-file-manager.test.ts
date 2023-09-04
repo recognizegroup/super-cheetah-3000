@@ -4,7 +4,7 @@ import sinon from 'sinon'
 import {promises as fs} from 'node:fs'
 import {LockFileManager} from '../../src/lock-file/lock-file-manager'
 import {LockFile} from '../../src/models/lock-file'
-import {Entity, Generator, RelationshipParity} from '../../src'
+import {Entity, Generator, Infrastructure, RelationshipParity} from '../../src'
 
 describe('lock file manager', () => {
   let lockFileManager: LockFileManager
@@ -298,114 +298,6 @@ describe('lock file manager', () => {
     })
   })
 
-  describe('add generated infrastructure', () => {
-    const infrastructure = {
-      services: [
-        {name: 'application '},
-      ],
-      storages: [
-        {name: 'blob'},
-      ],
-      databases: [],
-      network: {
-        ipRange: '10.0.0.0/16',
-      },
-    }
-
-    it('should create a new lock file if lockFile is null', async () => {
-      const writeFileStub = sandbox.stub(fs, 'writeFile')
-      const readFileStub = sandbox.stub(fs, 'readFile')
-
-      readFileStub.rejects(new Error('File not found'))
-
-      const generator: Generator = {metaData: {name: 'generator1'}} as any
-      const expectedLockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            infrastructure,
-          },
-        ],
-      }
-      writeFileStub.resolves()
-
-      const result = await lockFileManager.addGeneratedInfrastructure(generator, infrastructure)
-
-      expect(result).to.deep.equal(expectedLockFile)
-
-      sinon.assert.calledOnceWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
-    })
-
-    it('should add the project to an existing lock file', async () => {
-      const writeFileStub = sandbox.stub(fs, 'writeFile')
-      const readFileStub = sandbox.stub(fs, 'readFile')
-
-      const lockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-          },
-        ],
-      }
-
-      readFileStub.resolves(JSON.stringify(lockFile))
-
-      const generator: Generator = {metaData: {name: 'generator1'}} as any
-      const expectedLockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-            infrastructure,
-          },
-        ],
-      }
-      writeFileStub.resolves()
-
-      const result = await lockFileManager.addGeneratedInfrastructure(generator, infrastructure)
-
-      expect(result).to.deep.equal(expectedLockFile)
-      sinon.assert.calledOnceWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
-    })
-
-    it('should create a new generator item with infrastructure if it does not exist', async () => {
-      const writeFileStub = sandbox.stub(fs, 'writeFile')
-      const readFileStub = sandbox.stub(fs, 'readFile')
-
-      const lockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-          },
-        ],
-      }
-
-      readFileStub.resolves(JSON.stringify(lockFile))
-
-      const generator: Generator = {metaData: {name: 'generator2'}} as any
-      const expectedLockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-          },
-          {
-            generator: 'generator2',
-            infrastructure,
-          },
-        ],
-      }
-      writeFileStub.resolves()
-
-      const result = await lockFileManager.addGeneratedInfrastructure(generator, infrastructure)
-
-      expect(result).to.deep.equal(expectedLockFile)
-      sinon.assert.calledOnceWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
-    })
-  })
-
   describe('has generated entity with generator', () => {
     it('should return false if lockFile is null', async () => {
       const readFileStub = sandbox.stub(fs, 'readFile')
@@ -548,92 +440,6 @@ describe('lock file manager', () => {
     })
   })
 
-  describe('has generated infrastructure with generator', () => {
-    it('should return false if lockFile is null', async () => {
-      const readFileStub = sandbox.stub(fs, 'readFile')
-      readFileStub.rejects(new Error('File not found'))
-      const generator: Generator = {metaData: {name: 'generator1'}} as any
-
-      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
-
-      expect(result).to.be.false
-    })
-
-    it('should return false if the generator does not exist in the lock file', async () => {
-      const readFileStub = sandbox.stub(fs, 'readFile')
-
-      const lockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-          },
-        ],
-      }
-
-      readFileStub.resolves(JSON.stringify(lockFile))
-
-      const generator: Generator = {metaData: {name: 'generator2'}} as any
-
-      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
-
-      expect(result).to.be.false
-    })
-
-    it('should return true if the generator exists as a project in the lock file', async () => {
-      const readFileStub = sandbox.stub(fs, 'readFile')
-      const lockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-            infrastructure: {
-              services: [
-                {name: 'application '},
-              ],
-              storages: [
-                {name: 'blob'},
-              ],
-              databases: [],
-              network: {
-                ipRange: '10.0.0.0/16',
-              },
-            },
-          },
-        ],
-      }
-
-      readFileStub.resolves(JSON.stringify(lockFile))
-
-      const generator: Generator = {metaData: {name: 'generator1'}} as any
-
-      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
-
-      expect(result).to.be.true
-    })
-
-    it('should return false if the generator exists but not as a project in the lock file', async () => {
-      const readFileStub = sandbox.stub(fs, 'readFile')
-      const lockFile: LockFile = {
-        generated: [
-          {
-            generator: 'generator1',
-            entities: [],
-            project: true,
-          },
-        ],
-      }
-
-      readFileStub.resolves(JSON.stringify(lockFile))
-
-      const generator: Generator = {metaData: {name: 'generator1'}} as any
-
-      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
-
-      expect(result).to.be.false
-    })
-  })
-
   describe('write lock file', () => {
     it('should write the lock file content to the specified file', async () => {
       const writeFileStub = sandbox.stub(fs, 'writeFile')
@@ -702,6 +508,165 @@ describe('lock file manager', () => {
       }
 
       const result = lockFileManager.validateLockFile(lockFile)
+
+      expect(result).to.be.true
+    })
+  })
+
+  describe('add generated infrastructure', () => {
+    const infrastructure: Infrastructure = {
+      services: [
+        {name: 'application '},
+      ],
+      storages: [
+        {name: 'blob'},
+      ],
+      databases: [],
+      network: {
+        ipRange: '10.0.0.0/16',
+      },
+    }
+
+    it('should create a new lock file if lockFile is null', async () => {
+      const writeFileStub = sandbox.stub(fs, 'writeFile')
+      const readFileStub = sandbox.stub(fs, 'readFile')
+      readFileStub.rejects(new Error('File not found'))
+
+      const generator: Generator = {metaData: {name: 'generator1'}} as any
+      const expectedLockFile: LockFile = {
+        generated: [
+          {
+            generator: 'generator1',
+            infrastructure,
+            entities: [],
+          },
+        ],
+      }
+      writeFileStub.resolves()
+
+      const result = await lockFileManager.addGeneratedInfrastructure(generator, infrastructure)
+
+      expect(result).to.deep.equal(expectedLockFile)
+      sinon.assert.calledWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
+    })
+
+    it('should add the infrastructure to an existing lock file', async () => {
+      const writeFileStub = sandbox.stub(fs, 'writeFile')
+      const readFileStub = sandbox.stub(fs, 'readFile')
+
+      const lockFile: LockFile = {
+        generated: [
+          {
+            generator: 'generator1',
+            entities: [
+              {
+                name: 'entity1',
+                fields: [],
+              },
+            ],
+          },
+        ],
+      }
+
+      readFileStub.resolves(JSON.stringify(lockFile))
+
+      const generator: Generator = {metaData: {name: 'generator1'}} as any
+      const expectedLockFile: LockFile = {
+        generated: [
+          {
+            generator: 'generator1',
+            entities: [
+              {
+                name: 'entity1',
+                fields: [],
+              },
+            ],
+            infrastructure,
+          },
+        ],
+      }
+      writeFileStub.resolves()
+
+      const result = await lockFileManager.addGeneratedInfrastructure(generator, infrastructure)
+
+      expect(result).to.deep.equal(expectedLockFile)
+      sinon.assert.calledOnceWithExactly(writeFileStub, 'path/to/files/sc3000.lock.json', JSON.stringify(expectedLockFile, null, 2))
+    })
+  })
+
+  describe('has generated infrastructure with generator', () => {
+    const infrastructure: Infrastructure = {
+      services: [
+        {name: 'application '},
+      ],
+      storages: [
+        {name: 'blob'},
+      ],
+      databases: [],
+      network: {
+        ipRange: '10.0.0.0/16',
+      },
+    }
+
+    it('should return false if lockFile is null', async () => {
+      const readFileStub = sandbox.stub(fs, 'readFile')
+
+      readFileStub.rejects(new Error('File not found'))
+
+      const generator: Generator = {metaData: {name: 'generator1'}} as any
+      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
+
+      expect(result).to.be.false
+    })
+
+    it('should return false if the generator or infrastructure does not exist in the lock file', async () => {
+      const readFileStub = sandbox.stub(fs, 'readFile')
+
+      const lockFile: LockFile = {
+        generated: [
+          {
+            generator: 'generator1',
+            entities: [
+              {
+                name: 'entity1',
+                fields: [],
+              },
+            ],
+          },
+        ],
+      }
+
+      readFileStub.resolves(JSON.stringify(lockFile))
+
+      const generator: Generator = {metaData: {name: 'generator2'}} as any
+
+      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
+
+      expect(result).to.be.false
+    })
+
+    it('should return true if the generator and infrastructure exist in the lock file', async () => {
+      const readFileStub = sandbox.stub(fs, 'readFile')
+
+      const lockFile: LockFile = {
+        generated: [
+          {
+            generator: 'generator1',
+            entities: [
+              {
+                name: 'entity1',
+                fields: [],
+              },
+            ],
+            infrastructure,
+          },
+        ],
+      }
+
+      readFileStub.resolves(JSON.stringify(lockFile))
+      const generator: Generator = {metaData: {name: 'generator1'}} as any
+
+      const result = await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator)
 
       expect(result).to.be.true
     })

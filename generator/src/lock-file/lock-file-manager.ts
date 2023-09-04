@@ -58,6 +58,7 @@ export class LockFileManager {
       base.generated.push({
         generator: generator.metaData.name,
         project: true,
+        entities: [],
       })
     }
 
@@ -78,6 +79,7 @@ export class LockFileManager {
       base.generated.push({
         generator: generator.metaData.name,
         infrastructure: {...infrastructure},
+        entities: [],
       })
     }
 
@@ -168,7 +170,7 @@ export class LockFileManager {
         return false
       }
 
-      return generatedItem.project === true || Array.isArray(generatedItem.entities)
+      return generatedItem.project === true || Array.isArray(generatedItem.entities) || Boolean(generatedItem.infrastructure)
     })
   }
 
