@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {DefinitionBuilder} from '../src/definition-builder'
-import {Entity, IdentityProviderType, Project, ProjectGenerator} from '@recognizebv/sc3000-generator'
+import {Entity, IdentityProviderType, Infrastructure, Project, ProjectGenerator} from '@recognizebv/sc3000-generator'
 
 describe('definition builder', () => {
   let definitionBuilder: DefinitionBuilder
@@ -26,6 +26,19 @@ describe('definition builder', () => {
         clientId: '1234',
         tenantId: '5678',
       },
+    },
+  }
+
+  const infrastructureMock: Infrastructure = {
+    services: [
+      {name: 'application '},
+    ],
+    storages: [
+      {name: 'blob'},
+    ],
+    databases: [],
+    network: {
+      ipRange: '10.0.0.0/16',
     },
   }
 
@@ -66,5 +79,12 @@ describe('definition builder', () => {
 
     expect(result).to.equal(definitionBuilder)
     expect(definitionBuilder.securityConfiguration).to.deep.equal(securityConfigMock)
+  })
+
+  it('should add an infrastructure', () => {
+    const result = definitionBuilder.withInfrastructure(infrastructureMock)
+
+    expect(result).to.equal(definitionBuilder)
+    expect(definitionBuilder.infrastructure).to.deep.equal(infrastructureMock)
   })
 })

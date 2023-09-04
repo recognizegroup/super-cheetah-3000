@@ -9,6 +9,7 @@ import {DataType, EntityCodeProvider, ProjectCodeProvider} from '@recognizebv/sc
 import {LockFileManager} from '@recognizebv/sc3000-generator/dist/lock-file/lock-file-manager'
 import {CheetahLoader} from '../../../src/loader/cheetah-loader'
 import {DefaultLoader} from '../../../src/loader/default-loader'
+import {InfrastructureCodeProvider} from '@recognizebv/sc3000-generator/dist/providers/infrastructure-code-provider'
 
 describe('generate', () => {
   const stubTokenResponse: TokenResponse = {
@@ -23,6 +24,7 @@ describe('generate', () => {
 
   const projectCodeProvider = sinon.createStubInstance(ProjectCodeProvider)
   const entityCodeProvider = sinon.createStubInstance(EntityCodeProvider)
+  const infrastructureCodeProvider = sinon.createStubInstance(InfrastructureCodeProvider)
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
@@ -42,6 +44,7 @@ describe('generate', () => {
       {
         entityCodeProvider,
         projectCodeProvider,
+        infrastructureCodeProvider,
         metaData: {
           name: 'kotlin',
           description: 'Kotlin generator',
@@ -87,6 +90,18 @@ describe('generate', () => {
       generators: [
         {packageLocation: '@recognizegroup/kotlin', version: '^1.0', inputs: {directory: 'tmp'}},
       ],
+      infrastructure: {
+        services: [
+          {name: 'application '},
+        ],
+        storages: [
+          {name: 'blob'},
+        ],
+        databases: [],
+        network: {
+          ipRange: '10.0.0.0/16',
+        },
+      },
     }))
   })
 
@@ -98,7 +113,7 @@ describe('generate', () => {
   .stdout()
   .command(['generate'])
   .it('runs generate command', ctx => {
-    expect(ctx.stdout).to.contain('✅  Generated 1 projects and 2 entities')
+    expect(ctx.stdout).to.contain('✅  Generated 1 projects, 2 entities and 1 infrastructures')
   })
 
   test
@@ -107,6 +122,7 @@ describe('generate', () => {
     {
       entityCodeProvider,
       projectCodeProvider,
+      infrastructureCodeProvider,
       metaData: {
         name: 'kotlin',
         description: 'Kotlin generator',

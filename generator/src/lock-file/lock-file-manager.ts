@@ -3,6 +3,7 @@ import {writeFile, readFile} from 'node:fs/promises'
 import {Generator} from '../models/generator'
 import {Entity} from '../models/entity'
 import {IncrementalDataTemplatePiece} from '../models/incremental-data-template-piece'
+import {Infrastructure} from '../models/infrastructure'
 
 export class LockFileManager {
   readonly lockFileName = 'sc3000.lock.json'
@@ -57,6 +58,28 @@ export class LockFileManager {
       base.generated.push({
         generator: generator.metaData.name,
         project: true,
+        entities: [],
+      })
+    }
+
+    this.updateLockFileMetadata(base)
+    await this.writeLockFile(base)
+
+    return base
+  }
+
+  public async addGeneratedInfrastructure(generator: Generator, infrastructure: Infrastructure): Promise<LockFile> {
+    const lockFile = await this.readLockFile()
+    const base = lockFile ?? this.createBaseLockFile()
+
+    const generatorItem = base.generated.find(it => it.generator === generator.metaData.name)
+    if (generatorItem) {
+      generatorItem.infrastructure = {...infrastructure}
+    } else {
+      base.generated.push({
+        generator: generator.metaData.name,
+        infrastructure: {...infrastructure},
+        entities: [],
       })
     }
 
@@ -119,6 +142,15 @@ export class LockFileManager {
     }) ?? false
   }
 
+  public async hasGeneratedInfrastructureWithGenerator(generator: Generator): Promise<boolean> {
+    const lockFile = await this.readLockFile()
+    const generatorName = generator.metaData.name
+
+    return lockFile?.generated.some(generatedItem => {
+      return generatedItem.generator === generatorName && generatedItem.infrastructure
+    }) ?? false
+  }
+
   public async writeLockFile(lockFile: LockFile): Promise<LockFile> {
     const withoutCircularReferences = this.removeCircularReferences(lockFile)
 
@@ -138,7 +170,7 @@ export class LockFileManager {
         return false
       }
 
-      return generatedItem.project === true || Array.isArray(generatedItem.entities)
+      return generatedItem.project === true || Array.isArray(generatedItem.entities) || Boolean(generatedItem.infrastructure)
     })
   }
 

@@ -46,8 +46,9 @@ export class LocalFilesystem implements Filesystem {
   }
 
   async list(path: string): Promise<string[]> {
-    return (await this.readDirectoryRecursively(path))
-    .map(it => it.replace(new RegExp(`^${path}/`), ''))
+    const directory = await this.readDirectoryRecursively(path)
+
+    return directory.map(it => it.replace(new RegExp(`^${path}/`), ''))
   }
 
   async createDirectory(path: string): Promise<void> {
@@ -101,7 +102,9 @@ export class LocalFilesystem implements Filesystem {
     let files: string[] = []
 
     for (const item of items) {
-      if ((await fs.lstat(this.resolve(`${path}/${item}`))).isDirectory()) {
+      const stats = await fs.lstat(this.resolve(`${path}/${item}`))
+
+      if (stats.isDirectory()) {
         files = [...files, ...(await this.readDirectoryRecursively(`${path}/${item}`))]
       } else {
         files.push(`${path}/${item}`)

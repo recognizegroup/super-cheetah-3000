@@ -32,7 +32,7 @@ yarn add --dev @recognizebv/sc3000-definition
 Then, create a `sc3000.definition.ts` file in the root of your project. An example of such a file can be found below:
 
 ```typescript
-import { DataType, configureSecurity, createDefinition, createEntity, createProject, useGenerator, azureIdentityProvider } from '@recognizebv/sc3000-definition'
+import { DataType, configureSecurity, createDefinition, createEntity, createProject, useGenerator, azureIdentityProvider, DatabaseType } from '@recognizebv/sc3000-definition'
 
 const project = createEntity('Project')
     .addField('name', DataType.string, { required: true, mainProperty: true })
@@ -79,6 +79,14 @@ export default createDefinition()
                     .withClientId('0000-0000-0000-0000-0000')
                     .withTenantId('0000-0000-0000-0000-0000')
             )
+    )
+    .withInfrastructure(
+        configureInfrastructure()
+            .withNetwork('10.0.0.0/16')
+            .withService('api')
+            .withService('frontend')
+            .withDatabase(DatabaseType.postgres)
+            .withStorage('app')
     )
 
 ```
