@@ -17,6 +17,7 @@ import {IncrementalDataHandler} from '@recognizebv/sc3000-generator/dist/templat
 import {CheetahLoader} from '../../loader/cheetah-loader'
 import {DefaultLoader} from '../../loader/default-loader'
 import chalk from 'chalk'
+import {InfrastructureContext} from '@recognizebv/sc3000-generator/dist/context/infrastructure-context'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate all project files according to the current project model.'
@@ -76,9 +77,10 @@ $ sc3000 generate --force
 
     let projectCodeProviderInvocations = 0
     let entityCodeProviderInvocations = 0
+    let infrastructureCodeProviderInvocations = 0
 
     for (const generator of generators) {
-      const {metaData, entityCodeProvider, projectCodeProvider} = generator
+      const {metaData, entityCodeProvider, projectCodeProvider, infrastructureCodeProvider} = generator
       await loader.update(`Checking generator state for ${metaData.name}`)
 
       const index = generators.indexOf(generator)
@@ -86,23 +88,43 @@ $ sc3000 generate --force
 
       projectCodeProvider?.renderer?.setFileExistsConfirmation(this.fileExistsConfirmation.bind(this))
       entityCodeProvider?.renderer?.setFileExistsConfirmation(this.fileExistsConfirmation.bind(this))
+      infrastructureCodeProvider?.renderer?.setFileExistsConfirmation(this.fileExistsConfirmation.bind(this))
 
       try {
-        const context = new ProjectContext({
-          project: definition.project,
-          filesystem,
-          testData,
-          incrementalDataHandler,
-          securityConfiguration,
-          inputs,
-        })
-
         if (!await lockFileManager.hasGeneratedProjectWithGenerator(generator)) {
+          const context = new ProjectContext({
+            project: definition.project,
+            filesystem,
+            testData,
+            incrementalDataHandler,
+            securityConfiguration,
+            inputs,
+          })
+
           await loader.update(`Generating project structure with ${metaData.name}`)
 
           await projectCodeProvider?.render(context)
           lockFile = await lockFileManager.addGeneratedProject(generator)
           projectCodeProviderInvocations++
+        }
+
+        const infrastructure = definition.infrastructure
+        if (!await lockFileManager.hasGeneratedInfrastructureWithGenerator(generator) && infrastructure) {
+          const context = new InfrastructureContext({
+            project: definition.project,
+            filesystem,
+            testData,
+            incrementalDataHandler,
+            securityConfiguration,
+            inputs,
+            infrastructure,
+          })
+
+          await loader.update(`Generating infrastructure with ${metaData.name}`)
+
+          await infrastructureCodeProvider?.render(context)
+          lockFile = await lockFileManager.addGeneratedInfrastructure(generator, infrastructure)
+          infrastructureCodeProviderInvocations++
         }
 
         for (const entity of definition.entities) {
@@ -142,12 +164,12 @@ $ sc3000 generate --force
 
     await loader.stop()
 
-    if (projectCodeProviderInvocations === 0 && entityCodeProviderInvocations === 0) {
-      this.log('⚠️  No new entities or projects.')
+    if (projectCodeProviderInvocations === 0 && entityCodeProviderInvocations === 0 && infrastructureCodeProviderInvocations === 0) {
+      this.log('⚠️  No new entities, projects or infrastructures.')
       return
     }
 
-    this.log(`✅  Generated ${projectCodeProviderInvocations} projects and ${entityCodeProviderInvocations} entities.`)
+    this.log(`✅  Generated ${projectCodeProviderInvocations} projects, ${entityCodeProviderInvocations} entities and ${infrastructureCodeProviderInvocations} infrastructures.`)
   }
 
   public async fileExistsConfirmation(path: string): Promise<boolean> {

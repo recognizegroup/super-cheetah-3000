@@ -1,5 +1,5 @@
 import {
-  Entity,
+  Entity, Infrastructure,
   Project,
   ProjectDefinition,
   ProjectGenerator,
@@ -12,6 +12,7 @@ export class DefinitionBuilder implements ProjectDefinition {
   public generators: ProjectGenerator[] = []
   public workingDirectory = process.cwd()
   public securityConfiguration?: SecurityConfiguration
+  public infrastructure?: Infrastructure
 
   public forProject(project: Project): DefinitionBuilder {
     this.project = project
@@ -30,6 +31,11 @@ export class DefinitionBuilder implements ProjectDefinition {
 
   public withSecurityConfiguration(securityConfiguration: SecurityConfiguration): DefinitionBuilder {
     this.securityConfiguration = securityConfiguration
+    return this
+  }
+
+  public withInfrastructure(infrastructure: Infrastructure): DefinitionBuilder {
+    this.infrastructure = infrastructure
     return this
   }
 }

@@ -33,16 +33,25 @@ export class FakerTestDataManager implements TestDataManager {
     faker.seed(seed)
 
     switch (field.type) {
-    case DataType.string:
+    case DataType.string: {
       return faker.lorem.word()
-    case DataType.text:
+    }
+
+    case DataType.text: {
       return faker.lorem.paragraph(1)
-    case DataType.integer:
+    }
+
+    case DataType.integer: {
       return faker.number.int()
-    case DataType.boolean:
+    }
+
+    case DataType.boolean: {
       return faker.datatype.boolean()
-    default:
+    }
+
+    default: {
       return this.generateForRelationship(field.type as Relationship, seed)
+    }
     }
   }
 

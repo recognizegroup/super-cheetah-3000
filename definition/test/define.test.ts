@@ -1,5 +1,12 @@
 import {expect} from 'chai'
-import {azureIdentityProvider, configureSecurity, createDefinition, createEntity, createProject} from '../src'
+import {
+  azureIdentityProvider,
+  configureInfrastructure,
+  configureSecurity,
+  createDefinition,
+  createEntity,
+  createProject,
+} from '../src'
 import {useGenerator} from '../src/define'
 import {GeneratorBuilder} from '../src/generator-builder'
 import {DefinitionBuilder} from '../src/definition-builder'
@@ -7,6 +14,7 @@ import {ProjectBuilder} from '../src/project-builder'
 import {EntityBuilder} from '../src/entity-builder'
 import {SecurityConfigurationBuilder} from '../src/security-configuration-builder'
 import {AzureIdentityProviderConfigurationBuilder} from '../src/azure-identity-provider-configuration-builder'
+import {InfrastructureBuilder} from '../src/infrastructure-builder'
 
 describe('define', () => {
   it('createEntity should create an instance of EntityBuilder', () => {
@@ -44,6 +52,11 @@ describe('define', () => {
   it('configureSecurity should create an instance of SecurityConfigurationBuilder', () => {
     const securityConfigurationBuilder = configureSecurity()
     expect(securityConfigurationBuilder).to.be.an.instanceOf(SecurityConfigurationBuilder)
+  })
+
+  it('configureInfrastructure should create an instance of InfrastructureBuilder', () => {
+    const infrastructureBuilder = configureInfrastructure()
+    expect(infrastructureBuilder).to.be.an.instanceOf(InfrastructureBuilder)
   })
 
   it('azureIdentityProvider should create an instance of AzureIdentityProviderConfigurationBuilder', () => {
