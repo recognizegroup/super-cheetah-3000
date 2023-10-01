@@ -22,7 +22,7 @@ jobs:
         working-directory: cli/
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -52,7 +52,7 @@ jobs:
         working-directory: definition/
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -78,7 +78,7 @@ jobs:
         working-directory: generator/
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -105,7 +105,7 @@ jobs:
       TAG: ${{ github.ref_name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -134,7 +134,7 @@ jobs:
       TAG: ${{ github.ref_name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -162,7 +162,7 @@ jobs:
         working-directory: cli/
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -201,7 +201,7 @@ jobs:
         working-directory: cli/
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Update dependencies
         run: sudo apt update
       - name: Install software
@@ -244,7 +244,7 @@ jobs:
         working-directory: cli/
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:

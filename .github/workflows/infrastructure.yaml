@@ -24,7 +24,7 @@ jobs:
     name: Build registry Docker image
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to registry
@@ -58,7 +58,7 @@ jobs:
       ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
